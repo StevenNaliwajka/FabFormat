@@ -110,11 +110,13 @@ def read_Gerber(tstr):
     #
     # Gerber parser
     #
+    print(tstr)
     segment = -1
     xold = []
     yold = []
     line = 0
     nlines = len(tstr)
+    print(f"HERE: {nlines}")
     path = []
     apertures = []
     macros = []
@@ -336,10 +338,12 @@ def read_Excellon(tstr):
     #
     # Excellon parser
     #
+
     escale = 1
     segment = -1
     line = 0
-    nlines = len(tstr)
+    nlines = len(tstr.readlines())
+    print(f"HERE: {nlines}")
     path = []
     drills = []
     vias = []
@@ -573,21 +577,22 @@ def read(event):
     text = infile.get()
     file = open(text, 'r')
     tstr = file.readlines()
-    if ((text.find(".cmp") != -1) | (text.find(".sol")!= -1) \
-        | (text.find(".otl")!= -1)):
-        print ("reading Gerber file",text)
-        boundary = read_Gerber(tstr)
-    elif (text.find(".drl") != -1):
-        print ("reading Excellon file",text)
-        boundary = read_Excellon(tstr)
-        vias = read_ExcellonDrill(tstr)
-    elif (text.find(".dxf") != -1):
-        print ("reading DXF file",text)
-        boundary = read_DXF(tstr)
-    else:
-        print ("unsupported file type")
-        return
-    file.close()
+    for item in tstr:
+        if ((item.find(".cmp") != -1) | (item.find(".sol")!= -1) \
+            | (item.find(".otl")!= -1)):
+            print ("reading Gerber file",item)
+            boundary = read_Gerber(item)
+        elif (item.find(".drl") != -1):
+            print ("reading Excellon file",item)
+            boundary = read_Excellon(tstr)
+            vias = read_ExcellonDrill(tstr)
+        elif (item.find(".dxf") != -1):
+            print ("reading DXF file",text)
+            boundary = read_DXF(tstr)
+        else:
+            print ("unsupported file type")
+            return
+        file.close()
     toolpath = []
     sum1 = 0
     for segment in range(len(boundary)):
