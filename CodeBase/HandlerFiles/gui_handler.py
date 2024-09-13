@@ -1,38 +1,38 @@
 import sys
 import tkinter as tk
 from infile_handler import read
-from config_handler import Config_Handler
+from CodeBase.HandlerFiles.config_handler import Config_Handler
 class Gui_Handler():
     def __init__(self,CONFIG : Config_Handler):
         root = tk.Tk()
         root.title('cam.py')
         root.bind('q', 'exit')
 
-        infile = tk.StringVar()
-        outfile = tk.StringVar()
-        if (len(sys.argv) >= 2):
-            infile.set(sys.argv[1])
+        GUIinfile = tk.StringVar()
+        GUIoutfile = tk.StringVar()
+        if (CONFIG.get_infile() != None):
+            GUIinfile.set(CONFIG.get_infile())
         else:
-            infile.set('')
-        if (len(sys.argv) >= 4):
-            xoff = float(sys.argv[2])
-            yoff = float(sys.argv[3])
-        if (len(sys.argv) >= 5):
-            size = float(sys.argv[4])
-        if (len(sys.argv) >= 6):
-            outfile.set(sys.argv[5])
+            GUIinfile.set('')
+        if (CONFIG.get_xoff() != None):
+            xoff = CONFIG.get_xoff()
+            yoff = CONFIG.get_yoff()
+        if (CONFIG.get_size() != None):
+            size = CONFIG.get_size()
+        if (CONFIG.get_size() != None):
+            GUIoutfile.set(CONFIG.get_size())
         else:
-            outfile.set('out.rml')
-        if (len(sys.argv) >= 7):
-            undercut = float(sys.argv[6])
+            GUIoutfile.set('out.rml')
+        if (CONFIG.get_undercut() != None):
+            undercut = CONFIG.get_undercut()
 
         inframe = tk.Frame(root)
         tk.Label(inframe, text="input file: ").pack(side="left")
-        winfile = tk.Entry(inframe, width=20, textvariable=infile)
+        winfile = tk.Entry(inframe, width=20, textvariable=GUIinfile)
         winfile.pack(side="left")
-        winfile.bind('<Return>', read(infile))
+        winfile.bind('<Return>', read(GUIinfile))
         ssize = tk.StringVar()
-        ssize.set(str(size))
+        ssize.set(str(CONFIG.get_size()))
         tk.Label(inframe, text=" ").pack(side="left")
         tk.Label(inframe, text="display size:").pack(side="left")
         wsize = tk.Entry(inframe, width=10, textvariable=ssize)
@@ -47,11 +47,11 @@ class Gui_Handler():
 
         coordframe = tk.Frame(root)
         sxoff = tk.StringVar()
-        sxoff.set(str(xoff))
+        sxoff.set(str(CONFIG.get_xoff()))
         syoff = tk.StringVar()
-        syoff.set(str(yoff))
+        syoff.set(str(CONFIG.get_yoff()))
         sscale = tk.StringVar()
-        sscale.set(str(scale))
+        sscale.set(str(CONFIG.get_scale()))
         tk.Label(coordframe, text="x offset:").pack(side="left")
         wxoff = tk.Entry(coordframe, width=10, textvariable=sxoff)
         wxoff.pack(side="left")
@@ -87,7 +87,7 @@ class Gui_Handler():
         status.set(namedate)
         tk.Label(outframe, textvariable=status).pack(side="left")
         tk.Label(outframe, text="output file: ").pack(side="left")
-        woutfile = tk.Entry(outframe, width=20, textvariable=outfile)
+        woutfile = tk.Entry(outframe, width=20, textvariable=GUIoutfile)
         woutfile.bind('<Return>', camselect)
         woutfile.pack(side="left")
         tk.Label(outframe, text=" ").pack(side="left")
@@ -190,7 +190,7 @@ class Gui_Handler():
 
         camselect(0)
 
-        if (len(infile.get()) != 0):
+        if (len(GUIinfile.get()) != 0):
             read(0)
 
         root.mainloop()

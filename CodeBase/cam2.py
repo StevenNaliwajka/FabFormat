@@ -26,16 +26,28 @@
 #
 # Updated
 # 9/12/2024
+import sys
 
-from gui_handler import Gui_Handler
-from config_handler import Config_Handler
+from CodeBase.HandlerFiles.gui_handler import Gui_Handler
+from CodeBase.HandlerFiles.config_handler import Config_Handler
+from CodeBase.HandlerFiles.infile_handler import Infile_Handler
 
 if __name__ == "__main__":
     config_file_name = "config.txt"
 
+    infile = sys.argv[1]
+    xoff = float(sys.argv[2])
+    yoff = float(sys.argv[3])
+    size = float(sys.argv[4])
+    outfile = sys.argv[5]
+    undercut = float(sys.argv[6])
+
     #Create the TK GUI
-    CONFIG = Config_Handler(config_file_name)
+    CONFIG = Config_Handler(config_file_name,infile,xoff,
+                            yoff,size,outfile,undercut)
+    INFILE = Infile_Handler(CONFIG)
     GUI = Gui_Handler(CONFIG)
+
 
 
 boundary = []
