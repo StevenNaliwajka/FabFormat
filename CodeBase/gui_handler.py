@@ -1,7 +1,9 @@
 import sys
 import tkinter as tk
+from infile_handler import read
+from config_handler import Config_Handler
 class Gui_Handler():
-    def __init__(self):
+    def __init__(self,CONFIG : Config_Handler):
         root = tk.Tk()
         root.title('cam.py')
         root.bind('q', 'exit')
@@ -28,7 +30,7 @@ class Gui_Handler():
         tk.Label(inframe, text="input file: ").pack(side="left")
         winfile = tk.Entry(inframe, width=20, textvariable=infile)
         winfile.pack(side="left")
-        winfile.bind('<Return>', read)
+        winfile.bind('<Return>', read(infile))
         ssize = tk.StringVar()
         ssize.set(str(size))
         tk.Label(inframe, text=" ").pack(side="left")
