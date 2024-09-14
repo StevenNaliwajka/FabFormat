@@ -43,9 +43,12 @@ if __name__ == "__main__":
     undercut = float(sys.argv[6])
 
     #Create the TK GUI
+    #Reads config_file_name and holds all input information.
     CONFIG = Config_Handler(config_file_name,infile,xoff,
                             yoff,size,outfile,undercut)
+    #Reads infile and handles...
     INFILE = Infile_Handler(CONFIG)
+    #Creates the GUI
     GUI = Gui_Handler(CONFIG)
 
 

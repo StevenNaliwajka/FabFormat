@@ -28,18 +28,18 @@ xmax=-1e10
 ymin=1e10
 ymax=-1e10
 
-x=0
-y=1
-intersect=2
+X=0
+Y=1
+INTERSECT=2
 
-seg=0
-vert=1
-a=1
+SEG=0
+VERT=1
+A=1
 
-type=0
-size=1
-width=1
-height=2
-nverts=10
-true=1
-false=0
+TYPE=0
+SIZE=1
+WIDTH=1
+HEIGHT=2
+NVERTS=10
+TRUE=1
+FALSE=0

@@ -1,7 +1,8 @@
-import sys
 import tkinter as tk
-from infile_handler import read
+
 from CodeBase.HandlerFiles.config_handler import Config_Handler
+
+
 class Gui_Handler():
     def __init__(self,CONFIG : Config_Handler):
         root = tk.Tk()
@@ -9,6 +10,8 @@ class Gui_Handler():
         root.bind('q', 'exit')
 
         GUIinfile = tk.StringVar()
+
+        #Sets GUIoutfile
         GUIoutfile = tk.StringVar()
         if (CONFIG.get_infile() != None):
             GUIinfile.set(CONFIG.get_infile())

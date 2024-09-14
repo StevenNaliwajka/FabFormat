@@ -1,3 +1,4 @@
+import os
 import string
 
 
@@ -22,6 +23,8 @@ class Config_Handler():
     VERT = None
     A = None
     TYPE = None
+    # NOTE SIZE and size are both included. Not sure the diff... TBD
+    SIZE = None
     WIDTH = None
     HEIGHT = None
     NVERTS = None
@@ -43,8 +46,17 @@ class Config_Handler():
         self.size = size
         self.outfile = outfile
         self.undercut = undercut
-        config = self.read_config(config_file)
-        for key, value in config:
+
+        # Generates the path of the config file.
+        # config file must be in CodeBase folder.
+        current_file_path = os.path.abspath(__file__)
+        current_dir = os.path.dirname(current_file_path)
+        parent_dir = os.path.dirname(current_dir)
+        config_file_location = os.path.join(parent_dir, config_file)
+
+
+        config = self.read_config(config_file_location)
+        for key, value in config.items():
             if hasattr(self, key):
                 setattr(self, key, value)
             else:
