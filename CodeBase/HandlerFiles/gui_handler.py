@@ -197,3 +197,67 @@ class Gui_Handler():
             read(0)
 
         root.mainloop()
+
+    def plot(event):
+        global boundary, toolpath, ssize, sscale, sxoff, syoff, ivert, c
+        #
+        # scale and plot boundary and toolpath
+        #
+        size = float(ssize.get())
+        scale = float(sscale.get())
+        xoff = float(sxoff.get())
+        yoff = float(syoff.get())
+        vert = ivert.get()
+        c.delete("plot_boundary")
+        for seg in range(len(boundary)):
+            path_plot = []
+            for vertex in range(len(boundary[seg])):
+                xplot = int((boundary[seg][vertex][X] * scale + xoff) * WINDOW / size)
+                path_plot.append(xplot)
+                yplot = WINDOW - int((boundary[seg][vertex][Y] * scale + yoff) * WINDOW / size)
+                path_plot.append(yplot)
+                if (vert == 1):
+                    c.create_text(xplot, yplot, text=str(seg) + ':' + str(vertex), tag="plot_boundary")
+            c.create_line(path_plot, tag="plot_boundary")
+        c.delete("plot_path")
+        for seg in range(len(toolpath)):
+            path_plot = []
+            for vertex in range(len(toolpath[seg])):
+                xplot = int((toolpath[seg][vertex][X] * scale + xoff) * WINDOW / size)
+                path_plot.append(xplot)
+                yplot = WINDOW - int((toolpath[seg][vertex][Y] * scale + yoff) * WINDOW / size)
+                path_plot.append(yplot)
+                if (vert == 1):
+                    c.create_text(xplot, yplot, text=str(seg) + ':' + str(vertex), tag="plot_path")
+            c.create_line(path_plot, tag="plot_path", fill="red")
+    def plot_seg(event):
+        global segplot, ssize, sscale, sxoff, syoff, ivert, c
+        #
+        # scale and plot segplot and toolpath
+        #
+        size = float(ssize.get())
+        scale = float(sscale.get())
+        xoff = float(sxoff.get())
+        yoff = float(syoff.get())
+        vert = ivert.get()
+        c.delete("plot_segment")
+        for seg in range(len(segplot)):
+            path_plot = []
+            for vertex in range (len(segplot[seg])):
+                xplot = int((segplot[seg][vertex][X]*scale + xoff)*WINDOW/size)
+                path_plot.append(xplot)
+                yplot = WINDOW - int((segplot[seg][vertex][Y]*scale + yoff)*WINDOW/size)
+                path_plot.append(yplot)
+                if (vert == 1):
+                    c.create_text(xplot,yplot,text=str(seg)+':'+str(vertex),tag="plot_segment")
+            c.create_line(path_plot,tag="plot_segment",fill='white')
+            c.create_line(path_plot,tag="plot_segment",fill='blue')
+
+    def plot_delete(event):
+        global toolpath
+        #
+        # scale and plot boundary, delete toolpath
+        #
+        toolpath = []
+        print ("delete")
+        plot(event)

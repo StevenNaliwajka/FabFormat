@@ -52,6 +52,6 @@ class Infile_Handler():
             boundary[segment][-1][CONFIG.get_Y()] = boundary[segment][0][CONFIG.get_Y()]
         print("    found", len(boundary), "polygons,", sum1, "vertices")
         print("    added", CONFIG.get_noise(), "perturbation")
-        print(f"    xmin: %0.3g {xmin}xmax: %0.3g {xmax}ymin: %0.3g {ymin}ymax: %0.3g {ymax}")
+        #print(f"    xmin: %0.3g {xmin}xmax: %0.3g {xmax}ymin: %0.3g {ymin}ymax: %0.3g {ymax}")
         # FROM WHEN IT TOOK IN EVENT??
         # plot(event)
