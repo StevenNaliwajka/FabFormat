@@ -5,6 +5,7 @@ def read_Gerber(tstr, CONFIG: Config_Handler):
     #
     # Gerber parser
     #
+    #
     print(tstr)
     segment = -1
     xold = []
