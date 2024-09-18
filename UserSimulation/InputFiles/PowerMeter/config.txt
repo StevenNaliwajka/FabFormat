@@ -1,0 +1,17 @@
+# CONFIG FILE
+
+# PRINTER SPECIFIC VALUES
+# X-OFFSET FROM O,O TO BEGIN PLOTTING
+xoff = 0
+# Y-OFFSET FROM 0,0 TO BEGIN PLOTTING
+yoff = 0
+# Still unknown how this modifies everything...
+size = .1
+# How much the fillament squishes out horizontaly when printed.
+undercut = 1
+
+# FILES TO BE CONVERTED
+PowerMeter.cmp
+#PowerMeter.drd
+#PowerMeter.otl
+#PowerMeter.sol

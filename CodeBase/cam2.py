@@ -1,6 +1,7 @@
 #
 # cam2.py
 #
+#THIS INFO HAS MODIFIED
 # usage: python cam2.py [infile] [xoffset yoffset] [display size] [outfile] [undercut]
 #
 # input:

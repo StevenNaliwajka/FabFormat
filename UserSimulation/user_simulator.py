@@ -1,21 +1,68 @@
-# import GTG
+# originally by:
+# (C)BA Neil Gershenfeld
+# commercial sale licensed by MIT
+#
+# modified by:
+# tedgrosch
+# on Apr 2, 2017
+#
+# Re-written and modified by Steven Naliwajka
+# 9/12/2024
 import os
 
-if __name__ == "__main__":
-    #User's input
-    infile = "infile.txt"
-    xoff = 0
-    yoff = 0
-    size = .1
-    outfile = "finaloutput"
-    undercut = 1
 
-    #Generates the Path of Cam2.
+if __name__ == "__main__":
+    # 'config.txt' is a text document that contains the Excellon & Drill files to convert.
+    # Also contains the details for the printer that the file will be printed on.
+    # --- EX: config.txt  -------
+    #  xoff = 0
+    #  yoff = 0
+    #  size = .1
+    #  undercut = 1
+    #
+    #  PowerMeter.cmp
+    #  PowerMeter.drd
+    #  PowerMeter.otl
+    #  PowerMeter.sol
+    # ---------------------------
+
+    # --- EX: Folder format ------
+    # -InputFiles
+    #   - PowerMeter
+    #     - config.txt
+    #     - PowerMeter.cmp
+    #     - PowerMeter.drd
+    #     - PowerMeter.otl
+    #     - PowerMeter.sol
+    #   - PowerMeter2
+    #     - config.txt
+    #     - PowerMeter2.cmp
+    #     - PowerMeter2.drd
+    #     - PowerMeter2.otl
+    #     - PowerMeter2.sol
+    #
+    # -OutputFiles
+    #   - PowerMeter.gcode
+    #   - PowerMeter2.gcode
+    #
+    # cam2.py
+    # ----------------------------
+
+    # Generates file paths.
     current_file_path = os.path.abspath(__file__)
     current_dir = os.path.dirname(current_file_path)
     parent_dir = os.path.dirname(current_dir)
-    cam2location = os.path.join(parent_dir, "CodeBase", "cam2.py")
 
-    os.system(f'py {cam2location} {infile} {xoff} {yoff} {size} {outfile} {undercut}')
+    # Generates the File Path of Cam2.
+    cam2FilePath = os.path.join(parent_dir, "CodeBase", "cam2.py")
 
-    #os.system('py C:\\Users\Kevin\PycharmProjects\Gerber-DrilltoGcode\CodeBase\cam2.py %s %s %s %s %s %s' % (infile, xoff, yoff, size, outfile, undercut))
+    # Generates the File Path of Infile.
+    inputFolder = "PowerMeter"
+    inputDirectoryPath = os.path.join(current_dir, inputFolder)
+
+    # Generates the File Path of Outfile
+    outputDirectoryPath =
+
+    os.system(f'py {cam2FilePath} {inputDirectoryPath} {outputDirectoryPath}')
+    # Calls the files
+    #os.system(f'py {cam2FileLocation} {infileFileLocation} {xoff} {yoff} {size} {outfile} {undercut}')

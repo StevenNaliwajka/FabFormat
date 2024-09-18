@@ -46,6 +46,7 @@ class Config_Handler():
 
     def __init__(self, config_file: string, infile, xoff,
                  yoff, size, outfile, undercut):
+
         self.infile = infile
         self.xoff = xoff
         self.yoff = yoff
