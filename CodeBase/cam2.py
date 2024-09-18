@@ -34,25 +34,16 @@ from CodeBase.HandlerFiles.config_handler import Config_Handler
 from CodeBase.HandlerFiles.infile_handler import Infile_Handler
 
 if __name__ == "__main__":
-    config_file_name = "config.txt"
-
-    infile = sys.argv[1]
-    xoff = float(sys.argv[2])
-    yoff = float(sys.argv[3])
-    size = float(sys.argv[4])
-    outfile = sys.argv[5]
-    undercut = float(sys.argv[6])
+    infileDirectoryPath = sys.argv[1]
+    outfileDirectoryPath = sys.argv[2]
 
     #Create the TK GUI
     #Reads config_file_name & stores ALL of the data for the conversion.
-    CONFIG = Config_Handler(config_file_name,infile,xoff,
-                            yoff,size,outfile,undercut)
+    CONFIG = Config_Handler(infileDirectoryPath, outfileDirectoryPath)
     #Reads infile and updates config
     INFILE = Infile_Handler(CONFIG)
     #Creates the GUI
     GUI = Gui_Handler(CONFIG)
-
-
 
 boundary = []
 toolpath = []

@@ -15,6 +15,7 @@ if __name__ == "__main__":
     # 'config.txt' is a text document that contains the Excellon & Drill files to convert.
     # Also contains the details for the printer that the file will be printed on.
     # --- EX: config.txt  -------
+    #  outputType = gcode
     #  xoff = 0
     #  yoff = 0
     #  size = .1
@@ -24,7 +25,7 @@ if __name__ == "__main__":
     #  PowerMeter.drd
     #  PowerMeter.otl
     #  PowerMeter.sol
-    # ---------------------------
+    # ---------------------------  THIS HAS TO BE UPDATED ONCE FINALIZED
 
     # --- EX: Folder format ------
     # -InputFiles
@@ -56,13 +57,14 @@ if __name__ == "__main__":
     # Generates the File Path of Cam2.
     cam2FilePath = os.path.join(parent_dir, "CodeBase", "cam2.py")
 
-    # Generates the File Path of Infile.
-    inputFolder = "PowerMeter"
-    inputDirectoryPath = os.path.join(current_dir, inputFolder)
+    # Generates the File Path of each infile bundle.
+    input1Folder = "PowerMeter"
+    inputDirectoryPath = os.path.join(current_dir, "InputFiles", input1Folder)
 
-    # Generates the File Path of Outfile
-    outputDirectoryPath =
+    # Generates the File Path of where to send completed files
+    outputDirectoryPath = os.path.join(current_dir, "OutputFiles")
 
+    #Standard Usage, Can be called as many times as wanted.
     os.system(f'py {cam2FilePath} {inputDirectoryPath} {outputDirectoryPath}')
     # Calls the files
     #os.system(f'py {cam2FileLocation} {infileFileLocation} {xoff} {yoff} {size} {outfile} {undercut}')

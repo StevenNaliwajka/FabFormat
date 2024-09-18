@@ -1,0 +1,3 @@
+
+# window size in pixels
+window=500

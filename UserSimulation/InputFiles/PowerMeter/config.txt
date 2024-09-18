@@ -1,5 +1,8 @@
 # CONFIG FILE
 
+# CONVERT TO WHAT?
+outputType = gcode
+
 # PRINTER SPECIFIC VALUES
 # X-OFFSET FROM O,O TO BEGIN PLOTTING
 xoff = 0
@@ -10,8 +13,55 @@ size = .1
 # How much the fillament squishes out horizontaly when printed.
 undercut = 1
 
+# --------------------------------------------------------------------------
+# NOT SURE WHAT THESE DO TBD
+# numerical roundoff tolerance for testing intersections
+eps=1e-20
+
+# hack: std dev of numerical noise to add to remove degeneracies
+noise=1e-6
+
+# default parameters
+scale=1.0
+# assuming gerber is in inches and scad must be in mm
+gscale=25.4
+
+# substrate thickness
+sthickness=0.1
+# metal thickness in inches 0.19mm
+mthickness=0.0075
+# conductor width in inces 0.25mm
+mwidth=0.01
+size=2.0
+xoff=0.1
+yoff=0.1
+
+xmin=1e10
+xmax=-1e10
+ymin=1e10
+ymax=-1e10
+
+X=0
+Y=1
+INTERSECT=2
+
+SEG=0
+VERT=1
+A=1
+
+TYPE=0
+SIZE=1
+WIDTH=1
+HEIGHT=2
+NVERTS=10
+TRUE=1
+FALSE=0
+# ---------------------------------------------------
+
+# FILE NAMES MUST BE DENOTED WITH A '-' BEFORE
+# EXAMPLE : '-PowerMeter.cmp'
 # FILES TO BE CONVERTED
-PowerMeter.cmp
-#PowerMeter.drd
-#PowerMeter.otl
-#PowerMeter.sol
+-PowerMeter.cmp
+#-PowerMeter.drd
+#-PowerMeter.otl
+#-PowerMeter.sol
