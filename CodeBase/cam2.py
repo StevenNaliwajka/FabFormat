@@ -40,10 +40,10 @@ if __name__ == "__main__":
     #Create the TK GUI
     #Reads config_file_name & stores ALL of the data for the conversion.
     CONFIG = Config_Handler(infileDirectoryPath, outfileDirectoryPath)
+    # Creates the GUI
+    GUI = Gui_Handler(CONFIG)
     #Reads infile and updates config
     INFILE = Infile_Handler(CONFIG)
-    #Creates the GUI
-    GUI = Gui_Handler(CONFIG)
 
 boundary = []
 toolpath = []

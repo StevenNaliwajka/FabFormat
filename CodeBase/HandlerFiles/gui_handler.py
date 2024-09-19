@@ -4,15 +4,26 @@ from CodeBase.HandlerFiles.config_handler import Config_Handler
 
 
 class Gui_Handler():
-    def __init__(self,CONFIG : Config_Handler):
+    def __init__(self, CONFIG: Config_Handler):
+        # Overveiw for the tkinter (tk) module
+        # (For me to remember everytime I come back and forget)
+        # tk.StringVar() creates a StringVariable that can be used to create lables on the GUI
+        # tk.Label displays on the GUI, if a tk.StringVar() is passed in it is linked.
+        #  -This means that if the tk.StringVar() is updated (for example with XXX.set(YYY)), the GUI Label will update.
+
+        # Creates main application window.
         root = tk.Tk()
+        # Updates title
         root.title('cam.py')
+        # Binds key to EXIT
         root.bind('q', 'exit')
 
+        # Creates StringVar for Infile
         GUIinfile = tk.StringVar()
 
-        #Sets GUIoutfile
+        # Creates StringVar for outfile
         GUIoutfile = tk.StringVar()
+        '''
         if (CONFIG.get_infile() != None):
             GUIinfile.set(CONFIG.get_infile())
         else:
@@ -28,7 +39,9 @@ class Gui_Handler():
             GUIoutfile.set('out.rml')
         if (CONFIG.get_undercut() != None):
             undercut = CONFIG.get_undercut()
+        '''
 
+        # Links inframe with frame
         inframe = tk.Frame(root)
         tk.Label(inframe, text="input file: ").pack(side="left")
         winfile = tk.Entry(inframe, width=20, textvariable=GUIinfile)
@@ -230,6 +243,7 @@ class Gui_Handler():
                 if (vert == 1):
                     c.create_text(xplot, yplot, text=str(seg) + ':' + str(vertex), tag="plot_path")
             c.create_line(path_plot, tag="plot_path", fill="red")
+
     def plot_seg(event):
         global segplot, ssize, sscale, sxoff, syoff, ivert, c
         #
@@ -243,21 +257,66 @@ class Gui_Handler():
         c.delete("plot_segment")
         for seg in range(len(segplot)):
             path_plot = []
-            for vertex in range (len(segplot[seg])):
-                xplot = int((segplot[seg][vertex][X]*scale + xoff)*WINDOW/size)
+            for vertex in range(len(segplot[seg])):
+                xplot = int((segplot[seg][vertex][X] * scale + xoff) * WINDOW / size)
                 path_plot.append(xplot)
-                yplot = WINDOW - int((segplot[seg][vertex][Y]*scale + yoff)*WINDOW/size)
+                yplot = WINDOW - int((segplot[seg][vertex][Y] * scale + yoff) * WINDOW / size)
                 path_plot.append(yplot)
                 if (vert == 1):
-                    c.create_text(xplot,yplot,text=str(seg)+':'+str(vertex),tag="plot_segment")
-            c.create_line(path_plot,tag="plot_segment",fill='white')
-            c.create_line(path_plot,tag="plot_segment",fill='blue')
+                    c.create_text(xplot, yplot, text=str(seg) + ':' + str(vertex), tag="plot_segment")
+            c.create_line(path_plot, tag="plot_segment", fill='white')
+            c.create_line(path_plot, tag="plot_segment", fill='blue')
 
-    def plot_delete(event):
-        global toolpath
+    def plot_delete(event, CONFIG: Config_Handler):
+        #global toolpath
         #
         # scale and plot boundary, delete toolpath
         #
+        CONFIG.set_toolpath([])
+        print("delete")
+        self.plot(event)
+
+    def read(event):
+        global boundary, vias, toolpath, xmin, xmax, ymin, ymax
+        #
+        # read file
+        #
+        text = infile.get()
+        file = open(text, 'r')
+        tstr = file.readlines()
+        for item in tstr:
+            if ((item.find(".cmp") != -1) | (item.find(".sol") != -1) \
+                    | (item.find(".otl") != -1)):
+                print("reading Gerber file", item)
+                boundary = read_Gerber(item)
+            elif (item.find(".drl") != -1):
+                print("reading Excellon file", item)
+                boundary = read_Excellon(tstr)
+                vias = read_ExcellonDrill(tstr)
+            elif (item.find(".dxf") != -1):
+                print("reading DXF file", text)
+                boundary = read_DXF(tstr)
+            else:
+                print("unsupported file type")
+                return
+            file.close()
         toolpath = []
-        print ("delete")
+        sum1 = 0
+        for segment in range(len(boundary)):
+            sum1 += len(boundary[segment])
+            for vertex in range(len(boundary[segment])):
+                boundary[segment][vertex][X] += gauss(0, NOISE)
+                boundary[segment][vertex][Y] += gauss(0, NOISE)
+                x = boundary[segment][vertex][X]
+                y = boundary[segment][vertex][Y]
+                if (y < ymin): ymin = y
+                if (y > ymax): ymax = y
+                if (x < xmin): xmin = x
+                if (x > xmax): xmax = x
+            print(str(segment))
+            boundary[segment][-1][X] = boundary[segment][0][X]
+            boundary[segment][-1][Y] = boundary[segment][0][Y]
+        print("    found", len(boundary), "polygons,", sum1, "vertices")
+        print("    added", NOISE, "perturbation")
+        print("    xmin: %0.3g " % xmin, "xmax: %0.3g " % xmax, "ymin: %0.3g " % ymin, "ymax: %0.3g " % ymax)
         plot(event)
