@@ -19,25 +19,23 @@ class Infile_Handler():
         #
         # read file
         #
-        text = CONFIG.get_infile()
-        file = open(text, 'r')
-        tstr = file.readlines()
-        for item in tstr:
+        # Navigates through the input file list, determines the file type and parses each as required.
+        inputFileList = CONFIG.get_inputFileList()
+        for item in inputFileList:
             if ((item.find(".cmp") != -1) | (item.find(".sol") != -1)
                     | (item.find(".otl") != -1)):
-                print("reading Gerber file", item)
+                print(f"Infile Handler: Reading Gerber file: {item}")
                 CONFIG.set_boundary(read_Gerber(item, CONFIG))
             elif (item.find(".drl") != -1):
-                print("reading Excellon file", item)
-                CONFIG.set_boundary(read_Excellon(tstr))
-                CONFIG.set_vias(read_ExcellonDrill(tstr))
+                print(f"Infile Handler: Reading Excellon file: {item}")
+                CONFIG.set_boundary(read_Excellon(item))
+                CONFIG.set_vias(read_ExcellonDrill(item))
             elif (item.find(".dxf") != -1):
-                print("reading DXF file", text)
-                CONFIG.set_boundary(read_DXF(tstr))
+                print(f"Infile Handler: Reading DXF file: {item}")
+                CONFIG.set_boundary(read_DXF(item))
             else:
                 print("unsupported file type")
                 return
-            file.close()
         CONFIG.set_toolpath([])
         sum1 = 0
         for segment in range(len(CONFIG.get_boundary())):

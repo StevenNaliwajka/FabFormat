@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     # --- EX: Folder format ------
     # -InputFiles
-    #   - PowerMeter
+    #   - PowerMeter    #Directory Path passed as arg: 1
     #     - config.txt
     #     - PowerMeter.cmp
     #     - PowerMeter.drd
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     #     - PowerMeter2.otl
     #     - PowerMeter2.sol
     #
-    # -OutputFiles
+    # -OutputFiles    #Directory Path passed as arg: 2
     #   - PowerMeter.gcode
     #   - PowerMeter2.gcode
     #
@@ -57,14 +57,13 @@ if __name__ == "__main__":
     # Generates the File Path of Cam2.
     cam2FilePath = os.path.join(parent_dir, "CodeBase", "cam2.py")
 
-    # Generates the File Path of each infile bundle.
+    # Generates the File Path of each infile bundle.  ARG: 1
     input1Folder = "PowerMeter"
     inputDirectoryPath = os.path.join(current_dir, "InputFiles", input1Folder)
 
-    # Generates the File Path of where to send completed files
+    # Generates the File Path of where to send completed files. ARG: 2
     outputDirectoryPath = os.path.join(current_dir, "OutputFiles")
 
-    #Standard Usage, Can be called as many times as wanted.
+    #Standard Usage, Can be called as many times as wanted. Include a new Input Directory Each time
+
     os.system(f'py {cam2FilePath} {inputDirectoryPath} {outputDirectoryPath}')
-    # Calls the files
-    #os.system(f'py {cam2FileLocation} {infileFileLocation} {xoff} {yoff} {size} {outfile} {undercut}')

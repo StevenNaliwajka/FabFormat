@@ -62,6 +62,6 @@ FALSE=0
 # EXAMPLE : '-PowerMeter.cmp'
 # FILES TO BE CONVERTED
 -PowerMeter.cmp
-#-PowerMeter.drd
+-PowerMeter.drd
 #-PowerMeter.otl
 #-PowerMeter.sol

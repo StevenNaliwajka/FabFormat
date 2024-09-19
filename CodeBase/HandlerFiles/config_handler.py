@@ -6,7 +6,7 @@ class Config_Handler():
     # Config Data
     infileDirectoryPath = None
     outfileDirectoryPath = None
-    inputFileArray = {}
+    inputFileList = []
     outputType = None
     window = None
     eps = None
@@ -71,15 +71,12 @@ class Config_Handler():
     def read_gui_config(self, gui_config_path):
         # Reads GUI CONFIG file and passes back a parsed array
         config = {}
-        #file = open(gui_config_path, 'r')
-        #data = file.read()
-        #with open(file_path, 'r') as file:
-           # for line in file:
         with open(gui_config_path, 'r') as file:
-            for line in file:
+            content = file.read()
+            lines = content.splitlines()
+            for line in lines:
                 # ignore comments + blank lines
-                print(line)
-                if line.strip() and not line.startswith("#"):
+                if line.strip() and not line.startswith("#") and not line == "":
                     # Parse it and add it to config array to send back
                     key, value = line.strip().split("=")
                     config[key.strip()] = value.strip()
@@ -89,18 +86,21 @@ class Config_Handler():
     def read_input_config(self, input_config_path):
         # Reads INPUT CONFIG and passes back a parsed array
         config = {}
-        file = open(input_config_path, 'r')
-        data = file.read()
+        with open(input_config_path, 'r') as file:
+            content = file.read()
+            lines = content.splitlines()
+            for line in lines:
+                # ignore comments + blank lines
+                if line.strip() and not line.startswith("#") and not line == "":
+                    # Parse it and add it to config dict to send back
+                    if line.startswith("-"):
+                        # If a file, indicated with a "-" prefix, add to the file list
+                        self.inputFileList.append(line[1:].strip())
+                    else:
+                        # If else, update main config
+                        key, value = line.strip().split("=")
+                        config[key.strip()] = value.strip()
         file.close()
-        for line in data.splitlines():
-            # ignore comments + blank lines
-            if line.strip() and not line.startswith("#"):
-                # if line has the first char '-' add it to the file list
-                if line.startswith("-"):
-                    self.inputFileArray += str(line)[1:]
-                # else, parse it and add it to config array to send back
-                key, value = line.strip().split("=")
-                config[key.strip()] = value.strip()
         return config
 
     def update_config_handler(self, parsed_config_file, config_path: string):
@@ -235,8 +235,8 @@ class Config_Handler():
     def get_outfileDirectoryPath(self):
         return self.outfileDirectoryPath
 
-    def get_inputFileArray(self):
-        return self.inputFileArray
+    def get_inputFileList(self):
+        return self.inputFileList
 
     def get_outputType(self):
         return self.outputType
