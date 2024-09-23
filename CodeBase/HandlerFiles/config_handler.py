@@ -1,5 +1,6 @@
 import os
 import string
+from datetime import date
 
 
 class Config_Handler():
@@ -47,6 +48,7 @@ class Config_Handler():
     infile = None
     segplot = None
     vias = None
+    date = None
 
     def __init__(self, infileDirectoryPath: string, outfileDirectoryPath: string):
 
@@ -67,6 +69,8 @@ class Config_Handler():
         self.update_config_handler(self.read_gui_config(gui_config_path), gui_config_path)
         # Reads in INPUT CONFIG
         self.update_config_handler(self.read_input_config(infile_config_path), infile_config_path)
+
+        self.date = date.today()
 
     def read_gui_config(self, gui_config_path):
         # Reads GUI CONFIG file and passes back a parsed array
@@ -241,6 +245,9 @@ class Config_Handler():
     def get_outputType(self):
         return self.outputType
 
+    def get_date(self):
+        return self.date
+
     # SETTERS --------------------------
     def set_window(self, window):
         self.window = window
@@ -306,55 +313,56 @@ class Config_Handler():
         self.A = A
 
     def set_TYPE(self, TYPE):
-        self.TYPE
+        self.TYPE = TYPE
 
     def set_WIDTH(self, WIDTH):
-        self.WIDTH
+        self.WIDTH = WIDTH
 
     def set_HEIGHT(self, HEIGHT):
-        self.HEIGHT
+        self.HEIGHT  =HEIGHT
 
     def set_NVERTS(self, NVERTS):
-        self.NVERTS
+        self.NVERTS = NVERTS
 
     def set_TRUE(self, TRUE):
-        self.TRUE
+        self.TRUE = TRUE
 
     def set_FALSE(self, FALSE):
-        self.FALSE
+        self.FALSE = FALSE
 
     def set_infile(self, infile):
-        self.infile
+        self.infile = infile
 
     def set_xoff(self, xoff):
-        self.xoff
+        self.xoff = xoff
 
     def set_yoff(self, yoff):
-        self.yoff
+        self.yoff = yoff
 
     def set_size(self, size):
-        self.size
+        self.size = size
 
     def set_outfile(self, outfile):
-        self.outfile
+        self.outfile = outfile
 
     def set_undercut(self, undercut):
-        self.undercut
+        self.undercut = undercut
 
     def set_boundary(self, boundary):
-        self.boundary
+        self.boundary = boundary
 
     def set_toolpath(self, toolpath):
-        self.toolpath
+        self.toolpath = toolpath
 
     def set_itoolpath(self, itoolpath):
-        self.itoolpath
+        self.itoolpath = itoolpath
 
     def set_infile(self, infile):
-        self.infile
+        self.infile = infile
 
     def set_segplot(self, segplot):
-        self.segplot
+        self.segplot = segplot
 
     def set_vias(self, vias):
-        self.vias
+        self.vias = vias
+
