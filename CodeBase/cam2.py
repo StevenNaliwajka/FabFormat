@@ -30,8 +30,8 @@
 import sys
 
 from CodeBase.HandlerFiles.gui_handler import Gui_Handler
-from CodeBase.HandlerFiles.config_handler import Config_Handler
-from CodeBase.HandlerFiles.infile_handler import Infile_Handler
+from CodeBase.DataStructure.config_data import Config_Data
+from CodeBase.DataStructure.gui_data import GUI_Data
 
 if __name__ == "__main__":
     infileDirectoryPath = sys.argv[1]
@@ -39,11 +39,12 @@ if __name__ == "__main__":
 
     #Create the TK GUI
     #Reads config_file_name & stores ALL of the data for the conversion.
-    CONFIG = Config_Handler(infileDirectoryPath, outfileDirectoryPath)
+    CONFIG = Config_Data(infileDirectoryPath, outfileDirectoryPath)
     # Reads infile and updates config
     #INFILE = Infile_Handler()
     # Creates the GUI
-    GUI = Gui_Handler(CONFIG)
+    GUI_data = GUI_Data()
+    GUI = Gui_Handler(CONFIG,GUI_data)
 
 '''
 boundary = []

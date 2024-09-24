@@ -1,5 +1,5 @@
-from CodeBase.HandlerFiles.config_handler import Config_Handler
-def write_G(path, CONFIG:Config_Handler):
+from CodeBase.DataStructure.config_data import Config_Data
+def write_G(path, CONFIG:Config_Data):
     #
     # G code output
     #

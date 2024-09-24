@@ -1,14 +1,14 @@
 import os
 
-from CodeBase.HandlerFiles.config_handler import Config_Handler
+from CodeBase.DataStructure.config_data import Config_Data
 
 
-def read_Gerber(fileName, CONFIG: Config_Handler):
+def read_Gerber(fileName, CONFIG: Config_Data):
     #
     # Gerber parser
     #
     #
-    input_file_path = os.path.join(CONFIG.get_infileDirectoryPath(), fileName)
+    input_file_path = os.path.join(CONFIG.infileDirectoryPath(), fileName)
 
 
     segment = -1
@@ -119,7 +119,7 @@ def read_Gerber(fileName, CONFIG: Config_Handler):
                 #
                 index = line.find('*')
                 aperture = int(line[1:index])
-                size = apertures[aperture][CONFIG.get_size()]
+                size = apertures[aperture][CONFIG.size()]
 
                 continue
             elif (line.find("G54D") == 0):
@@ -128,7 +128,7 @@ def read_Gerber(fileName, CONFIG: Config_Handler):
                 #
                 index = line.find('*')
                 aperture = int(line[4:index])
-                size = apertures[aperture][CONFIG.get_size()]
+                size = apertures[aperture][CONFIG.size()]
 
                 continue
             elif (line.find("D01*") != -1):

@@ -1,7 +1,8 @@
 # CONFIG FILE
 
 # CONVERT TO WHAT?
-outputType = gcode
+# Correct Usage is the '.format' ex, ".gcode"
+outputType = .gcode
 
 # PRINTER SPECIFIC VALUES
 # X-OFFSET FROM O,O TO BEGIN PLOTTING
