@@ -35,6 +35,7 @@ class Config_Data():
     _NVERTS = None
     _TRUEVALUE = None
     _FALSEVALUE = None
+    _HUGE = None
 
     _infilename = None
     _boardxoff = None
@@ -63,6 +64,8 @@ class Config_Data():
 
         # Generates path of INFILE CONFIG
         infile_config_path = os.path.join(infileDirectoryPath, "config.txt")
+
+        _HUGE = 1e10
 
         # Reads in GUI CONFIG
         self.update_config_handler(self.read_gui_config(gui_config_path), gui_config_path)
@@ -110,7 +113,11 @@ class Config_Data():
         # Reads parsed array and updates the main config object.
         for key, value in parsed_config_file.items():
             if hasattr(self, key):
-                setattr(self, key, value)
+                try:
+                    setattr(self, key, value)
+                    #print(f"{key} successfully set to {value}")
+                except AttributeError as e:
+                    print(f"CONFIG_Data: Error setting {key}: {e}")
             else:
                 print(f"Config Handler: {config_path} is built incorrectly, {key} is incorrectly configured.")
 
@@ -182,6 +189,10 @@ class Config_Data():
     @property
     def Y(self):
         return self._Y
+
+    @property
+    def HUGE(self):
+        return self._HUGE
 
     @property
     def INTERSECT(self):
@@ -369,7 +380,11 @@ class Config_Data():
 
     @HEIGHT.setter
     def HEIGHT(self, HEIGHT):
-        self._HEIGHT  =HEIGHT
+        self._HEIGHT = HEIGHT
+
+    @outputType.setter
+    def outputType(self, outputType):
+        self._outputType = outputType
 
     @NVERTS.setter
     def NVERTS(self, NVERTS):

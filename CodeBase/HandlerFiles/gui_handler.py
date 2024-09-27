@@ -1,5 +1,6 @@
 import tkinter as tk
-
+from math import sqrt
+from random import gauss
 from CodeBase.DataStructure.config_data import Config_Data
 from CodeBase.DataStructure.gui_data import GUI_Data
 from CodeBase.InputFileTypes.read_gerber import read_Gerber
@@ -11,7 +12,7 @@ from functools import partial
 
 
 class Gui_Handler():
-    def __init__(self, CONFIG: Config_Data,GUI:GUI_Data):
+    def __init__(self, CONFIG: Config_Data, GUI: GUI_Data):
         # Overveiw for the tkinter (tk) module
         # (For me to remember everytime I come back and forget)
         # tk.StringVar() creates a StringVariable that can be used to create lables on the GUI
@@ -20,10 +21,10 @@ class Gui_Handler():
         # Frames are widgets that help layout buttons/Labels
 
         # Creates main application window.
-
-
+        self._root = tk.Tk()
         # Updates title
-        GUI.root().title('cam.py')
+        #GUI.root().title('cam.py')
+        self._root.title('cam.py')
         # Binds key to EXIT
         GUI.root().bind('q', 'exit')
 
@@ -61,8 +62,8 @@ class Gui_Handler():
         tk.Label(GUI.inframe, text=" ").pack(side="left")
         GUI.wvert = tk.Checkbutton(GUI.inframe, text="show vertices", variable=GUI.ivert)
         GUI.wvert.pack(side="left")
-        #commented out in cam1
-        #GUI.get_wvert.bind('<tk.ButtonRelease-1>',plot)
+        # commented out in cam1
+        # GUI.get_wvert.bind('<tk.ButtonRelease-1>',plot)
         GUI.inframe.pack()
 
         GUI.coordframe = tk.Frame(GUI.root)
@@ -189,25 +190,25 @@ class Gui_Handler():
 
         self.camselect(0, CONFIG=CONFIG, GUI=GUI)
 
-        if (len(CONFIG._inputFileList) != 0):
-            self.read(0,CONFIG=CONFIG)
+        if len(CONFIG.inputFileList) != 0:
+            self.read(0, CONFIG=CONFIG)
 
         GUI.root.mainloop()
 
-    def displace(self, path, GUI:GUI_Data, CONFIG:Config_Data):
+    def displace(self, path, GUI: GUI_Data, CONFIG: Config_Data):
         #
         # displace path inwards by tool radius if negitive
         #
-        #global sundercut, sdia
+        # global sundercut, sdia
         newpath = []
         GUI.scale = float(sscale.get())
         GUI.undercut = float(GUI.sundercut)
         toolrad = (float(GUI.sdia) / 2.0 - GUI.undercut) / GUI.scale
         for seg in range(len(path)):
             GUI.newpath.append([])
-            if (len(path[seg]) > 2):
+            if len(path[seg]) > 2:
                 for vert1 in range(len(path[seg]) - 1):
-                    if (vert1 == 0):
+                    if vert1 == 0:
                         vert0 = len(path[seg]) - 2
                     else:
                         vert0 = vert1 - 1
@@ -218,7 +219,7 @@ class Gui_Handler():
                     y0 = path[seg][vert0][CONFIG.Y]
                     y1 = path[seg][vert1][CONFIG.Y]
                     y2 = path[seg][vert2][CONFIG.Y]
-                    [dx, dy] = self.offset(x0, x1, x2, y0, y1, y2, toolrad)
+                    [dx, dy] = self.offset(x0, x1, x2, y0, y1, y2, toolrad, CONFIG)
                     if (dx != []):
                         newpath[seg].append([(x1 + dx), (y1 + dy), []])
                         if (vert1 == 0):
@@ -233,7 +234,7 @@ class Gui_Handler():
                         y1 = path[seg][1][CONFIG.Y]
                         x2 = 2 * x1 - x0
                         y2 = 2 * y1 - y0
-                        [dx, dy] = self.offset(x0, x1, x2, y0, y1, y2, toolrad)
+                        [dx, dy] = self.offset(x0, x1, x2, y0, y1, y2, toolrad, CONFIG)
                 newpath[seg].append([xo, yo, []])
                 x0 = newpath[seg][0][CONFIG.X]
                 y0 = newpath[seg][0][CONFIG.Y]
@@ -242,7 +243,7 @@ class Gui_Handler():
                 print("  displace: shouldn't happen")
         return newpath
 
-    def offset(x0, x1, x2, y0, y1, y2, r):
+    def offset(self, x0, x1, x2, y0, y1, y2, r, CONFIG: Config_Data):
         #
         # calculate offset by r for vertex 1
         #
@@ -262,12 +263,12 @@ class Gui_Handler():
         dy1perp = -dx1 / d1
         # print ("offset points:",x0,x1,x2,y0,y1,y2
         # print ("offset normals:",dx0perp,dx1perp,dy0perp,dy1perp
-        if ((abs(dx0perp * dy1perp - dx1perp * dy0perp) < EPS) | \
-                (abs(dy0perp * dx1perp - dy1perp * dx0perp) < EPS)):
+        if ((abs(dx0perp * dy1perp - dx1perp * dy0perp) < CONFIG.eps) |
+                (abs(dy0perp * dx1perp - dy1perp * dx0perp) < CONFIG.eps)):
             dx = r * dx1perp
             dy = r * dy1perp
             # print ("    offset planar:",dx,dy
-        elif ((abs(dx0perp + dx1perp) < EPS) & (abs(dy0perp + dy1perp) < EPS)):
+        elif ((abs(dx0perp + dx1perp) < CONFIG.eps) & (abs(dy0perp + dy1perp) < CONFIG.eps)):
             dx = r * dx0par
             dy = r * dy0par
             # print ("    offset hairpin:",dx,dy
@@ -279,70 +280,67 @@ class Gui_Handler():
             # print ("    offset OK:",dx,dy
         return [dx, dy]
 
-    def contour_boundary(self, event, GUI: GUI_Data,CONFIG: Config_Data):
-        #global boundary, toolpath
+    def contour_boundary(self, event, GUI: GUI_Data, CONFIG: Config_Data):
+        # global boundary, toolpath
         #
         # contour boundary to find toolpath
         #
         print("contouring boundary ...")
-        undercut = float(GUI.sundercut())
-        if (undercut != 0.0):
+        undercut = float(GUI.sundercut)
+        if undercut != 0.0:
             print("    undercutting contour by", undercut)
             #
             # displace vertices inward by tool size
             #
             print("    displacing ...")
-            toolpath = self.displace(path=CONFIG.boundary(), GUI=GUI)
+            CONFIG.toolpath = self.displace(path=CONFIG.boundary, GUI=GUI)
         else:
             print("     WARNING: no displacement set")
-        self.plot(event,CONFIG)
+        self.plot(event, CONFIG)
         print('displaced')
-        sign = -1
-
-        #COMMENTED in CAM1
+        # COMMENTED in CAM1
+        # sign = -1
         # toolpath = new_prune(toolpath,sign,event)
 
         self.plot(event, CONFIG)
         print("    done")
 
-    def plot(self, event, CONFIG: Config_Data):
-        #global boundary, toolpath, ssize, sscale, sxoff, syoff, ivert, c
+    def plot(self, event, CONFIG: Config_Data, GUI: GUI_Data):
+        # global boundary, toolpath, ssize, sscale, sxoff, syoff, ivert, c
         #
         # scale and plot boundary and toolpath
         #
-        # size = float(ssize.get())
-        size = float(CONFIG.size())
-        # scale = float(sscale.get())
-        scale = float(CONFIG.scale())
-        # xoff = float(sxoff.get())
-        xoff = float(CONFIG.xoff())
-        # yoff = float(syoff.get())
-        yoff = float(CONFIG.yoff())
-        vert = self.ivert.get()
+        size = float(CONFIG.size)
+        scale = float(CONFIG.scale)
+        xoff = float(CONFIG.xoff)
+        yoff = float(CONFIG.yoff)
+        vert = GUI.ivert.get()
         c.delete("plot_boundary")
-        for seg in range(len(boundary)):
+        for seg in range(len(CONFIG.boundary)):
             path_plot = []
-            for vertex in range(len(boundary[seg])):
-                xplot = int((boundary[seg][vertex][X] * scale + xoff) * WINDOW / size)
+            for vertex in range(len(CONFIG.boundary[seg])):
+                xplot = int((CONFIG.boundary[seg][vertex][CONFIG.X] * scale + xoff) * CONFIG.window / size)
                 path_plot.append(xplot)
-                yplot = WINDOW - int((boundary[seg][vertex][Y] * scale + yoff) * WINDOW / size)
+                yplot = CONFIG.window - int(
+                    (CONFIG.boundary[seg][vertex][CONFIG.Y] * scale + yoff) * CONFIG.window / size)
                 path_plot.append(yplot)
-                if (vert == 1):
+                if vert == 1:
                     c.create_text(xplot, yplot, text=str(seg) + ':' + str(vertex), tag="plot_boundary")
             c.create_line(path_plot, tag="plot_boundary")
-        c.delete("plot_path")
-        for seg in range(len(toolpath)):
+        GUI.c.delete("plot_path")
+        for seg in range(len(CONFIG.toolpath)):
             path_plot = []
-            for vertex in range(len(toolpath[seg])):
-                xplot = int((toolpath[seg][vertex][X] * scale + xoff) * WINDOW / size)
+            for vertex in range(len(CONFIG.toolpath[seg])):
+                xplot = int((CONFIG.toolpath[seg][vertex][CONFIG.X] * scale + xoff) * CONFIG.window / size)
                 path_plot.append(xplot)
-                yplot = WINDOW - int((toolpath[seg][vertex][Y] * scale + yoff) * WINDOW / size)
+                yplot = CONFIG.window - int(
+                    (CONFIG.toolpath[seg][vertex][CONFIG.Y] * scale + yoff) * CONFIG.window / size)
                 path_plot.append(yplot)
-                if (vert == 1):
+                if vert == 1:
                     c.create_text(xplot, yplot, text=str(seg) + ':' + str(vertex), tag="plot_path")
             c.create_line(path_plot, tag="plot_path", fill="red")
 
-    def plot_seg(event):
+    def plot_seg(self, event, CONFIG: Config_Data):
         global segplot, ssize, sscale, sxoff, syoff, ivert, c
         #
         # scale and plot segplot and toolpath
@@ -356,171 +354,351 @@ class Gui_Handler():
         for seg in range(len(segplot)):
             path_plot = []
             for vertex in range(len(segplot[seg])):
-                xplot = int((segplot[seg][vertex][X] * scale + xoff) * WINDOW / size)
+                xplot = int((segplot[seg][vertex][CONFIG.X] * scale + xoff) * CONFIG.window / size)
                 path_plot.append(xplot)
-                yplot = WINDOW - int((segplot[seg][vertex][Y] * scale + yoff) * WINDOW / size)
+                yplot = CONFIG.window - int((segplot[seg][vertex][CONFIG.Y] * scale + yoff) * CONFIG.window / size)
                 path_plot.append(yplot)
-                if (vert == 1):
+                if vert == 1:
                     c.create_text(xplot, yplot, text=str(seg) + ':' + str(vertex), tag="plot_segment")
             c.create_line(path_plot, tag="plot_segment", fill='white')
             c.create_line(path_plot, tag="plot_segment", fill='blue')
 
-    def plot_delete(self, event, CONFIG: Config_Data):
-        #global toolpath
+    def plot_delete(self, event, CONFIG: Config_Data, GUI:GUI_Data):
+        # global toolpath
         #
         # scale and plot boundary, delete toolpath
         #
-        CONFIG.set_toolpath([])
+        CONFIG.toolpath = []
         print("delete")
-        self.plot(event)
+        self.plot(event, CONFIG=CONFIG,GUI=GUI)
 
     def read(self, event, CONFIG: Config_Data):
-        inputFileList = CONFIG.inputFileList()
+        inputFileList = CONFIG.inputFileList
         for item in inputFileList:
             if ((item.find(".cmp") != -1) | (item.find(".sol") != -1)
                     | (item.find(".otl") != -1)):
                 print(f"Infile Handler: Reading Gerber file: {item}")
-                CONFIG.set_boundary(read_Gerber(item, CONFIG))
-            elif (item.find(".drl") != -1):
+                CONFIG.boundary = read_Gerber(item, CONFIG)
+            elif item.find(".drl") != -1:
                 print(f"Infile Handler: Reading Excellon file: {item}")
-                CONFIG.set_boundary(read_Excellon(item))
-                CONFIG.set_vias(read_ExcellonDrill(item))
-            elif (item.find(".dxf") != -1):
+                CONFIG.boundary = read_Excellon(item)
+                CONFIG.vias = read_ExcellonDrill(item)
+            elif item.find(".dxf") != -1:
                 print(f"Infile Handler: Reading DXF file: {item}")
-                CONFIG.set_boundary(read_DXF(item))
+                CONFIG.boundary = read_DXF(item)
             else:
                 print("unsupported file type")
                 return
-        CONFIG.set_toolpath([])
+        CONFIG.toolpath = []
         sum1 = 0
-        for segment in range(len(CONFIG.boundary())):
-            sum1 += len(CONFIG.boundary()[segment])
-            for vertex in range(len(CONFIG.boundary()[segment])):
-                CONFIG.boundary()[segment][vertex][CONFIG.X()] += gauss(0, CONFIG.noise())
-                CONFIG.boundary()[segment][vertex][CONFIG.Y()] += gauss(0, CONFIG.noise())
-                x = CONFIG.boundary()[segment][vertex][CONFIG.X()]
-                y = CONFIG.boundary()[segment][vertex][CONFIG.Y()]
-                if y < CONFIG.ymin():
-                    CONFIG.set_ymin(y)
-                if y > CONFIG.ymax():
-                    CONFIG.set_ymax(y)
-                if x < CONFIG.xmin():
-                    CONFIG.set_xmin(x)
-                if x > CONFIG.xmax():
-                    CONFIG.set_xmax(x)
+        for segment in range(len(CONFIG.boundary)):
+            sum1 += len(CONFIG.boundary[segment])
+            for vertex in range(len(CONFIG.boundary[segment])):
+                CONFIG.boundary[segment][vertex][CONFIG.X] += gauss(0, CONFIG.noise)
+                CONFIG.boundary[segment][vertex][CONFIG.Y] += gauss(0, CONFIG.noise)
+                x = CONFIG.boundary[segment][vertex][CONFIG.X]
+                y = CONFIG.boundary[segment][vertex][CONFIG.Y]
+                if y < CONFIG.ymin:
+                    CONFIG.ymin = y
+                if y > CONFIG.ymax:
+                    CONFIG.ymax = y
+                if x < CONFIG.xmin:
+                    CONFIG.xmin = x
+                if x > CONFIG.xmax:
+                    CONFIG.xmax = x
             print(str(segment))
-            CONFIG.boundary()[segment][-1][CONFIG.X()] = CONFIG.boundary()[segment][0][CONFIG.X()]
-            CONFIG.boundary()[segment][-1][CONFIG.Y()] = CONFIG.boundary()[segment][0][CONFIG.Y()]
-        print("    found", len(CONFIG.boundary()), "polygons,", sum1, "vertices")
-        print("    added", CONFIG.noise(), "perturbation")
-        #print(f"    xmin: %0.3g {xmin}xmax: %0.3g {xmax}ymin: %0.3g {ymin}ymax: %0.3g {ymax}")
+            CONFIG.boundary[segment][-1][CONFIG.X] = CONFIG.boundary[segment][0][CONFIG.X]
+            CONFIG.boundary[segment][-1][CONFIG.Y] = CONFIG.boundary[segment][0][CONFIG.Y]
+        print("    found", len(CONFIG.boundary), "polygons,", sum1, "vertices")
+        print("    added", CONFIG.noise, "perturbation")
+        # print(f"    xmin: %0.3g {xmin}xmax: %0.3g {xmax}ymin: %0.3g {ymin}ymax: %0.3g {ymax}")
 
         self.plot(event)
 
-    def delframes(self, CONFIG:Config_Data):
+    def delframes(self, CONFIG: Config_Data, GUI:GUI_Data):
         #
         # delete all CAM frames
         #
-        #global cutframe, imgframe, toolframe, millframe, gframe, laserframe
-        cutframe.pack_forget()
-        imgframe.pack_forget()
-        toolframe.pack_forget()
-        millframe.pack_forget()
-        gframe.pack_forget()
-        laserframe.pack_forget()
+        # global cutframe, imgframe, toolframe, millframe, gframe, laserframe
+        GUI.cutframe.pack_forget()
+        GUI.imgframe.pack_forget()
+        GUI.toolframe.pack_forget()
+        GUI.millframe.pack_forget()
+        GUI.gframe.pack_forget()
+        GUI.laserframe.pack_forget()
 
-    def camselect(self, event, CONFIG:Config_Data, GUI:GUI_Data):
-        #global size
+    def camselect(self, event, CONFIG: Config_Data, GUI: GUI_Data):
+        # global size
         #
         # pack appropriate CAM GUI options based on output file
         #
-        #global outfile, soverlap, szup, szdown, sxyvel, szvel, sforce, svel, srate, spower, sspeed, sztop, szbottom, sfeed, sspindle, stool, sximg, syimg
+        # global outfile, soverlap, szup, szdown, sxyvel, szvel, sforce, svel, srate, spower, sspeed, sztop, szbottom, sfeed, sspindle, stool, sximg, syimg
         text = CONFIG.outputType()
         if (text.find(".rml") != -1):
 
-            self.delframes(CONFIG)
-            GUI.set_sdia("0.015")
-            GUI.set_sundercut("0.00")
-            GUI.set_soverlap("0.8")
-            GUI._toolframe.pack()
-            szup.set("0.04")
-            szdown.set("-0.015")
-            sxyvel.set("2")
-            szvel.set("5")
-            millframe.pack()
+            self.delframes(CONFIG=CONFIG,GUI=GUI)
+            GUI.sdia = "0.015"
+            GUI.sundercut = "0.00"
+            GUI.soverlap = "0.8"
+            GUI.toolframe.pack()
+            GUI.szup = "0.04"
+            GUI.szdown = "-0.015"
+            GUI.sxyvel = "2"
+            GUI.szvel = "5"
+            GUI.millframe.pack()
         elif (text.find(".camm") != -1):
-            delframes()
-            sforce.set("70")
-            svel.set("2")
-            cutframe.pack()
+            self.delframes(CONFIG=CONFIG,GUI=GUI)
+            GUI.sforce = "70"
+            GUI.svel = "2"
+            GUI.cutframe.pack()
         elif (text.find(".epi") != -1):
-            delframes()
-            srate.set("2500")
-            spower.set("50")
-            sspeed.set("50")
-            ssize.set("10")
-            laserframe.pack()
-            plot(event)
+            self.delframes(CONFIG=CONFIG,GUI=GUI)
+            GUI.srate = "2500"
+            GUI.spower = "50"
+            GUI.sspeed = "50"
+            GUI.ssize = "10"
+            GUI.laserframe.pack()
+            self.plot(event,CONFIG=CONFIG,GUI=GUI)
         elif (text.find(".g") != -1):
-            delframes()
-            sdia.set("0.015")
-            sundercut.set("0.00")
-            soverlap.set("0.8")
-            toolframe.pack()
-            sztop.set("1")
-            szbottom.set("0")
-            sfeed.set("5")
-            sspindle.set("5000")
-            stool.set("1")
-            gframe.pack()
+            self.delframes(CONFIG=CONFIG,GUI=GUI)
+            GUI.sdia = "0.015"
+            GUI.sundercut = "0.00"
+            GUI.soverlap = "0.8"
+            GUI.toolframe.pack()
+            GUI.sztop = "1"
+            GUI.szbottom = "0"
+            GUI.sfeed = "5"
+            GUI.sspindle = "5000"
+            GUI.stool = "1"
+            GUI.gframe.pack()
         elif ((text.find(".scad") != -1) | text.find(".scad")):
-            delframes()
-            sdia.set("0.015")
-            sundercut.set("0.01")
-            soverlap.set("0.8")
-            toolframe.pack()
-            sztop.set("1")
-            szbottom.set("0")
-            sfeed.set("5")
-            sspindle.set("5000")
-            stool.set("1")
-            gframe.pack()
+            self.delframes(CONFIG=CONFIG,GUI=GUI)
+            GUI.sdia = "0.015"
+            GUI.sundercut = "0.01"
+            GUI.soverlap = "0.8"
+            GUI.toolframe.pack()
+            GUI.sztop = "1"
+            GUI.szbottom = "0"
+            GUI.sfeed = "5"
+            GUI.sspindle = "5000"
+            GUI.stool = "1"
+            GUI.gframe.pack()
         elif ((text.find(".jpg") != -1) | (text.find(".bmp") != -1)):
-            delframes()
-            sdia.set("0.015")
-            sundercut.set("0.000")
-            soverlap.set("0.8")
-            toolframe.pack()
-            sximg.set("500")
-            syimg.set("500")
-            imgframe.pack()
+            self.delframes(CONFIG=CONFIG,GUI=GUI)
+            GUI.sdia = "0.015"
+            GUI.sundercut = "0.000"
+            GUI.soverlap = "0.8"
+            GUI.toolframe.pack()
+            GUI.sximg = "500"
+            GUI.syimg = "500"
+            GUI.imgframe.pack()
         else:
             print("output file format not supported")
         return
 
-    def union_boundary(self, event, CONFIG: Config_Data):
-        #global boundary, intersections
+    def union_boundary(self, event, CONFIG: Config_Data,GUI:GUI_Data):
+        # global boundary, intersections
         #
         # union intersecting polygons on boundary
         #
         print("union boundary ...")
         sign = 1
         # boundary = prune(boundary,sign,event)
-        CONFIG.set_boundary(new_prune(CONFIG.boundary(), sign, event))
+        CONFIG.boundary = self.new_prune(CONFIG.boundary, sign, event)
         print("    done")
-        self.plot(event)
+        self.plot(event, CONFIG=CONFIG,GUI=GUI)
 
-    def new_prune(path, sign, event):
+    def intersect(self, path, seg0, vert0, sega, verta, CONFIG:Config_Data):
+        #
+        # test and return edge intersection
+        #
+        if (seg0 == sega) & (vert0 == 0) & (verta == (len(path[sega]) - 2)):
+            # print ("    return (0-end)"
+            return [[], []]
+        x0 = path[seg0][vert0][CONFIG.X]
+        y0 = path[seg0][vert0][CONFIG.Y]
+        x1 = path[seg0][vert0 + 1][CONFIG.X]
+        y1 = path[seg0][vert0 + 1][CONFIG.Y]
+        dx01 = x1 - x0
+        dy01 = y1 - y0
+        d01 = sqrt(dx01 * dx01 + dy01 * dy01)
+        if d01 == 0:
+            #
+            # zero-length segment, return no intersection
+            #
+            # print ("zero-length segment"
+            return [[], []]
+        dxpar01 = dx01 / d01
+        dypar01 = dy01 / d01
+        dxperp01 = dypar01
+        dyperp01 = -dxpar01
+        xa = path[sega][verta][CONFIG.X]
+        ya = path[sega][verta][CONFIG.Y]
+        xb = path[sega][verta + 1][CONFIG.X]
+        yb = path[sega][verta + 1][CONFIG.Y]
+        dx0a = xa - x0
+        dy0a = ya - y0
+        dpar0a = dx0a * dxpar01 + dy0a * dypar01
+        dperp0a = dx0a * dxperp01 + dy0a * dyperp01
+        dx0b = xb - x0
+        dy0b = yb - y0
+        dpar0b = dx0b * dxpar01 + dy0b * dypar01
+        dperp0b = dx0b * dxperp01 + dy0b * dyperp01
+        # if (dperp0a*dperp0b > EPS):
+        if ((dperp0a > CONFIG.eps) & (dperp0b > CONFIG.eps)) | ((dperp0a < -CONFIG.eps) & (dperp0b < -CONFIG.eps)):
+            #
+            # vertices on same side, return no intersection
+            #
+            # print (" same side"
+            return [[], []]
+        elif (abs(dperp0a) < CONFIG.eps) & (abs(dperp0b) < CONFIG.eps):
+            #
+            # edges colinear, return no intersection
+            #
+            # d0a = (xa-x0)*dxpar01 + (ya-y0)*dypar01
+            # d0b = (xb-x0)*dxpar01 + (yb-y0)*dypar01
+            # print (" colinear"
+            return [[], []]
+        #
+        # calculation distance to intersection
+        #
+        d = (dpar0a * abs(dperp0b) + dpar0b * abs(dperp0a)) / (abs(dperp0a) + abs(dperp0b))
+        if ((d < -CONFIG.eps) | (d > (d01 + CONFIG.eps))):
+            #
+            # intersection outside segment, return no intersection
+            #
+            # print ("    found intersection outside segment"
+            return [[], []]
+        else:
+            #
+            # intersection in segment, return intersection
+            #
+            # print ("    found intersection in segment s0 v0 sa va",seg0,vert0,sega,verta
+            xloc = x0 + dxpar01 * d
+            yloc = y0 + dypar01 * d
+            return [xloc, yloc]
+
+    def add_intersections(self, path, GUI:GUI_Data, CONFIG:Config_Data):
+        #
+        # add vertices at path intersections
+        #
+        #global status, outframe, namedate
+        intersection = 0
+        #
+        # loop over first edge
+        #
+        for seg0 in range(len(path)):
+            GUI.status.set("    segment " + str(seg0) + "/" + str(len(path) - 1) + "  ")
+            GUI.outframe.update()
+            vert0 = 0
+            N0 = len(path[seg0]) - 1
+            while vert0 < N0:
+                #
+                # loop over second edge
+                #
+                vert1 = vert0 + 2
+                while vert1 < N0:
+                    #
+                    # check for path self-intersection
+                    #
+                    [xloc, yloc] = self.intersect(path, seg0, vert0, seg0, vert1)
+                    if xloc != []:
+                        #
+                        # found intersection, insert vertices
+                        #
+                        n0 = self.insert(path, xloc, yloc, seg0, vert0, intersection)
+                        N0 += n0
+                        vert1 += n0
+                        n1 = self.insert(path, xloc, yloc, seg0, vert1, intersection)
+                        N0 += n1
+                        vert1 += n1
+                        if (n0 > 0) | (n1 > 0):
+                            intersection += 1
+                    vert1 += 1
+                for sega in range((seg0 + 1), len(path)):
+                    #
+                    # check for intersection with other parts
+                    #
+                    # outframe.update()
+                    verta = 0
+                    Na = len(path[sega]) - 1
+                    while verta < Na:
+                        [xloc, yloc] = self.intersect(path, seg0, vert0, sega, verta)
+                        if xloc != []:
+                            #
+                            # found intersection, insert vertices
+                            #
+                            n0 = self.insert(path, xloc, yloc, seg0, vert0, intersection)
+                            N0 += n0
+                            vert1 += n0
+                            na = self.insert(path, xloc, yloc, sega, verta, intersection)
+                            Na += na
+                            verta += na
+                            if (n0 > 0) | (na > 0):
+                                intersection += 1
+                        verta += 1
+                vert0 += 1
+        #
+        # make vertex table and segment list of intersections
+        #
+        GUI.status.set(CONFIG.namedate)
+        GUI.outframe.update()
+        intersections = []
+        for i in range(intersection):
+            intersections.append([])
+        for seg in range(len(path)):
+            for vert in range(len(path[seg])):
+                inters = path[seg][vert][CONFIG.INTERSECT]
+                if (inters != []):
+                    intersections[inters].append([seg, vert])
+        print('    found', len(intersections), 'intersection(s)')
+        seg_intersections = []
+        for i in range(len(path)):
+            seg_intersections.append([])
+        for i in range(len(intersections)):
+            if (len(intersections[i]) != 2):
+                print("    shouldn't happen: i", i, intersections[i])
+            else:
+                seg_intersections[intersections[i][0][CONFIG.SEG]].append(i)
+                seg_intersections[intersections[i][CONFIG.A][CONFIG.SEG]].append(i)
+        return [path, intersections, seg_intersections]
+
+    def insert(self, path, x, y, seg, vert, intersection, GUI:GUI_Data, CONFIG:Config_Data):
+        #
+        # insert a vertex at x,y in seg,vert, if needed
+        #
+        d0 = (path[seg][vert][CONFIG.X] - x) ** 2 + (path[seg][vert][CONFIG.Y] - y) ** 2
+        d1 = (path[seg][vert + 1][CONFIG.X] - x) ** 2 + (path[seg][vert + 1][CONFIG.Y] - y) ** 2
+        # print ("check insert seg",seg,"vert",vert,"intersection",intersection
+        if ((d0 > CONFIG.eps) & (d1 > CONFIG.eps)):
+            # print ("    added intersection vertex",vert+1
+            path[seg].insert((vert + 1), [x, y, intersection])
+            return 1
+        elif (d0 < CONFIG.eps):
+            if (path[seg][vert][CONFIG.INTERSECT] == []):
+                path[seg][vert][CONFIG.INTERSECT] = intersection
+                # print ("    added d0",vert
+            return 0
+        elif (d1 < CONFIG.eps):
+            if (path[seg][vert + 1][CONFIG.INTERSECT] == []):
+                path[seg][vert + 1][CONFIG.INTERSECT] = intersection
+                # print ("    added d1",vert+1
+            return 0
+        else:
+            # print ("    shouldn't happen: d0",d0,"d1",d1
+            return 0
+
+    def new_prune(self, path, sign, event, CONFIG:Config_Data,GUI:GUI_Data):
         #
         # new_prune path intersections
         #
         # first find the intersections
         #
-        global segplot
+        #global segplot
         print("    intersecting ...")
         # plot_path(event)
         # raw_input('before intersection')
-        [path, intersections, seg_intersections] = add_intersections(path)
+        [path, intersections, seg_intersections] = self.add_intersections(path, CONFIG=CONFIG,GUI=GUI)
         # print ('path:',path)
         # print ('intersections:',intersections)
         # print ('seg_intersections:',seg_intersections)
@@ -543,13 +721,13 @@ class Gui_Handler():
             [seg1, vert1] = intersections[ii][1]
             point = path[seg0][vert0]
             poly = path[seg1]
-            if (point_in_polygon(point, poly, HUGE)):
+            if (self.point_in_polygon(point, poly, CONFIG.HUGE)):
                 intersections[ii] = []
                 print("     Intersection " + str(ii) + "inside poly")
             else:
                 point = path[seg1][vert1]
                 poly = path[seg0]
-                if (point_in_polygon(point, poly, HUGE)):
+                if (self.point_in_polygon(point, poly, CONFIG.HUGE)):
                     intersections[ii] = []
                     print("     Intersection " + str(ii) + "inside poly")
                 # end if
@@ -571,20 +749,20 @@ class Gui_Handler():
             # else:
             #   istart = i
             #   get the segment in the first intersection
-            seg = intersections[i][0][SEG]
-            vert = intersections[i][0][VERT]
+            seg = intersections[i][0][CONFIG.SEG]
+            vert = intersections[i][0][CONFIG.VERT]
             seg0 = seg
             vert0 = vert
-            sega = intersections[i][1][SEG]  # ending segment and vertex
-            verta = intersections[i][1][VERT]  # ending segment and vertex
+            sega = intersections[i][1][CONFIG.SEG]  # ending segment and vertex
+            verta = intersections[i][1][CONFIG.VERT]  # ending segment and vertex
             segplot = []
             segplot.append(path[seg])
             segplot.append(path[sega])
-            plot_seg(event)
-            status.set("    " + str(i) + ": intersection " + str(i) + "/" + str(len(intersections) - 1) + "  ")
-            outframe.update()
+            self.plot_seg(event)
+            GUI.status.set("    " + str(i) + ": intersection " + str(i) + "/" + str(len(intersections) - 1) + "  ")
+            GUI.outframe.update()
             print("    " + str(i) + ": intersection " + str(i) + "/" + str(len(intersections) - 1) + "  ")
-            print_intersections(path, intersections, seg)
+            self.print_intersections(path, intersections, seg)
             intersections[i] = []  # remove this intersection
             vert1 = (vert + 1) % len(path[seg])
             # calculate a point halfway
@@ -593,52 +771,52 @@ class Gui_Handler():
             point[0] = point[0] + (point1[0] - point[0]) / 2.0
             point[1] = point[1] + (point1[1] - point[1]) / 2.0
             poly = path[sega]
-            forward = not point_in_polygon(point, poly, HUGE)
+            forward = not self.point_in_polygon(point, poly, CONFIG.HUGE)
             print("     Go forward? " + str(forward))
             newseg = len(newpath)
             newpath.append([])
-            x = path[seg][vert][X]
-            y = path[seg][vert][Y]
+            x = path[seg][vert][CONFIG.X]
+            y = path[seg][vert][CONFIG.Y]
             vertc = 0
             print("      new vertex = " + str(vert))
             newpath[newseg].append([])
             newpath[newseg][vertc] = [x, y, []]
             vertc += 1
             intersectindex = []  # clear next intersection
-            while (intersectindex != i):  # go all the way around the loop
-                if (forward):
+            while intersectindex != i:  # go all the way around the loop
+                if forward:
                     vert = (vert + 1) % len(path[seg])
                 else:
                     vert = (vert - 1) % len(path[seg])
                 print("      new vertex = " + str(vert))
-                intersectindex = path[seg][vert][INTERSECT]
-                if (intersectindex == []):
-                    x = path[seg][vert][X]
-                    y = path[seg][vert][Y]
+                intersectindex = path[seg][vert][CONFIG.INTERSECT]
+                if intersectindex == []:
+                    x = path[seg][vert][CONFIG.X]
+                    y = path[seg][vert][CONFIG.Y]
                     newpath[newseg].append([])
                     newpath[newseg][vertc] = [x, y, []]
                     vertc += 1
-                elif (intersectindex == i):
+                elif intersectindex == i:
                     # we've come full circle
-                    x = path[seg0][vert0][X]
-                    y = path[seg0][vert0][Y]
+                    x = path[seg0][vert0][CONFIG.X]
+                    y = path[seg0][vert0][CONFIG.Y]
                     newpath[newseg].append([])
                     newpath[newseg][vertc] = [x, y, []]
                     print("Segment complete [" + str(seg0) + "," + str(vert0) + "] \n\n")
                     break
                 else:
-                    x = path[seg][vert][X]
-                    y = path[seg][vert][Y]
+                    x = path[seg][vert][CONFIG.X]
+                    y = path[seg][vert][CONFIG.Y]
                     newpath[newseg].append([])
                     newpath[newseg][vertc] = [x, y, []]
                     vertc += 1
                     # switch to next segment
                     intersection = intersections[intersectindex]
-                    if (intersection == []):
+                    if intersection == []:
                         print("      Intersection erased go on")
                     else:
                         print("     Intersection = " + str(intersectindex))
-                        if (intersection[0][0] == seg):
+                        if intersection[0][0] == seg:
                             [seg, vert] = intersection[1]
                             [sega, verta] = intersection[0]
                         else:
@@ -647,10 +825,10 @@ class Gui_Handler():
                         print("    New segment [" + str(seg) + "," + str(vert) + "]  Old segment [" + str(
                             sega) + "," + str(verta) + "]\n")
                         segplot.append(path[sega])
-                        plot_seg(event)
-                        outframe.update()
+                        self.plot_seg(event, CONFIG=CONFIG)
+                        GUI.outframe.update()
                         intersections[intersectindex] = []  # remove this intersection
-                        print_intersections(path, intersections, seg)
+                        self.print_intersections(path, intersections, seg)
                         vert1 = (vert + 1) % len(path[seg])
                         # calculate a point halfway
                         point = path[seg][vert]
@@ -658,7 +836,7 @@ class Gui_Handler():
                         point[0] = point[0] + (point1[0] - point[0]) / 2.0
                         point[1] = point[1] + (point1[1] - point[1]) / 2.0
                         poly = path[sega]
-                        forward = not point_in_polygon(point, poly, HUGE)
+                        forward = not self.point_in_polygon(point, poly, CONFIG.HUGE)
                         print("     Go forward? " + str(forward))
                         print("      new vertex = " + str(vert))
                     # end if
@@ -666,23 +844,40 @@ class Gui_Handler():
             # end while
         return newpath
 
+    def print_intersections(self, path, intersections, seg, CONFIG:Config_Data):
+        print("    Seg:" + str(seg) + " Intersections found:")
+        for ii in range(len(path[seg]) - 1):
+            intersect = path[seg][ii][CONFIG.INTERSECT]
+            if intersect != []:
+                if intersections[intersect] == []:
+                    print("     " + str(intersect) + " Erased")
+                else:
+                    [seg0, vert0] = intersections[intersect][0]
+                    [seg1, vert1] = intersections[intersect][1]
+                    print(
+                        "     " + str(intersect) + " = [" + str(seg0) + "," + str(vert0) + "][" + str(seg1) + "," + str(
+                            vert1) + "],")
+        return
+
     def write(self, event, CONFIG: Config_Data):
-        #global toolpath, boundary, vias, xmin, xmax, ymin, ymax, gscale
+        # global toolpath, boundary, vias, xmin, xmax, ymin, ymax, gscale
         #
         # write toolpath
         #
-        if (CONFIG.toolpath() == []):
-            CONFIG.set_toolpath(CONFIG.boundary())
-        texti = self.GUIinfile.get()
+        if CONFIG.toolpath == []:
+            CONFIG.toolpath = CONFIG.boundary
+
+            # ONLY TESTING FOR GCODE RN
+        #texti = self.GUIinfile.get()
         # if (text.find(".rml") != -1):
         #     write_RML(toolpath)
         # elif (text.find(".camm") != -1):
         #     write_CAMM(toolpath)
         # elif (text.find(".epi") != -1):
         #     write_EPI(toolpath)
-        if (CONFIG.outputType() == "GCODE"):
-            #write_G(toolpath)
-            write_G(toolpath, CONFIG)
+        if CONFIG.outputType == "GCODE":
+            # write_G(toolpath)
+            write_G(CONFIG.toolpath, CONFIG)
         # elif ((text.find(".jpg") != -1) | (text.find(".bmp") != -1)):
         #     write_img(toolpath)
         # elif (text.find(".scad") != -1):
@@ -696,8 +891,23 @@ class Gui_Handler():
         else:
             print("unsupported output file format")
             return
-        sxmin = gscale * (xmin + xoff)
-        sxmax = gscale * (xmax + xoff)
-        symin = gscale * (ymin + yoff)
-        symax = gscale * (ymax + yoff)
+        sxmin = CONFIG.gscale * (CONFIG.xmin + CONFIG.xoff)
+        sxmax = CONFIG.gscale * (CONFIG.xmax + CONFIG.xoff)
+        symin = CONFIG.gscale * (CONFIG.ymin + CONFIG.yoff)
+        symax = CONFIG.gscale * (CONFIG.ymax + CONFIG.yoff)
         print("    xmin: %0.3g " % sxmin, "xmax: %0.3g " % sxmax, "ymin: %0.3g " % symin, "ymax: %0.3g " % symax)
+
+    def point_in_polygon(self, pt, poly, inf):
+        result = False
+        for i in range(len(poly)-1):
+            if self.intersect1(poly[i], poly[i+1], pt, [inf, pt[1]]):
+                result = not result
+        if self.intersect1(poly[-1], poly[0], pt, (inf, pt[1])):
+            result = not result
+        return result
+
+    def intersect1(self,A, B, C, D):
+        return (self.ccw(A, C, D) != self.ccw(B, C, D)) and (self.ccw(A, B, C) != self.ccw(A, B, D))
+
+    def ccw(self,A, B, C):
+        return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])

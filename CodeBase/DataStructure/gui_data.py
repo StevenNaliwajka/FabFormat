@@ -446,7 +446,7 @@ class GUI_Data():
     def szdown(self, szdown):
         self._szdown = szdown
 
-    @szdown.setter
+    @sxyvel.setter
     def sxyvel(self, sxyvel):
         self._sxyvel = sxyvel
 
