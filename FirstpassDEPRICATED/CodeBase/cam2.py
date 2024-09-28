@@ -29,16 +29,28 @@
 # 9/12/2024
 import sys
 
-
+from CodeBase.HandlerFiles.gui_handler import Gui_Handler
+from CodeBase.DataStructure.config_data import Config_Data
+from CodeBase.DataStructure.gui_data import GUI_Data
 
 if __name__ == "__main__":
     infileDirectoryPath = sys.argv[1]
     outfileDirectoryPath = sys.argv[2]
 
-    # Create new config object for global slicer settings.
-    # Create new Input object for each infile.
-    # Create new Output object that inherits output_parent.
-    # IF GUI = TRUE in config,
-    # Create new GUI object walk through steps that way.
-    # ELSE, do the work automaticaly...
+    #Create the TK GUI
+    #Reads config_file_name & stores ALL of the data for the conversion.
+    CONFIG = Config_Data(infileDirectoryPath, outfileDirectoryPath)
+    # Reads infile and updates config
+    #INFILE = Infile_Handler()
+    # Creates the GUI
+    GUI_data = GUI_Data()
+    GUI = Gui_Handler(CONFIG,GUI_data)
 
+'''
+boundary = []
+toolpath = []
+itoolpath = []
+infile = []
+segplot = []
+vias = []
+'''
