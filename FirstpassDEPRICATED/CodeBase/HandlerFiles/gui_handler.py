@@ -3,11 +3,11 @@ from math import sqrt
 from random import gauss
 from CodeBase.DataStructure.config_data import Config_Data
 from CodeBase.DataStructure.gui_data import GUI_Data
-from CodeBase.InputFileTypes.read_gerber import read_Gerber
-from CodeBase.InputFileTypes.read_excellon import read_Excellon
-from CodeBase.InputFileTypes.read_excellon import read_ExcellonDrill
-from CodeBase.InputFileTypes.read_dxf import read_DXF
-from CodeBase.OutputFileTypes.write_g import write_G
+from CodeBase.InputTypes.read_gerber import read_Gerber
+from CodeBase.InputTypes.read_excellon import read_Excellon
+from CodeBase.InputTypes.read_excellon import read_ExcellonDrill
+from CodeBase.InputTypes.read_dxf import read_DXF
+from CodeBase.OutputTypes.write_gcode import write_G
 from functools import partial
 
 
