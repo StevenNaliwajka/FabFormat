@@ -1,7 +1,7 @@
 #
 # cam2.py
 #
-#THIS INFO HAS MODIFIED
+# THIS INFO HAS MODIFIED
 # usage: python cam2.py [infile] [xoffset yoffset] [display size] [outfile] [undercut]
 #
 # input:
@@ -29,9 +29,7 @@
 # 9/12/2024
 import os
 import sys
-from CodeBase.config import Config
-from CodeBase.in_out_manager import *
-from CodeBase.gui import Gui
+from CodeBase.fileIO.in_out_manager import *
 
 if __name__ == "__main__":
     infileDirectoryPath = sys.argv[1]
@@ -44,7 +42,7 @@ if __name__ == "__main__":
     input_file_obj_list = []
     for i in range(len(CONFIG.inputFileList)):
         infile_path = os.path.join(infileDirectoryPath, CONFIG.inputFileList[i])
-        new_infile = input_manager(infile_path,CONFIG)
+        new_infile = input_manager(infile_path, CONFIG)
         input_file_obj_list.append(new_infile)
     print("CREATING OUTFILE")
     # Create new Output object
@@ -57,5 +55,4 @@ if __name__ == "__main__":
         pass
     else:
         print("STARTING HEADLESS")
-        outfile.write_headless(CONFIG=CONFIG, path=input_file_obj_list[0].path)
-
+        outfile.write_headless(input_file_obj_list=input_file_obj_list, CONFIG=CONFIG)

@@ -20,7 +20,7 @@ class Config:
         parent_dir = os.path.dirname(current_dir)
 
         # Generates path of GUI CONFIG
-        gui_config_path = os.path.join(parent_dir, "CodeBase", "gui_config.txt")
+        gui_config_path = os.path.join(parent_dir, "CodeBase", "../gui_config.txt")
 
         # Generates path of INFILE CONFIG
         infile_config_path = os.path.join(self._infileDirectoryPath, "config.txt")

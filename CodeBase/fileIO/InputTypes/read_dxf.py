@@ -1,4 +1,4 @@
-from CodeBase.InputTypes.input_parent import InputParent
+from CodeBase.fileIO.InputTypes.input_parent import InputParent
 
 
 class ReadDxf(InputParent):

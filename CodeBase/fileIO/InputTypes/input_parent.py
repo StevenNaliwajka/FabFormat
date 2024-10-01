@@ -1,5 +1,4 @@
-from CodeBase.config import Config
-from CodeBase.universal_parent import UniversalParent
+from CodeBase.fileIO.universal_parent import UniversalParent
 from math import *
 
 class InputParent(UniversalParent):

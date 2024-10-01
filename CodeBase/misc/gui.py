@@ -1,7 +1,5 @@
-import sys
 import tkinter as tk
-from CodeBase.OutputTypes import output_parent
-from CodeBase.config import Config
+from CodeBase.misc.config import Config
 
 class Gui:
     def __init__(self, CONFIG:Config):

@@ -1,8 +1,10 @@
 from math import *
-from CodeBase.gui import Gui
-from CodeBase.universal_parent import UniversalParent
+from CodeBase.misc.gui import Gui
+from CodeBase.fileIO.universal_parent import UniversalParent
+from CodeBase.misc.config import Config
 
-# Used to hold all the methods to build the toolpaths for converting the files.
+
+# Contains Universal Methods for converting files.
 
 class OutputParent(UniversalParent):
     def __init__(self):
@@ -16,7 +18,7 @@ class OutputParent(UniversalParent):
         # used in tandem with toolpath for plotting
         self.segplot = []
 
-        #Only used in write files? strange...
+        # Only used in write files? strange...
         # results from ExcellionDrill files, holes.
         self.vias = []
 
@@ -38,10 +40,15 @@ class OutputParent(UniversalParent):
         # No clue what this does...
         self.A = 1
 
-    def write(self):
-        #IMPLEMENTED by the write_xxxx.py file
+    def write_gui(self, input_file_obj_list, CONFIG:Config):
+        # IMPLEMENTED by the write_xxxx.py file
+        # Called IF CONFIG.gui_state == true
         pass
 
+    def write_headless(self, input_file_obj_list, GUI: Gui):
+        # IMPLEMENTED by the write_xxxx.py file
+        # Called if CONFIG.gui_state != true
+        pass
 
     def intersect(self, path, seg0, vert0, sega, verta):
         #
@@ -80,13 +87,13 @@ class OutputParent(UniversalParent):
         dpar0b = dx0b * dxpar01 + dy0b * dypar01
         dperp0b = dx0b * dxperp01 + dy0b * dyperp01
         # if (dperp0a*dperp0b >  self.EPS):
-        if (((dperp0a >  self.EPS) & (dperp0b >  self.EPS)) | ((dperp0a < - self.EPS) & (dperp0b < - self.EPS))):
+        if (((dperp0a > self.EPS) & (dperp0b > self.EPS)) | ((dperp0a < - self.EPS) & (dperp0b < - self.EPS))):
             #
             # vertices on same side, return no intersection
             #
             # print (" same side"
             return [[], []]
-        elif ((abs(dperp0a) <  self.EPS) & (abs(dperp0b) <  self.EPS)):
+        elif ((abs(dperp0a) < self.EPS) & (abs(dperp0b) < self.EPS)):
             #
             # edges colinear, return no intersection
             #
@@ -98,7 +105,7 @@ class OutputParent(UniversalParent):
         # calculation distance to intersection
         #
         d = (dpar0a * abs(dperp0b) + dpar0b * abs(dperp0a)) / (abs(dperp0a) + abs(dperp0b))
-        if ((d < - self.EPS) | (d > (d01 +  self.EPS))):
+        if ((d < - self.EPS) | (d > (d01 + self.EPS))):
             #
             # intersection outside segment, return no intersection
             #
@@ -145,11 +152,11 @@ class OutputParent(UniversalParent):
         dyab = yb - ya
         dot = dxab * dy01 - dyab * dx01
         # print ("    dot",dot)
-        if (abs(dot) <=  self.EPS):
+        if (abs(dot) <= self.EPS):
             print("  colinear")
             seg = []
             vert = []
-        elif (dot >  self.EPS):
+        elif (dot > self.EPS):
             seg = intersections[i][int((1 - sign) / 2)][self.SEG]
             vert = intersections[i][int((1 - sign) / 2)][self.VERT]
         else:
@@ -164,16 +171,16 @@ class OutputParent(UniversalParent):
         d0 = (path[seg][vert][self.X] - x) ** 2 + (path[seg][vert][self.Y] - y) ** 2
         d1 = (path[seg][vert + 1][self.X] - x) ** 2 + (path[seg][vert + 1][self.Y] - y) ** 2
         # print ("check insert seg",seg,"vert",vert,"intersection",intersection
-        if ((d0 >  self.EPS) & (d1 >  self.EPS)):
+        if ((d0 > self.EPS) & (d1 > self.EPS)):
             # print ("    added intersection vertex",vert+1
             path[seg].insert((vert + 1), [x, y, intersection])
             return 1
-        elif (d0 <  self.EPS):
+        elif (d0 < self.EPS):
             if (path[seg][vert][self.INTERSECT] == []):
                 path[seg][vert][self.INTERSECT] = intersection
                 # print ("    added d0",vert
             return 0
-        elif (d1 <  self.EPS):
+        elif (d1 < self.EPS):
             if (path[seg][vert + 1][self.INTERSECT] == []):
                 path[seg][vert + 1][self.INTERSECT] = intersection
                 # print ("    added d1",vert+1
@@ -182,7 +189,7 @@ class OutputParent(UniversalParent):
             # print ("    shouldn't happen: d0",d0,"d1",d1
             return 0
 
-    def add_intersections(self, path, GUI:Gui):
+    def add_intersections(self, path, GUI: Gui):
         #
         # add vertices at path intersections
         #
@@ -287,12 +294,12 @@ class OutputParent(UniversalParent):
         dy1perp = -dx1 / d1
         # print ("offset points:",x0,x1,x2,y0,y1,y2
         # print ("offset normals:",dx0perp,dx1perp,dy0perp,dy1perp
-        if ((abs(dx0perp * dy1perp - dx1perp * dy0perp) <  self.EPS) |
-                (abs(dy0perp * dx1perp - dy1perp * dx0perp) <  self.EPS)):
+        if ((abs(dx0perp * dy1perp - dx1perp * dy0perp) < self.EPS) |
+                (abs(dy0perp * dx1perp - dy1perp * dx0perp) < self.EPS)):
             dx = r * dx1perp
             dy = r * dy1perp
             # print ("    offset planar:",dx,dy
-        elif ((abs(dx0perp + dx1perp) <  self.EPS) & (abs(dy0perp + dy1perp) <  self.EPS)):
+        elif ((abs(dx0perp + dx1perp) < self.EPS) & (abs(dy0perp + dy1perp) < self.EPS)):
             dx = r * dx0par
             dy = r * dy0par
             # print ("    offset hairpin:",dx,dy
@@ -304,7 +311,7 @@ class OutputParent(UniversalParent):
             # print ("    offset OK:",dx,dy
         return [dx, dy]
 
-    def displace(self, path, GUI:Gui):
+    def displace(self, path, GUI: Gui):
         #
         # displace path inwards by tool radius if negitive
         #
@@ -401,7 +408,7 @@ class OutputParent(UniversalParent):
                             vert1) + "],")
         return
 
-    def new_prune(self, path, sign, event, GUI:Gui):
+    def new_prune(self, path, sign, event, GUI: Gui):
         #
         # new_prune path intersections
         #
@@ -672,7 +679,7 @@ class OutputParent(UniversalParent):
                 i += 1
         return newpath
 
-    def union_boundary(self, event, GUI:Gui):
+    def union_boundary(self, event, GUI: Gui):
         # global boundary, intersections
         #
         # union intersecting polygons on boundary
@@ -684,7 +691,7 @@ class OutputParent(UniversalParent):
         print("    done")
         GUI.plot(event)
 
-    def contour_boundary(self, event, GUI:Gui):
+    def contour_boundary(self, event, GUI: Gui):
         # global boundary, toolpath
         #
         # contour boundary to find toolpath
@@ -707,7 +714,7 @@ class OutputParent(UniversalParent):
         GUI.plot(event)
         print("    done")
 
-    def raster(self, event, GUI:Gui):
+    def raster(self, event, GUI: Gui):
         # global boundary, toolpath, ymin, ymax
         #
         # raster interior

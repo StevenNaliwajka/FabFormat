@@ -1,5 +1,5 @@
-from CodeBase.InputTypes.input_parent import InputParent
-from CodeBase.config import Config
+from CodeBase.fileIO.InputTypes.input_parent import InputParent
+from CodeBase.misc.config import Config
 from math import *
 
 class ReadGerber(InputParent):

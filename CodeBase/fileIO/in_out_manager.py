@@ -1,8 +1,8 @@
-from CodeBase.InputTypes.read_dxf import ReadDxf
-from CodeBase.InputTypes.read_gerber import ReadGerber
-from CodeBase.OutputTypes.write_gcode import WriteGcode
-from CodeBase.InputTypes.read_excellon import ReadExcellon
-from CodeBase.config import Config
+from CodeBase.fileIO.InputTypes.read_dxf import ReadDxf
+from CodeBase.fileIO.InputTypes.read_gerber import ReadGerber
+from CodeBase.fileIO.OutputTypes.write_gcode import WriteGcode
+from CodeBase.fileIO.InputTypes.read_excellon import ReadExcellon
+from CodeBase.misc.config import Config
 
 
 def input_manager(infile_path,CONFIG:Config):
