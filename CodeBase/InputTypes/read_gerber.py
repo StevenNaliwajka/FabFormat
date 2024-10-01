@@ -1,31 +1,30 @@
-import os
+from CodeBase.InputTypes.input_parent import InputParent
+from CodeBase.config import Config
+from math import *
 
-from CodeBase.DataStructure.config_data import Config_Data
+class ReadGerber(InputParent):
+    def __init__(self, filepath):
+        super().__init__()
+        self.readfile(filepath)
 
+    def read(self, CONFIG:Config):
+        #
+        # Gerber parser
+        #
 
-def read_Gerber(fileName, CONFIG: Config_Data):
-    #
-    # Gerber parser
-    #
-    #
-    input_file_path = os.path.join(CONFIG.infileDirectoryPath(), fileName)
+        segment = -1
+        xold = []
+        yold = []
+        line = 0
+        nlines = len(self.file_by_list_array)
+        path = []
+        apertures = []
+        macros = []
+        N_macros = 0
+        for i in range(1000):
+            apertures.append([])
 
-
-    segment = -1
-    xold = []
-    yold = []
-    line = 0
-    #nlines = len(tstr)
-    #print(f"HERE: {nlines}")
-    path = []
-    apertures = []
-    macros = []
-    N_macros = 0
-    for i in range(1000):
-        apertures.append([])
-    #while line < nlines:
-    with open(input_file_path, 'r') as file:
-        for line in file:
+        for line in self.file_by_list_array:
             if (line.find("%FS") != -1):
                 #
                 # format statement
@@ -119,7 +118,7 @@ def read_Gerber(fileName, CONFIG: Config_Data):
                 #
                 index = line.find('*')
                 aperture = int(line[1:index])
-                size = apertures[aperture][CONFIG.size()]
+                size = apertures[aperture][self.SIZE]
 
                 continue
             elif (line.find("G54D") == 0):
@@ -128,18 +127,18 @@ def read_Gerber(fileName, CONFIG: Config_Data):
                 #
                 index = line.find('*')
                 aperture = int(line[4:index])
-                size = apertures[aperture][CONFIG.size()]
+                size = apertures[aperture][self.SIZE]
 
                 continue
             elif (line.find("D01*") != -1):
                 #
                 # pen down
                 #
-                [xnew, ynew] = coord(line, digits, fraction)
+                [xnew, ynew] = self.coord(line, digits, fraction)
 
-                if (size > EPS):
-                    if ((abs(xnew - xold) > EPS) | (abs(ynew - yold) > EPS)):
-                        newpath = stroke(xold, yold, xnew, ynew, size)
+                if (size > self.EPS):
+                    if ((abs(xnew - xold) > self.EPS) | (abs(ynew - yold) > self.EPS)):
+                        newpath = self.stroke(xold, yold, xnew, ynew, size)
                         path.append(newpath)
                         segment += 1
                 else:
@@ -151,8 +150,8 @@ def read_Gerber(fileName, CONFIG: Config_Data):
                 #
                 # pen up
                 #
-                [xold, yold] = coord(line, digits, fraction)
-                if (size < EPS):
+                [xold, yold] = self.coord(line, digits, fraction)
+                if (size < self.EPS):
                     path.append([])
                     segment += 1
                     path[segment].append([xold, yold, []])
@@ -163,72 +162,72 @@ def read_Gerber(fileName, CONFIG: Config_Data):
                 #
                 # flash
                 #
-                [xnew, ynew] = coord(line, digits, fraction)
+                [xnew, ynew] = self.coord(line, digits, fraction)
 
-                if (apertures[aperture][TYPE] == "C"):
+                if (apertures[aperture][self.TYPE] == "C"):
                     #
                     # circle
                     #
                     path.append([])
                     segment += 1
-                    size = apertures[aperture][SIZE]
-                    for i in range(NVERTS):
-                        angle = i * 2.0 * pi / (NVERTS - 1.0)
+                    size = apertures[aperture][self.SIZE]
+                    for i in range(self.NVERTS):
+                        angle = i * 2.0 * pi / (self.NVERTS - 1.0)
                         x = xnew + (size / 2.0) * cos(angle)
                         y = ynew + (size / 2.0) * sin(angle)
                         path[segment].append([x, y, []])
-                elif (apertures[aperture][TYPE] == "R"):
+                elif (apertures[aperture][self.TYPE] == "R"):
                     #
                     # rectangle
                     #
                     path.append([])
                     segment += 1
-                    width = apertures[aperture][WIDTH] / 2.0
-                    height = apertures[aperture][HEIGHT] / 2.0
+                    width = apertures[aperture][self.WIDTH] / 2.0
+                    height = apertures[aperture][self.HEIGHT] / 2.0
                     path[segment].append([xnew - width, ynew - height, []])
                     path[segment].append([xnew + width, ynew - height, []])
                     path[segment].append([xnew + width, ynew + height, []])
                     path[segment].append([xnew - width, ynew + height, []])
                     path[segment].append([xnew - width, ynew - height, []])
-                elif (apertures[aperture][TYPE] == "O"):
+                elif (apertures[aperture][self.TYPE] == "O"):
                     #
                     # obround
                     #
                     path.append([])
                     segment += 1
-                    width = apertures[aperture][WIDTH]
-                    height = apertures[aperture][HEIGHT]
+                    width = apertures[aperture][self.WIDTH]
+                    height = apertures[aperture][self.HEIGHT]
                     if (width > height):
-                        for i in range(NVERTS / 2):
-                            angle = i * pi / (NVERTS / 2 - 1.0) + pi / 2.0
+                        for i in range(self.NVERTS / 2):
+                            angle = i * pi / (self.NVERTS / 2 - 1.0) + pi / 2.0
                             x = xnew - (width - height) / 2.0 + (height / 2.0) * cos(angle)
                             y = ynew + (height / 2.0) * sin(angle)
                             path[segment].append([x, y, []])
-                        for i in range(NVERTS / 2):
-                            angle = i * pi / (NVERTS / 2 - 1.0) - pi / 2.0
+                        for i in range(self.NVERTS / 2):
+                            angle = i * pi / (self.NVERTS / 2 - 1.0) - pi / 2.0
                             x = xnew + (width - height) / 2.0 + (height / 2.0) * cos(angle)
                             y = ynew + (height / 2.0) * sin(angle)
                             path[segment].append([x, y, []])
                     else:
-                        for i in range(NVERTS / 2):
-                            angle = i * pi / (NVERTS / 2 - 1.0) + pi
+                        for i in range(self.NVERTS / 2):
+                            angle = i * pi / (self.NVERTS / 2 - 1.0) + pi
                             x = xnew + (width / 2.0) * cos(angle)
                             y = ynew - (height - width) / 2.0 + (width / 2.0) * sin(angle)
                             path[segment].append([x, y, []])
-                        for i in range(NVERTS / 2):
-                            angle = i * pi / (NVERTS / 2 - 1.0)
+                        for i in range(self.NVERTS / 2):
+                            angle = i * pi / (self.NVERTS / 2 - 1.0)
                             x = xnew + (width / 2.0) * cos(angle)
                             y = ynew + (height - width) / 2.0 + (width / 2.0) * sin(angle)
                             path[segment].append([x, y, []])
-                    x = path[segment][-1][X]
-                    y = path[segment][-1][Y]
+                    x = path[segment][-1][self.X]
+                    y = path[segment][-1][self.Y]
                     path[segment].append([x, y, []])
                 else:
-                    print("    aperture", apertures[aperture][TYPE], "is not implemented")
+                    print("    aperture", apertures[aperture][self.TYPE], "is not implemented")
                     return
                 xold = xnew
                 yold = ynew
                 continue
             else:
                 print("    not parsed:", line)
-    return path
+        return path

@@ -1,10 +1,18 @@
-# CONFIG FILE
+# CONFIG.TXT
 
-# CONVERT TO WHAT?
+# ---------------------------------------------------
+# OVERALL
+# ---------------------------------------------------
 # Correct Usage is the 'format' ex, "gcode"
-outputType = gcode
+outfile_type = gcode
+outfile_name = Powermeter
 
-# PRINTER SPECIFIC VALUES
+# Should the GUI run? (TRUE/FALSE)
+gui_state = FALSE
+
+# ---------------------------------------------------
+# PRINTER SPECIFIC VALUES **NEEDS TO BE SORTED**
+# ---------------------------------------------------
 # X-OFFSET FROM O,O TO BEGIN PLOTTING
 xoff = 0
 # Y-OFFSET FROM 0,0 TO BEGIN PLOTTING
@@ -13,52 +21,50 @@ yoff = 0
 size = .1
 # How much the fillament squishes out horizontaly when printed.
 undercut = 1
-
-# --------------------------------------------------------------------------
-# NOT SURE WHAT THESE DO TBD
-# numerical roundoff tolerance for testing intersections
-eps=1e-20
-
-# hack: std dev of numerical noise to add to remove degeneracies
-noise=1e-6
-
 # default parameters
-scale=1.0
+scale = 1.0
 # assuming gerber is in inches and scad must be in mm
-gscale=25.4
-
+gscale = 25.4
 # substrate thickness
-sthickness=0.1
+sthickness = 0.1
 # metal thickness in inches 0.19mm
-mthickness=0.0075
+mthickness = 0.0075
 # conductor width in inces 0.25mm
-mwidth=0.01
-size=2.0
-xoff=0.1
-yoff=0.1
+mwidth = 0.01
 
-xmin=1e10
-xmax=-1e10
-ymin=1e10
-ymax=-1e10
+#dia = ?
 
-X=0
-Y=1
-INTERSECT=2
+#overlap = ?
 
-SEG=0
-VERT=1
-A=1
+#zup = ?
 
-TYPE=0
-SIZE=1
-WIDTH=1
-HEIGHT=2
-NVERTS=10
-TRUE=1
-FALSE=0
+#zdown = ?
+
+#xyvel = ?
+
+#zvel = ?
+
+#rapid motion?
+ztop = 1
+#?
+zbottom = 0
+
+#rate = ?
+
+#power = ?
+
+#speed = ?
+# feed rate
+feed = 5
+# Spindle speed
+spindle = 5000
+# tool?
+tool = 1
+
+
 # ---------------------------------------------------
-
+# INPUT FILES
+# ---------------------------------------------------
 # FILE NAMES MUST BE DENOTED WITH A '-' BEFORE
 # EXAMPLE : '-PowerMeter.cmp'
 # FILES TO BE CONVERTED

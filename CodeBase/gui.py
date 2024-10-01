@@ -1,30 +1,16 @@
 import sys
 import tkinter as tk
 from CodeBase.OutputTypes import output_parent
+from CodeBase.config import Config
 
 class Gui:
-    def __init__(self, OUTFILE:output_parent):
+    def __init__(self, CONFIG:Config):
         root = tk.Tk()
-        root.title('cam.py')
+        root.title('cam2.py')
         root.bind('q', 'exit')
 
         infile = tk.StringVar()
         outfile = tk.StringVar()
-        if (len(sys.argv) >= 2):
-            infile.set(sys.argv[1])
-        else:
-            infile.set('')
-        if (len(sys.argv) >= 4):
-            xoff = float(sys.argv[2])
-            yoff = float(sys.argv[3])
-        if (len(sys.argv) >= 5):
-            size = float(sys.argv[4])
-        if (len(sys.argv) >= 6):
-            outfile.set(sys.argv[5])
-        else:
-            outfile.set('out.rml')
-        if (len(sys.argv) >= 7):
-            undercut = float(sys.argv[6])
 
         inframe = tk.Frame(root)
         tk.Label(inframe, text="input file: ").pack(side="left")

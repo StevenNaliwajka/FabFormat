@@ -27,18 +27,35 @@
 #
 # Updated
 # 9/12/2024
+import os
 import sys
-
-
+from CodeBase.config import Config
+from CodeBase.in_out_manager import *
+from CodeBase.gui import Gui
 
 if __name__ == "__main__":
     infileDirectoryPath = sys.argv[1]
     outfileDirectoryPath = sys.argv[2]
 
     # Create new config object for global slicer settings.
-    # Create new Input object for each infile.
-    # Create new Output object that inherits output_parent.
-    # IF GUI = TRUE in config,
-    # Create new GUI object walk through steps that way.
-    # ELSE, do the work automaticaly...
+    CONFIG = Config(infileDirectoryPath, outfileDirectoryPath)
+
+    # Populates list with each infile
+    input_file_obj_list = []
+    for i in range(len(CONFIG.inputFileList)):
+        infile_path = os.path.join(infileDirectoryPath, CONFIG.inputFileList[i])
+        new_infile = input_manager(infile_path,CONFIG)
+        input_file_obj_list.append(new_infile)
+    print("CREATING OUTFILE")
+    # Create new Output object
+    outfile = output_manager(CONFIG.outfile_type)
+    print("OUTFILE CREATED")
+    GUI = None
+    if CONFIG.gui_state.lower() == "true":
+        print("STARTING GUI")
+        # GUI = Gui(CONFIG)
+        pass
+    else:
+        print("STARTING HEADLESS")
+        outfile.write_headless(CONFIG=CONFIG, path=input_file_obj_list[0].path)
 

@@ -1,12 +1,12 @@
 from math import *
-from CodeBase.gui import GUI
+from CodeBase.gui import Gui
+from CodeBase.universal_parent import UniversalParent
 
 # Used to hold all the methods to build the toolpaths for converting the files.
 
-class OutputParent:
+class OutputParent(UniversalParent):
     def __init__(self):
-        # numerical roundoff tolerance for testing intersections
-        self.EPS = 1e-20
+        super().__init__()
         # hack: std dev of numerical noise to add to remove degeneracies
         self.NOISE = 1e-6
         # boundary is gotten from parsing input file and used in plot method
@@ -28,10 +28,6 @@ class OutputParent:
         self.ymax = -self.HUGE
 
         # No clue what this does...
-        self.X = 0
-        # No clue what this does...
-        self.Y = 1
-        # No clue what this does...
         self.INTERSECT = 2
 
         # No clue what this does...
@@ -42,55 +38,10 @@ class OutputParent:
         # No clue what this does...
         self.A = 1
 
-        # No clue what this does...
-        self.NVERTS = 10
+    def write(self):
+        #IMPLEMENTED by the write_xxxx.py file
+        pass
 
-        # GOTTEN FROM THE PARSED INFILE....
-        # USED to determine the type of Aperture Hole
-        # 'C': Circle
-        # 'R': Rectangle
-        # 'O': Obround
-        self.TYPE = None
-        # Designates size of Drill holes.
-        self.SIZE = None # Was 1
-        # Designates width of Drill holes.
-        self.WIDTH = None # Was 1
-        # Designates height of Drill holes.
-        self.HEIGHT = None # Was 2
-
-    def stroke(self, x0, y0, x1, y1, width):
-        #
-        # stroke segment with width
-        #
-        # print ("stroke:",x0,y0,x1,y1,width
-        #global NVERTS
-        itemp = 0
-        dx = x1 - x0
-        dy = y1 - y0
-        d = sqrt(dx * dx + dy * dy)
-        dxpar = dx / d
-        dypar = dy / d
-        dxperp = dypar
-        dyperp = -dxpar
-        dx = -dxperp * width / 2.0
-        dy = -dyperp * width / 2.0
-        angle = pi / (self.NVERTS / 2 - 1.0)
-        c = cos(angle)
-        s = sin(angle)
-        newpath = []
-        for i in range(int(self.NVERTS / 2)):  # NVERTS/2):
-            newpath.append([x0 + dx, y0 + dy, []])
-            [dx, dy] = [c * dx - s * dy, s * dx + c * dy]
-        dx = dxperp * width / 2.0
-        dy = dyperp * width / 2.0
-        for i in range(int(self.NVERTS / 2)):
-            newpath.append([x1 + dx, y1 + dy, []])
-            [dx, dy] = [c * dx - s * dy, s * dx + c * dy]
-        itemp = itemp + 2 * i  # This is only here to turn off the warning that i is not used
-        x0 = newpath[0][self.X]
-        y0 = newpath[0][self.Y]
-        newpath.append([x0, y0, []])
-        return newpath
 
     def intersect(self, path, seg0, vert0, sega, verta):
         #
@@ -231,7 +182,7 @@ class OutputParent:
             # print ("    shouldn't happen: d0",d0,"d1",d1
             return 0
 
-    def add_intersections(self, path, GUI:GUI):
+    def add_intersections(self, path, GUI:Gui):
         #
         # add vertices at path intersections
         #
@@ -353,7 +304,7 @@ class OutputParent:
             # print ("    offset OK:",dx,dy
         return [dx, dy]
 
-    def displace(self, path, GUI:GUI):
+    def displace(self, path, GUI:Gui):
         #
         # displace path inwards by tool radius if negitive
         #
@@ -450,7 +401,7 @@ class OutputParent:
                             vert1) + "],")
         return
 
-    def new_prune(self, path, sign, event, GUI:GUI):
+    def new_prune(self, path, sign, event, GUI:Gui):
         #
         # new_prune path intersections
         #
@@ -721,7 +672,7 @@ class OutputParent:
                 i += 1
         return newpath
 
-    def union_boundary(self, event, GUI:GUI):
+    def union_boundary(self, event, GUI:Gui):
         # global boundary, intersections
         #
         # union intersecting polygons on boundary
@@ -733,7 +684,7 @@ class OutputParent:
         print("    done")
         GUI.plot(event)
 
-    def contour_boundary(self, event):
+    def contour_boundary(self, event, GUI:Gui):
         # global boundary, toolpath
         #
         # contour boundary to find toolpath
@@ -756,7 +707,7 @@ class OutputParent:
         GUI.plot(event)
         print("    done")
 
-    def raster(self, event):
+    def raster(self, event, GUI:Gui):
         # global boundary, toolpath, ymin, ymax
         #
         # raster interior
@@ -816,26 +767,3 @@ class OutputParent:
                     self.toolpath[-1].append([x1, y, []])
         GUI.plot(event)
         print("    done")
-
-    def coord(self, tstr, digits, fraction):
-        #
-        # parse Gerber coordinates
-        #
-        # global gerbx, gerby
-        gerbx = None
-        gerby = None
-        xindex = tstr.find("X")
-        yindex = tstr.find("Y")
-        index = tstr.find("D")
-        if (xindex == -1):
-            x = gerbx
-            y = int(tstr[(yindex + 1):index]) * (10 ** (-fraction))
-        elif (yindex == -1):
-            y = gerby
-            x = int(tstr[(xindex + 1):index]) * (10 ** (-fraction))
-        else:
-            x = int(tstr[(xindex + 1):yindex]) * (10 ** (-fraction))
-            y = int(tstr[(yindex + 1):index]) * (10 ** (-fraction))
-        gerbx = x
-        gerby = y
-        return [x, y]
