@@ -14,7 +14,7 @@ class Gui:
         tk.Label(inframe, text="input file: ").pack(side="left")
         winfile = tk.Entry(inframe, width=20, textvariable=infile)
         winfile.pack(side="left")
-        # winfile.bind('<Return>', read)
+        winfile.bind('<Return>', read)
         ssize = tk.StringVar()
         ssize.set(str(CONFIG.size))
         tk.Label(inframe, text=" ").pack(side="left")
