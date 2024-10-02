@@ -5,7 +5,7 @@
 # ---------------------------------------------------
 # Correct Usage is the 'format' ex, "gcode"
 outfile_type = gcode
-outfile_name = Powermeter
+outfile_name = PowerMeter
 
 # Should the GUI run? (TRUE/FALSE)
 gui_state = FALSE
@@ -69,6 +69,6 @@ tool = 1
 # EXAMPLE : '-PowerMeter.cmp'
 # FILES TO BE CONVERTED
 -PowerMeter.cmp
--PowerMeter.drd
+#-PowerMeter.drd
 #-PowerMeter.otl
 #-PowerMeter.sol

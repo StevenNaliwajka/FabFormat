@@ -28,11 +28,17 @@ class WriteGcode(OutputParent):
         file.write("T" + str(CONFIG.tool) + "\n")  # tool
         file.write("M08\n")  # coolant on
         file.write("M03\n")  # spindle on clockwise
-        for i in input_file_obj_list:
-            print(f"I is :{i}")
-            path = input_file_obj_list[i].path
+        print(f"There are {len(input_file_obj_list)} input files.")
+        # counter = 0
+        for input_object in input_file_obj_list:
+            # counter += 1
+            # print(f"Handling infile #{counter}.")
+            path = input_object.path
+            print(f"There are {len(path)} segments.")
             for segment in range(len(path)):
                 vertex = 0
+                # print(f"Type of self.X is:{scale}")
+                # print(f"DELETTHISNOW:{path[segment][vertex][self.X]}")
                 x = path[segment][vertex][self.X] * scale + xoff
                 y = path[segment][vertex][self.Y] * scale + yoff
                 file.write("G00X%0.4f" % x + "Y%0.4f" % y + "Z" + str(CONFIG.ztop) + "\n")  # rapid motion
@@ -46,7 +52,7 @@ class WriteGcode(OutputParent):
             file.write("M09\n")  # coolant off
             file.write("M30\n")  # program end and reset
             file.close()
-            print("wrote", len(path), "G code toolpath segments to", outfile_path)
+        print("wrote", len(path), "G code toolpath segments to", outfile_path)
 
 
     def write_gui(self, input_file_obj_list, GUI:Gui):
