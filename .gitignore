@@ -162,4 +162,5 @@ cython_debug/
 #.idea/
 /out.rml
 /finaloutput
-/UserSimulation/OutputFIles/
+
+/UserSimulation/OutputFIles/PowerMeter.gcode
