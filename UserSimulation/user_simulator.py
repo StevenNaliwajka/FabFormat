@@ -58,7 +58,7 @@ if __name__ == "__main__":
     cam2FilePath = os.path.join(parent_dir, "CodeBase", "cam2.py")
 
     # Generates the File Path of each infile bundle.  ARG: 1
-    input1Folder = "PowerMeter"
+    input1Folder = "ProMicro12640"
     inputDirectoryPath = os.path.join(current_dir, "InputFiles", input1Folder)
 
     # Generates the File Path of where to send completed files. ARG: 2

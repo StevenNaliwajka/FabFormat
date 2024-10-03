@@ -12,6 +12,7 @@ This project has a few steps.
    1) Broken down. Object oriented and scalable. Nice.
 3) Once "cam1.py" has been digested, debug the outputs.
    1) Done. Can slice single files and outputs a usable gcode file.
+   2) So far used default gerber parser (no issues). Have updated the Excellion parser to work better.
    2) RN, working on how the best way to merge the copper and insulator files to be able to print on a dual extruder FDM printer.
    3) I realize a lot of values were hard coded. These need to be extracted and placed into config. (eg. nozzle settings, bed heat. etc...)
    4) Still digging through understanding how the 'cam1.py' handled itself so I can splice together two or more files...
