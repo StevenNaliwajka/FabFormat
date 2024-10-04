@@ -266,6 +266,13 @@ class ReadExcellon(InputParent):
                     pass
                 line += 1
                 continue
+            elif self.file_by_list_array[line].find("FMAT"):
+                if self.file_by_list_array[line].find("1") != -1:
+                    # FMAT = 1
+                    pass
+                elif self.file_by_list_array[line].find("1") != -1:
+                    # FMAT = 2
+                    pass
             elif self.file_by_list_array[line].find("T") != -1:
                 # Creates new tool types in a list
                 # T1 = [0], T2 = [1], ETC...
