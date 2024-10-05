@@ -1,11 +1,49 @@
+import re
+
 from CodeBase.fileIO.universal_parent import UniversalParent
 from math import *
+
 
 class InputParent(UniversalParent):
     def __init__(self, ):
         super().__init__()
-        self.file_by_list_array = None
+        self.file_by_line_list = None
         self.path = None
+        self.filepath = None
+
+        # Used to stop while loops
+        self.run = 0
+        # Tracks where in file ya are.
+        self.line = 0
+
+        # Exact or relative position instructions
+        # 0 (EXACT) is default
+        # EXACT EX: X5 means X = 5
+        # 1 (RELATIVE) is rare but an option and should be considered if possible
+        # RELATIVE EX: X5 means X += 5
+        self._position_instruction_type = 0
+
+        # UNIT: METRIC OR IMPERIAL
+        # 0 (METRIC) is default
+        # 1 (IMPERIAL) is an option. :(
+        self._unit = 0
+
+        # NUMBER FORMATING
+        # EX:
+        # IF GIVEN A 012345 & MY FORMAT IS 2:4
+        # ASSUMING TRAILING ZEROS
+        #
+        self._number_format = "2:4"
+
+        # ZERO TYPE
+        # "TZ" - INCLUDES TRAILING ZEROS (DEFAULT)
+        # "LZ" - INCLUDES LEADING ZEROS
+        # "AZ" - INCLUDES ALL ZEROS
+        # EXAMPLE - 00012345000
+        # TZ - 12345000
+        # LZ - 00012345
+        # AZ - 000123450000
+        self._zero_type = "TZ"
 
     def read(self):
         # Implemented by child. Parses the read in data.
@@ -16,7 +54,9 @@ class InputParent(UniversalParent):
         file = open(file_path, 'r')
         tstr = file.readlines()
         file.close()
-        self.file_by_list_array = tstr
+        # Make lowercase so K sensitive is not a problem.
+        tstr = [line.lower() for line in tstr]
+        self.file_by_line_list = tstr
 
     def coord(self, tstr, digits, fraction):
         #
@@ -74,3 +114,94 @@ class InputParent(UniversalParent):
         y0 = newpath[0][self.Y]
         newpath.append([x0, y0, []])
         return newpath
+
+    def search_switcher(self, switcher):
+        # Run till "%" is seen.
+        self.run = 1
+        while self.run:
+            for item, method in switcher.items():
+                # If item exists in the line, call method.
+                if item in self.file_by_line_list[self.line]:
+                    if callable(method):
+                        method()
+                        self.line += 1
+                        continue
+                    else:
+                        print(f"{self.file_name}: Method for {item} is not callable")
+                else:
+                    print(
+                        f"{self.file_name}: Line \"{self.line + 1}\" file \"{self.filepath}\" is being incorrectly parsed.")
+                self.line += 1
+
+
+    def do_nothing(self):
+        # Typically used for handling comments in files.
+        pass
+
+    def interpret_number_format(self, number):
+        # Takes in an Int. Converts it to a modified float with
+        # _number_format
+        # and
+        # _zero_type
+        # In mind
+        if not isinstance(number, int):
+            raise ValueError("The number must be an int.")
+
+        before_decimal, after_decimal = map(int, self._number_format.split(':'))
+        number_str = str(number)
+
+        # TRIM ZEROS.
+        if self._zero_type == "TZ":  # Trim leading zeros
+            self._zero_type = self._zero_type.lstrip('0')
+        elif self._zero_type == "LZ":  # Trim trailing zeros
+            self._zero_type = self._zero_type.rstrip('0')
+
+        # Ensure the string has enough digits by adding zeros if needed
+        number_str = number_str.zfill(before_decimal + after_decimal)
+        # Insert the decimal point at the correct position
+        formatted_value = f"{number_str[:before_decimal]}.{number_str[before_decimal:before_decimal + after_decimal]}"
+        return float(formatted_value)
+
+    @property
+    def position_instruction_type(self):
+        return self._position_instruction_type
+
+    @property
+    def unit(self):
+        return self._unit
+
+    @property
+    def zero_type(self):
+        return self._zero_type
+
+    @property
+    def number_format(self):
+        return self._number_format
+
+    @number_format.setter
+    def number_format(self, new_value):
+        # Checks for a pattern of "#:#" where # is a number.
+        pattern = r'^\d+:\d+$'
+        if re.match(pattern, new_value):
+            _number_format = new_value
+
+    @zero_type.setter
+    def zero_type(self, new_value):
+        if new_value in ("TZ", "LZ", "AZ"):
+            self._zero_type = new_value
+
+    @position_instruction_type.setter
+    def position_instruction_type(self, new_value):
+        if new_value == 0 or new_value == 1:
+            self._position_instruction_type = new_value
+        else:
+            raise ValueError("UniversalParent: \"position_instruction_type\" must be equal to 0/1.")
+
+    @unit.setter
+    def unit(self, new_value):
+        if new_value == 0 or new_value == 1:
+            self._unit = new_value
+        else:
+            raise ValueError("UniversalParent: \"unit\" must be equal to 0/1.")
+
+

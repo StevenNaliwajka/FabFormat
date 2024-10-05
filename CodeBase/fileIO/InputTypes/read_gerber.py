@@ -2,6 +2,9 @@ from CodeBase.fileIO.InputTypes.input_parent import InputParent
 from CodeBase.misc.config import Config
 from math import *
 
+# GERBER PARSER LIFTED FROM GTG.py
+# No need to reinvent the wheel till its time.
+
 class ReadGerber(InputParent):
     def __init__(self, filepath):
         super().__init__()
@@ -16,7 +19,7 @@ class ReadGerber(InputParent):
         xold = []
         yold = []
         line = 0
-        nlines = len(self.file_by_list_array)
+        nlines = len(self.file_by_line_list)
         path = []
         apertures = []
         macros = []
@@ -24,7 +27,7 @@ class ReadGerber(InputParent):
         for i in range(1000):
             apertures.append([])
 
-        for line in self.file_by_list_array:
+        for line in self.file_by_line_list:
             if (line.find("%FS") != -1):
                 #
                 # format statement
