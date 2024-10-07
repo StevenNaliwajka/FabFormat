@@ -15,7 +15,7 @@ class ReadExcellonDrill(InputParent):
         self.filepath = filepath
         self.readfile(filepath)
         self.file_name = "ReadExcellonDrill"
-        self.holes = []
+        self.holes = {}
 
         # Used to store tool sizes.
         # Tool types in a list
@@ -28,31 +28,34 @@ class ReadExcellonDrill(InputParent):
         # SWITCHER OF EXCELLON HEADER SYNTAX OPTIONS.
         # IF CONFUSED ON VARS. SEE "universal_parent.py"
         header_switcher = {
-            "%": self.toggle_run(),  # STOP
-            ";": self.do_nothing(),  # COMMENTS
-            "inch": self.update_units(1),  # INCHES
-            "metric": self.update_units(0),  # METRIC
-            "ici": self.update_ici(),
-            "fmat": self.update_fmat(),
-            "t": self.update_drill_tools()  #GENERATES DRILL TYPES
+            "%": self.toggle_run,  # STOP
+            ";": self.do_nothing,  # COMMENTS
+            "inch": lambda: self.update_units(1),  # INCHES
+            "metric": lambda: self.update_units(0),  # METRIC
+            "ici": self.update_ici,
+            "fmat": self.update_fmat,
+            "t": self.update_drill_tools  #GENERATES DRILL TYPES
         }
         # SWITCHER OF EXCELLON BODY SYNTAX OPTIONS.
         body_switcher = {
-            ";": self.do_nothing(),  # COMMENTS
-            "m30": self.toggle_run(),  # STOP
-            "m71": self.update_units(0),  # METRIC
-            "m72": self.update_units(1),  # INCHES
-            "t": self.update_current_drill(),  # SWITCH SIZE
-            "x": self.make_hole()
+            ";": self.do_nothing,  # COMMENTS
+            "g90": lambda: setattr(self, 'position_instruction_type', 0),
+            "g91": lambda: setattr(self, 'position_instruction_type', 1),
+            "m30": self.toggle_run,  # STOP
+            "m71": lambda: self.update_units(0),  # METRIC
+            "m72": lambda: self.update_units(1),  # INCHES
+            "t": self.update_current_drill,  # SWITCH SIZE
+            "x": self.make_hole
         }
 
         # CHECK FOR HEADER
-        if self.file_by_line_list[self.line] == "M48":
+        if self.file_by_line_list[self.line].strip() == "m48":
             # Parses Header
             # Reads Lines from M48 to %
+            self.line += 1
             self.search_switcher(header_switcher)
 
-        # Parses body. Returns holes,
+        # Parses body. Returns holes,-
         self.search_switcher(body_switcher)
 
         # Returns 2 things:
@@ -67,13 +70,19 @@ class ReadExcellonDrill(InputParent):
         drill_num = int(self.current_drill[1:]) - 1
 
         # RAW X-Y from LIST
-        x_raw, y_raw = re.match(r'X(\d+)Y(\d+)', self.file_by_line_list[self.line])
+        match = re.match(r"x(\d+)y(\d+)", self.file_by_line_list[self.line])
+        x_raw = int(match.group(1))
+        y_raw = int(match.group(2))
         # cleans x_raw and y_raw with formating settings.
         x_real = self.interpret_number_format(x_raw)
         y_real = self.interpret_number_format(y_raw)
 
-        # Updates with a new hole
-        self.holes[drill_num].append([x_real][y_real])
+
+        # Prevents error-ing of index out of rage by init-ing the drill_tool list to be of proper length.
+        if drill_num not in self.holes:
+            self.holes[drill_num] = []
+
+        self.holes[drill_num].append([x_real, y_real])
 
     def update_units(self, unit):
         # Updates Units and also checks for TZ/LZ
@@ -92,6 +101,10 @@ class ReadExcellonDrill(InputParent):
         tool_number = int(self.file_by_line_list[self.line][1])
         # Removes the "T#C", gets only the diameter
         tool_diameter = self.file_by_line_list[self.line][3:]
+
+        # Prevents error-ing of index out of rage by init-ing the drill_tool list to be of proper length.
+        while len(self.drill_tool_diameter) <= tool_number - 1:
+            self.drill_tool_diameter.append(None)
 
         # Drill tool #1 with a diameter of X,   is in drill_tool_diameter[0] with a value of X
         self.drill_tool_diameter[tool_number - 1] = tool_diameter

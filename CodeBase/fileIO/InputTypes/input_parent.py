@@ -23,11 +23,6 @@ class InputParent(UniversalParent):
         # RELATIVE EX: X5 means X += 5
         self._position_instruction_type = 0
 
-        # UNIT: METRIC OR IMPERIAL
-        # 0 (METRIC) is default
-        # 1 (IMPERIAL) is an option. :(
-        self._unit = 0
-
         # NUMBER FORMATING
         # EX:
         # IF GIVEN A 012345 & MY FORMAT IS 2:4
@@ -118,21 +113,28 @@ class InputParent(UniversalParent):
     def search_switcher(self, switcher):
         # Run till "%" is seen.
         self.run = 1
+        flag = False
         while self.run:
+            flag = False
+            line_content = self.file_by_line_list[self.line].strip().lower()
             for item, method in switcher.items():
                 # If item exists in the line, call method.
-                if item in self.file_by_line_list[self.line]:
+                if line_content.startswith(item):
                     if callable(method):
                         method()
+                        print(f"Line #{self.line} successfully parsed.")
                         self.line += 1
-                        continue
+                        flag = True
+                        break
                     else:
                         print(f"{self.file_name}: Method for {item} is not callable")
-                else:
-                    print(
-                        f"{self.file_name}: Line \"{self.line + 1}\" file \"{self.filepath}\" is being incorrectly parsed.")
-                self.line += 1
-
+                if flag:
+                    break
+            if flag:
+                continue
+            print(f"{self.file_name}: Line \"{self.line + 1}\" file \"{self.filepath}\" is being incorrectly parsed.")
+            print(f"ERRORED LINE IS: {self.file_by_line_list[self.line]}")
+            self.line += 1
 
     def do_nothing(self):
         # Typically used for handling comments in files.
@@ -167,10 +169,6 @@ class InputParent(UniversalParent):
         return self._position_instruction_type
 
     @property
-    def unit(self):
-        return self._unit
-
-    @property
     def zero_type(self):
         return self._zero_type
 
@@ -195,13 +193,4 @@ class InputParent(UniversalParent):
         if new_value == 0 or new_value == 1:
             self._position_instruction_type = new_value
         else:
-            raise ValueError("UniversalParent: \"position_instruction_type\" must be equal to 0/1.")
-
-    @unit.setter
-    def unit(self, new_value):
-        if new_value == 0 or new_value == 1:
-            self._unit = new_value
-        else:
-            raise ValueError("UniversalParent: \"unit\" must be equal to 0/1.")
-
-
+            raise ValueError(f"{self.file_name}: \"position_instruction_type\" must be equal to 0/1.")
