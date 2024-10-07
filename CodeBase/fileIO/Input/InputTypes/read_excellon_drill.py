@@ -1,5 +1,6 @@
 import re
 
+from CodeBase.fileIO.CommonFormat.subtractive_cf import SubtractiveCF
 from CodeBase.fileIO.Input.input_parent import InputParent
 
 
@@ -15,12 +16,8 @@ class ReadExcellonDrill(InputParent):
         self.filepath = filepath
         self.readfile(filepath)
         self.file_name = "ReadExcellonDrill"
-        self.holes = {}
 
-        # Used to store tool sizes.
-        # Tool types in a list
-        # FORM OF drill_tool_diameter[size][x][y]
-        self.drill_tool_diameter = []
+        self.common_form = SubtractiveCF()
 
         self.current_drill = "T1"  # DEFAULT T1
 
@@ -71,7 +68,7 @@ class ReadExcellonDrill(InputParent):
         # EX: T1 = .225   tool_list[0]=.225
         # holes: A dict of holes + cords.
         # EX holes{t#}[x][y]
-        return self.drill_tool_diameter, self.holes
+        #return self.drill_tool_diameter, self.holes
 
     def make_hole(self):
         # Gets drill position in list
@@ -85,12 +82,8 @@ class ReadExcellonDrill(InputParent):
         x_real = self.interpret_number_format(x_raw)
         y_real = self.interpret_number_format(y_raw)
 
-
-        # Prevents error-ing of index out of rage by init-ing the drill_tool list to be of proper length.
-        if drill_num not in self.holes:
-            self.holes[drill_num] = []
-
-        self.holes[drill_num].append([x_real, y_real])
+        # Updates the common form object.
+        self.common_form.make_hole(drill_num,x_real,y_real)
 
     def update_units(self, unit):
         # Updates Units and also checks for TZ/LZ
@@ -110,12 +103,7 @@ class ReadExcellonDrill(InputParent):
         # Removes the "T#C", gets only the diameter
         tool_diameter = self.file_by_line_list[self.line][3:]
 
-        # Prevents error-ing of index out of rage by init-ing the drill_tool list to be of proper length.
-        while len(self.drill_tool_diameter) <= tool_number - 1:
-            self.drill_tool_diameter.append(None)
-
-        # Drill tool #1 with a diameter of X,   is in drill_tool_diameter[0] with a value of X
-        self.drill_tool_diameter[tool_number - 1] = tool_diameter
+        self.common_form.new_tool(tool_number,tool_diameter)
 
     def toggle_run(self):
         self.run = 0
