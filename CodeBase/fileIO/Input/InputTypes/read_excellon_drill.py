@@ -1,6 +1,6 @@
 import re
 
-from CodeBase.fileIO.InputTypes.input_parent import InputParent
+from CodeBase.fileIO.Input.input_parent import InputParent
 
 
 # REWRITTEN EXCELLON DRILL PARSER.
@@ -27,14 +27,22 @@ class ReadExcellonDrill(InputParent):
     def read(self):
         # SWITCHER OF EXCELLON HEADER SYNTAX OPTIONS.
         # IF CONFUSED ON VARS. SEE "universal_parent.py"
+
+        # BULK OF THE PARSER IS IN THESE TWO SWITCHERS.
+        # THE "BRAIN"... IF THE STRINGS ARE FOUND WHILE GOING LINE BY LINE IN FILE.
+        # RUN ASSOCIATED METHOD.
+        # https://gist.github.com/katyo/5692b935abc085b1037e USED AS REF TO BACKFILL MY EXISTING FILES.
+        # NOT 100%, BARE BONES. CLOSER TO 40% OF AVAILABLE EXCELLON FUNCTIONALITY.
+        # GOOD ENOUGH TO PARSE MY EAGLE FILE AND GET A RESULT FOR NOW...
         header_switcher = {
             "%": self.toggle_run,  # STOP
+            "m95": self.toggle_run,  # STOP
             ";": self.do_nothing,  # COMMENTS
             "inch": lambda: self.update_units(1),  # INCHES
             "metric": lambda: self.update_units(0),  # METRIC
-            "ici": self.update_ici,
-            "fmat": self.update_fmat,
-            "t": self.update_drill_tools  #GENERATES DRILL TYPES
+            "ici": self.update_ici,  # CHECK IF RELATIVE OR DIRECT
+            "fmat": self.update_fmat,  # UPDATE FORMAT
+            "t": self.update_drill_tools  # GENERATES A DRILL TYPE AND SIZE
         }
         # SWITCHER OF EXCELLON BODY SYNTAX OPTIONS.
         body_switcher = {
@@ -48,21 +56,21 @@ class ReadExcellonDrill(InputParent):
             "x": self.make_hole
         }
 
-        # CHECK FOR HEADER
+        # CHECK FOR HEADER "m48"
         if self.file_by_line_list[self.line].strip() == "m48":
             # Parses Header
             # Reads Lines from M48 to %
             self.line += 1
             self.search_switcher(header_switcher)
 
-        # Parses body. Returns holes,-
+        # Parses body.
         self.search_switcher(body_switcher)
 
         # Returns 2 things:
-        # tool_list[]: A list of tool sizes.
+        # tool_list: A list of tool sizes.
         # EX: T1 = .225   tool_list[0]=.225
-        # holes[]: A list of holes + cords.
-        # EX holes[t#][x][y]
+        # holes: A dict of holes + cords.
+        # EX holes{t#}[x][y]
         return self.drill_tool_diameter, self.holes
 
     def make_hole(self):
@@ -142,7 +150,7 @@ class ReadExcellonDrill(InputParent):
             # so 012345 becomes
             # 1.2345
             self.number_format = "1:5"
-        elif self.file_by_line_list[self.line].find("1") != -1:
+        elif self.file_by_line_list[self.line].find("2") != -1:
             # FMAT = 2
             # 2:4 decimal
             # so 012345 becomes

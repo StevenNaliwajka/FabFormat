@@ -1,7 +1,7 @@
-from CodeBase.fileIO.InputTypes.read_dxf import ReadDxf
-from CodeBase.fileIO.InputTypes.read_gerber import ReadGerber
-from CodeBase.fileIO.OutputTypes.write_gcode import WriteGcode
-from CodeBase.fileIO.InputTypes.read_excellon_drill import ReadExcellonDrill
+from CodeBase.fileIO.Input.InputTypes.read_dxf import ReadDxf
+from CodeBase.fileIO.Input.InputTypes.read_gerber import ReadGerber
+from CodeBase.fileIO.Output.OutputTypes.write_gcode import WriteGcode
+from CodeBase.fileIO.Input.InputTypes.read_excellon_drill import ReadExcellonDrill
 from CodeBase.misc.config import Config
 
 
@@ -42,11 +42,10 @@ def input_manager(infile_path, CONFIG: Config):
         new_input.path = new_input.read()
     except TypeError:
         new_input.path = new_input.read(CONFIG)
-    '''
     except AttributeError:
         print(f"File type \".{filename}\" not supported: See \"in_out_manager.py\" for supported file types.")
         exit()
-        '''
+
     return new_input
 
 

@@ -1,16 +1,19 @@
-from CodeBase.fileIO.InputTypes.input_parent import InputParent
+from CodeBase.fileIO.Input.input_parent import InputParent
 from CodeBase.misc.config import Config
 from math import *
 
-# GERBER PARSER LIFTED FROM GTG.py
-# No need to reinvent the wheel till its time.
+
+# REWRITING GERBER PARSER TO ALIGN MORE WITH THE UFF (UNIVERSAL FORMAT)
+# No need to reinvent the wheel till its time; It's time.
 
 class ReadGerber(InputParent):
     def __init__(self, filepath):
         super().__init__()
+        self.filepath = filepath
         self.readfile(filepath)
+        self.file_name = "ReadExcellonDrill"
 
-    def read(self, CONFIG:Config):
+    def read(self, CONFIG: Config):
         #
         # Gerber parser
         #
@@ -28,39 +31,39 @@ class ReadGerber(InputParent):
             apertures.append([])
 
         for line in self.file_by_line_list:
-            if (line.find("%FS") != -1):
+            if (line.find("%fs") != -1):
                 #
                 # format statement
                 #
-                index = line.find("X")
+                index = line.find("x")
                 digits = int(line[index + 1])
                 fraction = int(line[index + 2])
                 continue
-            elif (line.find("%AM") != -1):
+            elif (line.find("%am") != -1):
                 #
                 # aperture macro
                 #
-                index = line.find("%AM")
+                index = line.find("%am")
                 index1 = line.find("*")
                 macros.append([])
                 macros[-1] = line[index + 3:index1]
                 N_macros += 1
                 continue
-            elif (line.find("%ADD") != -1):
+            elif (line.find("%add") != -1):
                 #
                 # aperture definition
                 #
-                index = line.find("%ADD")
+                index = line.find("%add")
                 parse = 0
-                if (line.find("C,") != -1):
+                if (line.find("c,") != -1):
                     #
                     # circle
                     #
-                    index = line.find("C,")
+                    index = line.find("c,")
                     index1 = line.find("*")
                     aperture = int(line[4:index])
                     size = float(line[index + 2:index1])
-                    apertures[aperture] = ["C", size]
+                    apertures[aperture] = ["c", size]
                     print("    read aperture", aperture, ": circle diameter", size)
 
                     continue
@@ -71,7 +74,7 @@ class ReadGerber(InputParent):
                     index = line.find("O,")
                     aperture = int(line[4:index])
                     index1 = line.find(",", index)
-                    index2 = line.find("X", index)
+                    index2 = line.find("x", index)
                     index3 = line.find("*", index)
                     width = float(line[index1 + 1:index2])
                     height = float(line[index2 + 1:index3])
@@ -79,18 +82,18 @@ class ReadGerber(InputParent):
                     print("    read aperture", aperture, ": obround", width, "x", height)
 
                     continue
-                elif (line.find("R,") != -1):
+                elif (line.find("r,") != -1):
                     #
                     # rectangle
                     #
-                    index = line.find("R,")
+                    index = line.find("r,")
                     aperture = int(line[4:index])
                     index1 = line.find(",", index)
-                    index2 = line.find("X", index)
+                    index2 = line.find("x", index)
                     index3 = line.find("*", index)
                     width = float(line[index1 + 1:index2])
                     height = float(line[index2 + 1:index3])
-                    apertures[aperture] = ["R", width, height]
+                    apertures[aperture] = ["r", width, height]
                     print("    read aperture", aperture, ": rectangle", width, "x", height)
 
                     continue
@@ -108,14 +111,14 @@ class ReadGerber(InputParent):
                         index1 = line.find(",", index)
                         index2 = line.find("*", index)
                         size = float(line[index1 + 1:index2])
-                        apertures[aperture] = ["C", size]
+                        apertures[aperture] = ["c", size]
                         print("    read aperture", aperture, ": macro (assuming circle) diameter", size)
                         parse = 1
                         continue
                 if (parse == 0):
                     print("    aperture not implemented:", line)
                     return
-            elif (line.find("D") == 0):
+            elif (line.find("d") == 0):
                 #
                 # change aperture
                 #
@@ -124,7 +127,7 @@ class ReadGerber(InputParent):
                 size = apertures[aperture][self.SIZE]
 
                 continue
-            elif (line.find("G54D") == 0):
+            elif (line.find("g54d") == 0):
                 #
                 # change aperture
                 #
@@ -133,7 +136,7 @@ class ReadGerber(InputParent):
                 size = apertures[aperture][self.SIZE]
 
                 continue
-            elif (line.find("D01*") != -1):
+            elif (line.find("d01*") != -1):
                 #
                 # pen down
                 #
@@ -149,7 +152,7 @@ class ReadGerber(InputParent):
                 xold = xnew
                 yold = ynew
                 continue
-            elif (line.find("D02*") != -1):
+            elif (line.find("d02*") != -1):
                 #
                 # pen up
                 #
@@ -161,13 +164,13 @@ class ReadGerber(InputParent):
                 newpath = []
 
                 continue
-            elif (line.find("D03*") != -1):
+            elif (line.find("d03*") != -1):
                 #
                 # flash
                 #
                 [xnew, ynew] = self.coord(line, digits, fraction)
 
-                if (apertures[aperture][self.TYPE] == "C"):
+                if (apertures[aperture][self.TYPE] == "c"):
                     #
                     # circle
                     #
@@ -179,7 +182,7 @@ class ReadGerber(InputParent):
                         x = xnew + (size / 2.0) * cos(angle)
                         y = ynew + (size / 2.0) * sin(angle)
                         path[segment].append([x, y, []])
-                elif (apertures[aperture][self.TYPE] == "R"):
+                elif (apertures[aperture][self.TYPE] == "r"):
                     #
                     # rectangle
                     #
@@ -233,4 +236,5 @@ class ReadGerber(InputParent):
                 continue
             else:
                 print("    not parsed:", line)
+
         return path

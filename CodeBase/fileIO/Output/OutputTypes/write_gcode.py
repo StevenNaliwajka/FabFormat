@@ -1,6 +1,6 @@
 import os
 
-from CodeBase.fileIO.OutputTypes.output_parent import OutputParent
+from CodeBase.fileIO.Output.output_parent import OutputParent
 from CodeBase.misc.config import Config
 from CodeBase.misc.gui import Gui
 

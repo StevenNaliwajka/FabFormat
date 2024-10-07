@@ -122,7 +122,7 @@ class InputParent(UniversalParent):
                 if line_content.startswith(item):
                     if callable(method):
                         method()
-                        print(f"Line #{self.line} successfully parsed.")
+                        #print(f"Line #{self.line} successfully parsed.")
                         self.line += 1
                         flag = True
                         break
