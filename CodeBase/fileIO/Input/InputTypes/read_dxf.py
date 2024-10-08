@@ -1,16 +1,19 @@
 from CodeBase.fileIO.Input.input_parent import InputParent
 
 
+# DFX NOT SUPPORTED RN.
+
 class ReadDxf(InputParent):
     def __init__(self, filepath):
         super().__init__()
         self.readfile(filepath)
 
-    def read(self):
+    def parse_into_cf(self):
         #
         # DXF parser
         #
-
+        print("DXF NOT SUPPORTED")
+        '''
         segment = -1
         path = []
         xold = []
@@ -44,3 +47,4 @@ class ReadDxf(InputParent):
                 vertex = 0
             line += 1
         return path
+        '''

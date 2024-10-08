@@ -13,7 +13,9 @@ class WriteGcode(OutputParent):
         # Gerber code output
         #
 
-
+        # NEEDS TO BE RE-WRITTEN TO BE SCALABLE WITH MULTIPLE LAYERS AND INTAKE MULTIPLE POSSIBLE INTERSECTING
+        # TRACES FROM COMMON FORMAT.
+        '''
         print("WRITINGNOW")
         scale = CONFIG.scale
         xoff = CONFIG.xoff
@@ -53,6 +55,8 @@ class WriteGcode(OutputParent):
             file.write("M30\n")  # program end and reset
             file.close()
         print("wrote", len(path), "G code toolpath segments to", outfile_path)
+        '''
+
 
 
     def write_gui(self, input_file_obj_list, GUI:Gui):
@@ -60,6 +64,7 @@ class WriteGcode(OutputParent):
         # G code output
         #
 
+        '''
         ## GET PATH FROM input_file_obj_list
         scale = float(GUI.sscale.get())
         xoff = float(GUI.sxoff.get())
@@ -88,3 +93,4 @@ class WriteGcode(OutputParent):
         file.write("M30\n")  # program end and reset
         file.close()
         print("wrote", len(path), "G code toolpath segments to", text)
+        '''

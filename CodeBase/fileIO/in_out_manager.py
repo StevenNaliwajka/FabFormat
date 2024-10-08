@@ -39,9 +39,9 @@ def input_manager(infile_path, CONFIG: Config):
 
     # Interprets file, some-times CONFIG is required...
     try:
-        new_input.path = new_input.read()
+        new_input.path = new_input.parse_into_cf()
     except TypeError:
-        new_input.path = new_input.read(CONFIG)
+        new_input.path = new_input.parse_into_cf(CONFIG)
     except AttributeError:
         print(f"File type \".{filename}\" not supported: See \"in_out_manager.py\" for supported file types.")
         exit()

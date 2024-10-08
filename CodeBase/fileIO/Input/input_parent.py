@@ -40,7 +40,7 @@ class InputParent(UniversalParent):
         # AZ - 000123450000
         self._zero_type = "TZ"
 
-    def read(self):
+    def parse_into_cf(self):
         # Implemented by child. Parses the read in data.
         pass
 

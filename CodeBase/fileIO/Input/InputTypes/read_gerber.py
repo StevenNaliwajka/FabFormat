@@ -1,9 +1,12 @@
 from CodeBase.fileIO.Input.input_parent import InputParent
+from CodeBase.fileIO.CommonFormat.additive_cf import AdditiveCF
 from CodeBase.misc.config import Config
 from math import *
 
 
 # REWRITING GERBER PARSER TO ALIGN MORE WITH THE UFF (UNIVERSAL FORMAT)
+# USING https://www.ucamco.com/files/downloads/file_en/456/gerber-layer-format-specification-revision-2023-08_en.pdf
+# AS A BIBLE. PG 19 is helpfull, pg 78 for arcs
 # No need to reinvent the wheel till its time; It's time.
 
 class ReadGerber(InputParent):
@@ -12,12 +15,40 @@ class ReadGerber(InputParent):
         self.filepath = filepath
         self.readfile(filepath)
         self.file_name = "ReadExcellonDrill"
+        self.common_form = AdditiveCF()
 
-    def read(self, CONFIG: Config):
-        #
-        # Gerber parser
-        #
+    def parse_into_cf(self, CONFIG: Config):
+        # NEW GERBER PARSER. INPUTS TRACES BY LINE INTO common_form object
 
+        gerber_switcher = {
+            "g04": self.do_nothing(),  # COMMENT
+            "g74": xxx,  # SINGLE QUAD MODE. ARCS 0-90
+            "g75": xxx,  # MULTI QUAD MODE ARCS 0-360
+            "%momm*%": lambda: setattr(self, 'unit', 0),  # METRIC
+            "%moin*%": lambda: setattr(self, 'unit', 1),  # INCH
+            "%fs": xxx,  # SPECIFIES (LA/LP/IN) AND XY INT:DECIMAL PRECISION
+            "%lpd%": xxx,  # POLYGONS/CIRCLES FILL INSIDE
+            "%lpc%": xxx,  # POLYGONS/CIRCLES DONT FILL INSIDE
+            "%in": self.do_nothing(),  # SETS FILE NAME, CONSIDERED A COMMENT
+            "%ippos*%": xxx,  # DEPRECATED BUT APPEARS THE SAME TO %LPD%, IN EAGLE FILES.
+            "%ipneg*%": xxx,  # DEPRECATED BUT APPEARS THE SAME TO %LPC%, IN EAGLE FILES.
+            "%ad": xxx,  # Creates a template based aperture, assigns D code to it.
+            "%am": xxx,  # BEGINS CREATION OF AN APERTURE MACRO.
+            "g36*": xxx,  # BEGINS POLYGON, reads lines till "g37*"
+            "x": xxx,  # D01(DRAWS LINE), D02(PEN UP), D03(SINGLE DOT)
+            "m02": xxx,  # ENDS PROGRAM
+            "d": xxx  # Aperture selection codes, Used to select prior defined apertures. D10 and higher.
+            "g75": self.do_nothing(), # Issued before first circlular plot
+            "g01": xxx,  # Swaps to linear plot
+            "g02": xxx,  # Swaps to clockwise plot
+            "g03": xxx,  # Swaps to counter-clockwise plot
+            # LM
+            # LR
+            # LS
+            # SR
+        }
+
+        '''
         segment = -1
         xold = []
         yold = []
@@ -238,3 +269,4 @@ class ReadGerber(InputParent):
                 print("    not parsed:", line)
 
         return path
+        '''

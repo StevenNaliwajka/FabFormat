@@ -21,7 +21,7 @@ class ReadExcellonDrill(InputParent):
 
         self.current_drill = "T1"  # DEFAULT T1
 
-    def read(self):
+    def parse_into_cf(self):
         # SWITCHER OF EXCELLON HEADER SYNTAX OPTIONS.
         # IF CONFUSED ON VARS. SEE "universal_parent.py"
 
