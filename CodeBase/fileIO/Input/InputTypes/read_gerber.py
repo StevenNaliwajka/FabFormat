@@ -16,6 +16,17 @@ class ReadGerber(InputParent):
         self.readfile(filepath)
         self.file_name = "ReadExcellonDrill"
         self.common_form = AdditiveCF()
+        self.arc_quad_mode = 0  # Can be 0 (0-90°), or 1 (0-360°), Specifies how far an arc can turn.
+        self.conv_from_polar = 0  # FLAG. set 1 if LP command, must convert cordinates to cartesian(linear) from polar.
+                ## ^ WILL BE A FLAG INSIDE OF THE "%FS" Method..... NOT GLOBAL. SET EACH TIME.
+        self.polygon_circle_infil = 0 # FLAG. set 1 if infil of polygon/circle. 0 if empty.
+        self.current_tool = None  # "D10" and higher. Used when loading lines into CF. Updated by "D#" Command.
+        self.line_type = xxx  # TBD: Either "G01":LINEAR,"G02":Clockwise,"G03":CounterClockwise.
+
+        ## NOT SURE HOW APERTURE SELECTION CODE "AM" WORK WITH CF. MAYBE AM CREATES COMMON FORM REGULAR TRACES
+
+
+
 
     def parse_into_cf(self, CONFIG: Config):
         # NEW GERBER PARSER. INPUTS TRACES BY LINE INTO common_form object
@@ -26,7 +37,7 @@ class ReadGerber(InputParent):
             "g75": xxx,  # MULTI QUAD MODE ARCS 0-360
             "%momm*%": lambda: setattr(self, 'unit', 0),  # METRIC
             "%moin*%": lambda: setattr(self, 'unit', 1),  # INCH
-            "%fs": xxx,  # SPECIFIES (LA/LP/IN) AND XY INT:DECIMAL PRECISION
+            "%fs": xxx,  # SPECIFIES (LA/LP/IN) AND XY INT:DECIMAL PRECISION **REQ TO CONV TO LA
             "%lpd%": xxx,  # POLYGONS/CIRCLES FILL INSIDE
             "%lpc%": xxx,  # POLYGONS/CIRCLES DONT FILL INSIDE
             "%in": self.do_nothing(),  # SETS FILE NAME, CONSIDERED A COMMENT
@@ -38,7 +49,7 @@ class ReadGerber(InputParent):
             "x": xxx,  # D01(DRAWS LINE), D02(PEN UP), D03(SINGLE DOT)
             "m02": xxx,  # ENDS PROGRAM
             "d": xxx  # Aperture selection codes, Used to select prior defined apertures. D10 and higher.
-            "g75": self.do_nothing(), # Issued before first circlular plot
+            # "g75": self.do_nothing(), # Issued before first circlular plot.
             "g01": xxx,  # Swaps to linear plot
             "g02": xxx,  # Swaps to clockwise plot
             "g03": xxx,  # Swaps to counter-clockwise plot

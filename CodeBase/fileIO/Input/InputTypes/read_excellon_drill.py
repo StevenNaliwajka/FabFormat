@@ -2,7 +2,7 @@ import re
 
 from CodeBase.fileIO.CommonFormat.subtractive_cf import SubtractiveCF
 from CodeBase.fileIO.Input.input_parent import InputParent
-
+from CodeBase.fileIO.Input.InputTypes.excellon_drill import helper_excellon_drill
 
 # REWRITTEN EXCELLON DRILL PARSER.
 # GTG.py's version was lackluster and did not support EAGLE's default .XLN drill file.
@@ -31,6 +31,10 @@ class ReadExcellonDrill(InputParent):
         # https://gist.github.com/katyo/5692b935abc085b1037e USED AS REF TO BACKFILL MY EXISTING FILES.
         # NOT 100%, BARE BONES. CLOSER TO 40% OF AVAILABLE EXCELLON FUNCTIONALITY.
         # GOOD ENOUGH TO PARSE MY EAGLE FILE AND GET A RESULT FOR NOW...
+
+        # NEED TO MERGE SWITCHER OF BODY + HEADER.
+        # DEPENDS ON IF CHANGES TO RULES CAN BE MADE IN PROGRESS.
+        # I THINK CHANGES can be made mid file..
         header_switcher = {
             "%": self.toggle_run,  # STOP
             "m95": self.toggle_run,  # STOP
@@ -68,7 +72,7 @@ class ReadExcellonDrill(InputParent):
         # EX: T1 = .225   tool_list[0]=.225
         # holes: A dict of holes + cords.
         # EX holes{t#}[x][y]
-        #return self.drill_tool_diameter, self.holes
+        # return self.drill_tool_diameter, self.holes
 
     def make_hole(self):
         # Gets drill position in list
