@@ -16,12 +16,14 @@ class ReadGerber(InputParent):
         self.readfile(filepath)
         self.file_name = "ReadExcellonDrill"
         self.common_form = AdditiveCF()
-        self.arc_quad_mode = 0  # Can be 0 (0-90°), or 1 (0-360°), Specifies how far an arc can turn.
-        self.conv_from_polar = 0  # FLAG. set 1 if LP command, must convert cordinates to cartesian(linear) from polar.
+
+        # FLAGS
+        self._arc_quad_mode = 0  # FLAG. Can be 0 (0-90°), or 1 (0-360°), Specifies how far an arc can turn.
+        self._conv_from_polar = 0  # FLAG. set 1 if LP command, must convert cordinates to cartesian(linear) from polar.
                 ## ^ WILL BE A FLAG INSIDE OF THE "%FS" Method..... NOT GLOBAL. SET EACH TIME.
-        self.polygon_circle_infil = 0 # FLAG. set 1 if infil of polygon/circle. 0 if empty.
-        self.current_tool = None  # "D10" and higher. Used when loading lines into CF. Updated by "D#" Command.
-        self.line_type = xxx  # TBD: Either "G01":LINEAR,"G02":Clockwise,"G03":CounterClockwise.
+        self._current_infill = 0 # FLAG. set 1 if infil of polygon/circle. 0 if empty.
+        self._current_tool = None  # "D10" and higher. Used when loading lines into CF. Updated by "D#" Command.
+        self._current_line_type = 1  # 1 = "G01":LINEAR, 2 = "G02":Clockwise, 3 = "G03":CounterClockwise.
 
         ## NOT SURE HOW APERTURE SELECTION CODE "AM" WORK WITH CF. MAYBE AM CREATES COMMON FORM REGULAR TRACES
 
@@ -33,31 +35,82 @@ class ReadGerber(InputParent):
 
         gerber_switcher = {
             "g04": self.do_nothing(),  # COMMENT
-            "g74": xxx,  # SINGLE QUAD MODE. ARCS 0-90
-            "g75": xxx,  # MULTI QUAD MODE ARCS 0-360
+            "g74": lambda: setattr(self, 'arc_quad_mode', 0),  # SINGLE QUAD MODE. ARCS 0-90
+            "g75": lambda: setattr(self, 'arc_quad_mode', 1),  # MULTI QUAD MODE ARCS 0-360
             "%momm*%": lambda: setattr(self, 'unit', 0),  # METRIC
             "%moin*%": lambda: setattr(self, 'unit', 1),  # INCH
             "%fs": xxx,  # SPECIFIES (LA/LP/IN) AND XY INT:DECIMAL PRECISION **REQ TO CONV TO LA
-            "%lpd%": xxx,  # POLYGONS/CIRCLES FILL INSIDE
-            "%lpc%": xxx,  # POLYGONS/CIRCLES DONT FILL INSIDE
+            "%lpd%": lambda: setattr(self, 'current_infill', 1),  # POLYGONS/CIRCLES FILL INSIDE
+            "%lpc%": lambda: setattr(self, 'current_infill', 0),  # POLYGONS/CIRCLES DONT FILL INSIDE
             "%in": self.do_nothing(),  # SETS FILE NAME, CONSIDERED A COMMENT
-            "%ippos*%": xxx,  # DEPRECATED BUT APPEARS THE SAME TO %LPD%, IN EAGLE FILES.
-            "%ipneg*%": xxx,  # DEPRECATED BUT APPEARS THE SAME TO %LPC%, IN EAGLE FILES.
+            "%ippos*%": lambda: setattr(self, 'current_infill', 1),  # DEPRECATED BUT APPEARS THE SAME TO %LPD%, IN EAGLE FILES.
+            "%ipneg*%": lambda: setattr(self, 'current_infill', 0),  # DEPRECATED BUT APPEARS THE SAME TO %LPC%, IN EAGLE FILES.
             "%ad": xxx,  # Creates a template based aperture, assigns D code to it.
             "%am": xxx,  # BEGINS CREATION OF AN APERTURE MACRO.
             "g36*": xxx,  # BEGINS POLYGON, reads lines till "g37*"
             "x": xxx,  # D01(DRAWS LINE), D02(PEN UP), D03(SINGLE DOT)
-            "m02": xxx,  # ENDS PROGRAM
-            "d": xxx  # Aperture selection codes, Used to select prior defined apertures. D10 and higher.
+            "m02": self.do_nothing(),  # IGNORED. RUNS OFF OF LINES.
+            "d": xxx,  # Aperture selection codes, Used to select prior defined apertures. D10 and higher.
             # "g75": self.do_nothing(), # Issued before first circlular plot.
-            "g01": xxx,  # Swaps to linear plot
-            "g02": xxx,  # Swaps to clockwise plot
-            "g03": xxx,  # Swaps to counter-clockwise plot
+            "g01": lambda: setattr(self, 'current_line_type', 1),  # Swaps to linear plot
+            "g02": lambda: setattr(self, 'current_line_type', 2),  # Swaps to clockwise plot
+            "g03": lambda: setattr(self, 'current_line_type', 3),  # Swaps to counter-clockwise plot
             # LM
             # LR
             # LS
             # SR
         }
+
+    def create_aperture(self):
+        # CREATES A COMMON FORM TOOLHEAD.
+        self.common_form.
+
+    @property
+    def conv_from_polar(self):
+        return self._conv_from_polar
+
+    @property
+    def arc_quad_mode(self):
+        return self._arc_quad_mode
+
+    @property
+    def current_infill(self):
+        return self._current_infill
+
+    @property
+    def current_tool(self):
+        return self._current_tool
+
+    @property
+    def current_line_type(self):
+        return self.current_line_type
+
+    @conv_from_polar.setter
+    def conv_from_polar(self, new_value):
+        if new_value in (0,1):
+            self._conv_from_polar = new_value
+
+    @arc_quad_mode.setter
+    def arc_quad_mode(self, new_value):
+        if new_value in (0,1):
+            self._arc_quad_mode = new_value
+
+    @current_infill.setter
+    def current_infill(self, new_value):
+        if new_value in (0, 1):
+            self._current_infill = new_value
+
+    @current_tool.setter
+    def current_tool(self, new_value):
+        in_number_part = new_value[1:]
+        # ALSO CHECK FOR BOARD EXISTING ************
+        if in_number_part >= 10:
+            self._current_tool = new_value
+
+    @current_line_type.setter
+    def current_line_type(self, new_value):
+        if new_value in (1, 2, 3):
+            self._current_line_type = new_value
 
         '''
         segment = -1

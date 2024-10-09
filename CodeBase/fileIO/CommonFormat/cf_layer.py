@@ -5,9 +5,11 @@ class CFLayer:
         # CURRENTLY I THINK EVERY 'LINE' will have a different size.
         # CURRENTLY, EVERYTHING IS DIRECT AND NOT RELATIVE.
         self.layer = layer
+        self.toolhead_list = []
         self.linear_trace_list = []
         self.arc_trace_list = []
         self.circle_trace_list = []
+        self.polygon_trace_list = []
 
         ## NEED TO IMPLEMENT CONDITIONAL INFIL OF POLYGONS/CIRCLES
         ## INFIL FLAG SIGNALS OUTIFLE PARSER TO PROCEDURALY FILL THE SPACE OR NOT ACCORDING TO INFIL?
@@ -24,6 +26,8 @@ class CFLayer:
         ## NEED TO UPDATE THE CAPS INFORMATION TO ASSUME CAPS.. THEN IF IT DOES NOT FIND.
         ## RE-LOOP WITH A .toLower()
 
+    def add_toolhead
+
     def add_single_linear_trace(self, size, point_list):
         # Stores linear traces
         # Size of line, And the points that the line travels to in one stroke.
@@ -33,7 +37,7 @@ class CFLayer:
         # Stores linear traces
         # Size of line, And the points that the line travels to in a stroke.
         ## MUST RETURN TO OG POINT. ADD ERROR CHECKING.
-        self.linear_trace_list.append([size, point_list])
+        self.polygon_trace_list.append([size, point_list])
 
     def add_arc_trace(self, start, end, radius):
         # Stores start, end, radius data.
