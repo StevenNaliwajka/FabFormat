@@ -59,6 +59,8 @@ if __name__ == "__main__":
         infile_path = os.path.join(infileDirectoryPath, CONFIG.inputFileList[i])
         new_infile = input_manager(infile_path, CONFIG)
         input_file_obj_list.append(new_infile)
+
+    common_form =
     print("CREATING OUTFILE")
     # Create new Output object
     outfile = output_manager(CONFIG.outfile_type)
