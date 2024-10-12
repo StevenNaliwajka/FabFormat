@@ -1,7 +1,6 @@
 from CodeBase.fileIO.Input.input_parent import InputParent
-from CodeBase.fileIO.CommonFormat.additive_cf import AdditiveCF
+from CodeBase.fileIO.CommonFormat.CFLayer.additive_cf import AdditiveCF
 from CodeBase.misc.config import Config
-from math import *
 
 
 # REWRITING GERBER PARSER TO ALIGN MORE WITH THE UFF (UNIVERSAL FORMAT)

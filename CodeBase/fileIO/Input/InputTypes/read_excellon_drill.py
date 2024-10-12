@@ -1,8 +1,8 @@
 import re
 
-from CodeBase.fileIO.CommonFormat.subtractive_cf import SubtractiveCF
+from CodeBase.fileIO.CommonFormat.CFLayer.subtractive_cf import SubtractiveCF
 from CodeBase.fileIO.Input.input_parent import InputParent
-from CodeBase.fileIO.Input.InputTypes.excellon_drill import helper_excellon_drill
+
 
 # REWRITTEN EXCELLON DRILL PARSER.
 # GTG.py's version was lackluster and did not support EAGLE's default .XLN drill file.
