@@ -28,7 +28,8 @@ class InputParent(UniversalParent):
         # IF GIVEN A 012345 & MY FORMAT IS 2:4
         # ASSUMING TRAILING ZEROS
         #
-        self._number_format = "2:4"
+        self._x_number_format = "2:4"
+        self._y_number_format = "2:4"
 
         # ZERO TYPE
         # "TZ" - INCLUDES TRAILING ZEROS (DEFAULT)
@@ -173,15 +174,26 @@ class InputParent(UniversalParent):
         return self._zero_type
 
     @property
-    def number_format(self):
-        return self._number_format
+    def x_number_format(self):
+        return self._x_number_format
 
-    @number_format.setter
-    def number_format(self, new_value):
+    @property
+    def y_number_format(self):
+        return self._y_number_format
+
+    @x_number_format.setter
+    def x_number_format(self, new_value):
         # Checks for a pattern of "#:#" where # is a number.
         pattern = r'^\d+:\d+$'
         if re.match(pattern, new_value):
-            _number_format = new_value
+            _x_number_format = new_value
+
+    @y_number_format.setter
+    def y_number_format(self, new_value):
+        # Checks for a pattern of "#:#" where # is a number.
+        pattern = r'^\d+:\d+$'
+        if re.match(pattern, new_value):
+            _y_number_format = new_value
 
     @zero_type.setter
     def zero_type(self, new_value):

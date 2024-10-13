@@ -37,6 +37,7 @@ class CFLayer:
         # Stores linear traces
         # Size of line, And the points that the line travels to in a stroke.
         ## MUST RETURN TO OG POINT. ADD ERROR CHECKING.
+
         self.polygon_trace_list.append([size, point_list])
 
     def add_arc_trace(self, start, end, radius):

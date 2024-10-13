@@ -1,3 +1,5 @@
+import re
+
 from CodeBase.fileIO.Input.input_parent import InputParent
 from CodeBase.fileIO.CommonFormat.CFLayer.additive_cf import AdditiveCF
 from CodeBase.misc.config import Config
@@ -15,6 +17,7 @@ class ReadGerber(InputParent):
         self.readfile(filepath)
         self.file_name = "ReadExcellonDrill"
         self.common_form = AdditiveCF()
+        self.aperture_list = []
 
         # FLAGS
         self._arc_quad_mode = 0  # FLAG. Can be 0 (0-90°), or 1 (0-360°), Specifies how far an arc can turn.
@@ -38,7 +41,7 @@ class ReadGerber(InputParent):
             "g75": lambda: setattr(self, 'arc_quad_mode', 1),  # MULTI QUAD MODE ARCS 0-360
             "%momm*%": lambda: setattr(self, 'unit', 0),  # METRIC
             "%moin*%": lambda: setattr(self, 'unit', 1),  # INCH
-            "%fs": xxx,  # SPECIFIES (LA/LP/IN) AND XY INT:DECIMAL PRECISION **REQ TO CONV TO LA
+            "%fs": self.format_string(),  # SPECIFIES (LA/LP/IN) AND XY INT:DECIMAL PRECISION **REQ TO CONV TO LA
             "%lpd%": lambda: setattr(self, 'current_infill', 1),  # POLYGONS/CIRCLES FILL INSIDE
             "%lpc%": lambda: setattr(self, 'current_infill', 0),  # POLYGONS/CIRCLES DONT FILL INSIDE
             "%in": self.do_nothing(),  # SETS FILE NAME, CONSIDERED A COMMENT
@@ -59,6 +62,32 @@ class ReadGerber(InputParent):
             # LS
             # SR
         }
+    def create_aperture(self):
+        # Get Tool ##
+        match = re.search(r'ADD(\d+)[A-Za-z]', s)
+
+        if match:
+            aperture
+
+
+            _number = match.group(1)  # Extract the digits after 'ADD'
+        else:
+            raise ValueError("No valid number found after 'ADD'")
+
+    def format_string(self):
+        match = re.search(r'X(\d)(\d)Y(\d)(\d)', self.file_by_line_list[self.line])
+        ## LA/LP/IN NOT IMPLEMENTED
+        if match:
+            x1, x2, y1, y2 = match.groups()
+            x1 = int(x1)
+            x2 = int(x2)
+            y1 = int(y1)
+            y2 = int(y2)
+
+            self.x_number_format = f"{x1}:{x2}"
+            self.y_number_format = f"{y1}:{y2}"
+        else:
+            raise ValueError("String does not match the expected format")
 
     def create_aperture(self):
         # CREATES A COMMON FORM TOOLHEAD.

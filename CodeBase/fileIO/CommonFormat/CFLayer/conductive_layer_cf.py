@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.cf_layer import CFLayer
+from CodeBase.fileIO.CommonFormat.CFLayer.TraceInfo.cf_layer import CFLayer
 
 
 class AdditiveCF:

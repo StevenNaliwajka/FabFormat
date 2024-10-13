@@ -1,5 +1,5 @@
 from CodeBase.fileIO.Input.InputTypes.read_dxf import ReadDxf
-from CodeBase.fileIO.Input.InputTypes.read_gerber import ReadGerber
+from CodeBase.fileIO.Input.InputTypes.gerber.read_gerber import ReadGerber
 from CodeBase.fileIO.Output.OutputTypes.write_gcode import WriteGcode
 from CodeBase.fileIO.Input.InputTypes.read_excellon_drill import ReadExcellonDrill
 from CodeBase.misc.config import Config
