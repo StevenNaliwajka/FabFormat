@@ -1,4 +1,5 @@
 import re
+from abc import abstractmethod
 
 from CodeBase.fileIO.universal_parent import UniversalParent
 from math import *
@@ -41,6 +42,7 @@ class InputParent(UniversalParent):
         # AZ - 000123450000
         self._zero_type = "TZ"
 
+    @abstractmethod
     def parse_into_cf(self):
         # Implemented by child. Parses the read in data.
         pass

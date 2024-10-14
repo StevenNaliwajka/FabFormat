@@ -2,8 +2,7 @@ class CFTraceParent:
 
     def __init__(self):
         # Parent for CF "Common Form" trace types.
-        # What layer its on 1,2,3,4...
-        self.layer = None
+
         # What type it is "c","a","p","l"
         self._type = None
         # Size of trace

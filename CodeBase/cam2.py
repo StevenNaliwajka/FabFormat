@@ -44,32 +44,38 @@
 # FOR NOW.. 100% INFIL. NOT MY PROBLEM TO BE CONSERVITAVE WITH NON CONDUCTIVE FILLAMENT TILL IT WORKS.
 import os
 import sys
-from CodeBase.fileIO.in_out_manager import *
+
+from CodeBase.fileIO.CommonFormat.common_form import CommonForm
+from CodeBase.fileIO.Input.input_manager import input_manager
+
+from CodeBase.fileIO.Output.output_manager import output_manager
+from CodeBase.misc.config import Config
 
 if __name__ == "__main__":
     infileDirectoryPath = sys.argv[1]
     outfileDirectoryPath = sys.argv[2]
 
     # Create new config object for global slicer settings.
-    CONFIG = Config(infileDirectoryPath, outfileDirectoryPath)
+    config = Config(infileDirectoryPath, outfileDirectoryPath)
 
+    # Common Form: Stores Universal File Data
+    common_form = CommonForm()
     # Populates list with each infile
     input_file_obj_list = []
-    for i in range(len(CONFIG.inputFileList)):
-        infile_path = os.path.join(infileDirectoryPath, CONFIG.inputFileList[i])
-        new_infile = input_manager(infile_path, CONFIG)
+    for i in range(len(config.inputFileList)):
+        infile_path = os.path.join(infileDirectoryPath, config.inputFileList[i])
+        new_infile = input_manager(infile_path, common_form, config)
         input_file_obj_list.append(new_infile)
 
-    common_form =
     print("CREATING OUTFILE")
     # Create new Output object
-    outfile = output_manager(CONFIG.outfile_type)
+    outfile = output_manager(config.outfile_type)
     print("OUTFILE CREATED")
-    GUI = None
-    if CONFIG.gui_state.lower() == "true":
+    gui = None
+    if config.gui_state.lower() == "true":
         print("STARTING GUI")
         # GUI = Gui(CONFIG)
         pass
     else:
         print("STARTING HEADLESS")
-        outfile.write_headless(input_file_obj_list=input_file_obj_list, CONFIG=CONFIG)
+        outfile.write_headless(input_file_obj_list=input_file_obj_list, config=config)

@@ -1,6 +1,4 @@
-import os
-
-from CodeBase.fileIO.Output.output_parent import OutputParent
+from CodeBase.fileIO.Output.OutputTypes.output_parent import OutputParent
 from CodeBase.misc.config import Config
 from CodeBase.misc.gui import Gui
 
@@ -8,7 +6,7 @@ class WriteGcode(OutputParent):
     def __init__(self):
         super().__init__()
 
-    def write_headless(self, input_file_obj_list, CONFIG:Config):
+    def write_headless(self, input_file_obj_list, config:Config):
         #
         # Gerber code output
         #

@@ -1,4 +1,4 @@
-from CodeBase.fileIO.Input.input_parent import InputParent
+from CodeBase.fileIO.Input.InputTypes.input_parent import InputParent
 
 
 # DFX NOT SUPPORTED RN.

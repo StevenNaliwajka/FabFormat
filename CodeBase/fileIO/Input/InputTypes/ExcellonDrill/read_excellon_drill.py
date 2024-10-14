@@ -1,7 +1,7 @@
 import re
 
 from CodeBase.fileIO.CommonFormat.CFLayer.subtractive_cf import SubtractiveCF
-from CodeBase.fileIO.Input.input_parent import InputParent
+from CodeBase.fileIO.Input.InputTypes.input_parent import InputParent
 
 
 # REWRITTEN EXCELLON DRILL PARSER.
@@ -11,11 +11,11 @@ from CodeBase.fileIO.Input.input_parent import InputParent
 
 
 class ReadExcellonDrill(InputParent):
-    def __init__(self, filepath):
+    def __init__(self, filepath, common_form):
         super().__init__()
         self.filepath = filepath
         self.readfile(filepath)
-        self.file_name = "ReadExcellonDrill"
+        self.common_form = common_form
 
         self.common_form = SubtractiveCF()
 

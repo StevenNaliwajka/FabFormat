@@ -1,7 +1,10 @@
 import re
 
-from CodeBase.fileIO.Input.input_parent import InputParent
-from CodeBase.fileIO.CommonFormat.CFLayer.additive_cf import AdditiveCF
+from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.circle_aperture import CircleAperture
+from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.obround_aperture import ObroundAperture
+from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.polygon_aperture import PolygonAperture
+from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.rectangle_aperture import RectangleAperture
+from CodeBase.fileIO.Input.InputTypes.input_parent import InputParent
 from CodeBase.misc.config import Config
 
 
@@ -11,13 +14,18 @@ from CodeBase.misc.config import Config
 # No need to reinvent the wheel till its time; It's time.
 
 class ReadGerber(InputParent):
-    def __init__(self, filepath):
+    def __init__(self, filepath, common_form):
         super().__init__()
         self.filepath = filepath
         self.readfile(filepath)
-        self.file_name = "ReadExcellonDrill"
-        self.common_form = AdditiveCF()
+        self.common_form = common_form
+
+        # Stores apertures. Ordered
+        # EX: Aperture #11 is in index 10.
         self.aperture_list = []
+
+        # Stores custom apertures. Holds them until assigned a D code and placed in aperture_list.
+        self.aperture_macro_list = []
 
         # FLAGS
         self._arc_quad_mode = 0  # FLAG. Can be 0 (0-90°), or 1 (0-360°), Specifies how far an arc can turn.
@@ -47,7 +55,7 @@ class ReadGerber(InputParent):
             "%in": self.do_nothing(),  # SETS FILE NAME, CONSIDERED A COMMENT
             "%ippos*%": lambda: setattr(self, 'current_infill', 1),  # DEPRECATED BUT APPEARS THE SAME TO %LPD%, IN EAGLE FILES.
             "%ipneg*%": lambda: setattr(self, 'current_infill', 0),  # DEPRECATED BUT APPEARS THE SAME TO %LPC%, IN EAGLE FILES.
-            "%ad": xxx,  # Creates a template based aperture, assigns D code to it.
+            "%ad": self.create_aperture(),  # Creates an aperture, assigns D code to it.
             "%am": xxx,  # BEGINS CREATION OF AN APERTURE MACRO.
             "g36*": xxx,  # BEGINS POLYGON, reads lines till "g37*"
             "x": xxx,  # D01(DRAWS LINE), D02(PEN UP), D03(SINGLE DOT)
@@ -62,20 +70,103 @@ class ReadGerber(InputParent):
             # LS
             # SR
         }
+
+    def create_aperture_macro(self):
+        # Itterates through lines until reaching the closing "%"
+
+
     def create_aperture(self):
-        # Get Tool ##
-        match = re.search(r'ADD(\d+)[A-Za-z]', s)
+        line_data = self.file_by_line_list[self.line]
+        aperture_number, aperture_type = self.extract_aperture_info(line_data)
 
-        if match:
-            aperture
-
-
-            _number = match.group(1)  # Extract the digits after 'ADD'
+        if aperture_type == "c":
+            new_aperture = self.create_circle_aperture(aperture_number, line_data)
+        elif aperture_type == "r":
+            new_aperture = self.create_rectangle_aperture(aperture_number, line_data)
+        elif aperture_type == "o":
+            new_aperture = self.create_obround_aperture(aperture_number, line_data)
+        elif aperture_type == "p":
+            new_aperture = self.create_polygon_aperture(aperture_number, line_data)
         else:
-            raise ValueError("No valid number found after 'ADD'")
+            new_aperture = self.create_macro_aperture(aperture_number, aperture_type)
+
+        if new_aperture:
+            self.add_to_aperture_list(new_aperture)
+        else:
+            raise ValueError(f"READ_GERBER: Line: {self.line}, Aperture type \"{aperture_type}\" is not valid.")
+
+    def extract_aperture_info(self, line_data):
+        match = re.search(r'\d+([a-zA-Z]+)[*,]', line_data)
+        num_match = re.search(r'\d+', line_data)
+
+        if match and num_match:
+            aperture_number = num_match.group()
+            aperture_type = match.group(1)
+            return aperture_number, aperture_type
+        else:
+            raise ValueError(f"No valid number or aperture type found in line #{self.line}: \"{line_data}\"")
+
+    def create_circle_aperture(self, aperture_number, line_data):
+        pattern = r",([0-9]*\.?[0-9]+)(x([0-9]*\.?[0-9]+))?"
+        match = re.search(pattern, line_data)
+        if match:
+            diameter = float(match.group(1))
+            inside_hole_diameter = float(match.group(3)) if match.group(3) else None
+            return CircleAperture(aperture_number, diameter, inside_hole_diameter)
+        else:
+            raise ValueError("Circle aperture string format error.")
+
+    def create_rectangle_aperture(self, aperture_number, line_data):
+        pattern = r",([0-9]*\.?[0-9]+)x([0-9]*\.?[0-9]+)(x([0-9]*\.?[0-9]+))?"
+        match = re.search(pattern, line_data)
+        if match:
+            x_size = float(match.group(1))
+            y_size = float(match.group(2))
+            inside_hole_diameter = float(match.group(4)) if match.group(4) else None
+            return RectangleAperture(aperture_number, x_size, y_size, inside_hole_diameter)
+        else:
+            raise ValueError("Rectangle aperture string format error.")
+
+    def create_obround_aperture(self, aperture_number, line_data):
+        pattern = r",([0-9]*\.?[0-9]+)x([0-9]*\.?[0-9]+)(x([0-9]*\.?[0-9]+))?"
+        match = re.search(pattern, line_data)
+        if match:
+            x_size = float(match.group(1))
+            y_size = float(match.group(2))
+            inside_hole_diameter = float(match.group(4)) if match.group(4) else None
+            return ObroundAperture(aperture_number, x_size, y_size, inside_hole_diameter)
+        else:
+            raise ValueError("Obround aperture string format error.")
+
+    def create_polygon_aperture(self, aperture_number, line_data):
+        pattern = r",([0-9]*\.?[0-9]+)X([0-9]*\.?[0-9]+)(X([0-9]*\.?[0-9]+))?(X([0-9]*\.?[0-9]+))?"
+        match = re.search(pattern, line_data)
+        if match:
+            outer_diameter = float(match.group(1))
+            num_vertices = float(match.group(2))
+            rotation = float(match.group(4)) if match.group(4) else None
+            inside_hole_diameter = float(match.group(6)) if match.group(6) else None
+            return PolygonAperture(aperture_number, outer_diameter, num_vertices, rotation, inside_hole_diameter)
+        else:
+            raise ValueError("Polygon aperture string format error.")
+
+    def create_macro_aperture(self, aperture_number, aperture_type):
+        for aperture_macro in self.aperture_macro_list:
+            if aperture_type == aperture_macro.name:
+                return aperture_macro(aperture_number)
+        return None
+
+    def add_to_aperture_list(self, new_aperture):
+        index = new_aperture.aperture_number
+        # APERTURE LIST IS ORDERED, Adds Aperture based on the number
+        # EX: Aperture #10 is in index 9.
+        if len(self.aperture_list) <= index:
+            self.aperture_list.extend([None] * (index + 1 - len(self.aperture_list)))
+        else:
+            raise ValueError(f"READ_GERBER: SHITS FUCKED.")
 
     def format_string(self):
-        match = re.search(r'X(\d)(\d)Y(\d)(\d)', self.file_by_line_list[self.line])
+        match = re.search(r'x(\d)(\d)y(\d)(\d)', self.file_by_line_list[self.line])
         ## LA/LP/IN NOT IMPLEMENTED
         if match:
             x1, x2, y1, y2 = match.groups()
