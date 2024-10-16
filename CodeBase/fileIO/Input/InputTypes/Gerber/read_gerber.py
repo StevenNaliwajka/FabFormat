@@ -162,8 +162,7 @@ class ReadGerber(InputParent):
         # EX: Aperture #10 is in index 9.
         if len(self.aperture_list) <= index:
             self.aperture_list.extend([None] * (index + 1 - len(self.aperture_list)))
-        else:
-            raise ValueError(f"READ_GERBER: SHITS FUCKED.")
+        self.aperture_list[index-1] = new_aperture
 
     def format_string(self):
         match = re.search(r'x(\d)(\d)y(\d)(\d)', self.file_by_line_list[self.line])
