@@ -1,5 +1,7 @@
 import re
 
+from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.aperture_macro import \
+    ApertureMacro
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.circle_aperture import CircleAperture
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.obround_aperture import ObroundAperture
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.polygon_aperture import PolygonAperture
@@ -56,7 +58,7 @@ class ReadGerber(InputParent):
             "%ippos*%": lambda: setattr(self, 'current_infill', 1),  # DEPRECATED BUT APPEARS THE SAME TO %LPD%, IN EAGLE FILES.
             "%ipneg*%": lambda: setattr(self, 'current_infill', 0),  # DEPRECATED BUT APPEARS THE SAME TO %LPC%, IN EAGLE FILES.
             "%ad": self.create_aperture(),  # Creates an aperture, assigns D code to it.
-            "%am": xxx,  # BEGINS CREATION OF AN APERTURE MACRO.
+            "%am": self.create_aperture_macro(),  # BEGINS CREATION OF AN APERTURE MACRO.
             "g36*": xxx,  # BEGINS POLYGON, reads lines till "g37*"
             "x": xxx,  # D01(DRAWS LINE), D02(PEN UP), D03(SINGLE DOT)
             "m02": self.do_nothing(),  # IGNORED. RUNS OFF OF LINES.
@@ -72,8 +74,77 @@ class ReadGerber(InputParent):
         }
 
     def create_aperture_macro(self):
-        # Itterates through lines until reaching the closing "%"
+        # Creates a Custom Aperture + Populates
 
+        # gets aperture type
+        line_data = self.file_by_line_list[self.line]
+        match = re.search(r'%am(.*?)\*', line_data)
+        aperture_macro_name = match.group(1)
+
+        # Creates new aperture macro
+        new_aperture_macro = ApertureMacro(aperture_macro_name)
+        # Adds aperture macro to the aperture macro list.
+        self.aperture_macro_list.append(new_aperture_macro)
+        self.line += 1
+        # Iterates through lines till % is reached. Populates the created Aperture
+        self.populate_latest_aperture_macro()
+
+        # Must rationalize aperture macro to represent it in a form that General form can understand.
+        self.rationalize_latest_aperture_macro()
+
+    def rationalize_latest_aperture_macro(self):
+        # Required to represent in a form that General Form can understand.
+        current_aperture = self.aperture_macro_list[-1]
+        current_aperture.rationalize_aperture_macro()
+
+
+    def populate_latest_aperture_macro(self):
+        # Iterates through the txt file and populated the most recent aperture macro created
+        current_aperture = self.aperture_macro_list[-1]
+        line_data = self.file_by_line_list[self.line]
+
+        # Define the instruction mapping based on primitive_code
+        instruction_map = {
+            1: current_aperture.add_circle_instruction,
+            20: current_aperture.add_vector_instruction,
+            21: current_aperture.add_center_instruction,
+            4: current_aperture.add_outline_instruction,
+            5: current_aperture.add_polygon_instruction,
+            7: current_aperture.add_thermal_instruction
+        }
+
+        while "%" not in line_data:
+            self.add_primitive_to_aperture_macro(instruction_map, line_data)
+            self.line += 1
+            line_data = self.file_by_line_list[self.line]
+        # Remove the % from the line
+        stripped_line_data = line_data[:-1]
+        # If its not empty run again
+        if stripped_line_data:
+            self.add_primitive_to_aperture_macro(instruction_map, line_data)
+        # DO NOT append line +=1 again due to the fact that the OG switcher iterates by one upon finishing of method.
+
+    def add_primitive_to_aperture_macro(self, instruction_map, line_data):
+        ## POSSIBLY AN ISSUE IN THE FUTURE OF INDENTS BEING WEIRD. I MATCHED ONE USE CASE
+        ## NOT PERFECT. IF FILE DOES NOT INDENT AFTER EVERY * THIS WILL NOT WORK....
+        ## NOT MY PROBLEM RN... LOL
+
+        stripped_line_data = line_data.rstrip('*')
+        numbers = [int(num.strip()) for num in stripped_line_data.split(',')]
+        primitive_code = numbers[0]
+
+        if primitive_code in instruction_map:
+            # Prepare arguments based on whether rotation is present
+            args_without_rotation = numbers[1:-1] if len(numbers) - 1 == len(
+                instruction_map[primitive_code].__code__.co_varnames) else numbers[1:]
+            rotation = numbers[-1] if len(numbers) - 1 != len(
+                instruction_map[primitive_code].__code__.co_varnames) else 0
+            instruction_map[primitive_code](*args_without_rotation, rotation)
+        elif primitive_code == 0:
+            pass  # Comment code; no action required
+        else:
+            raise ValueError(
+                f"READ_GERBER: Line: {self.line}, The inputs for primitive code #{primitive_code} are not valid.")
 
     def create_aperture(self):
         line_data = self.file_by_line_list[self.line]

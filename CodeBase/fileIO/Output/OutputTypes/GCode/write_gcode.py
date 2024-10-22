@@ -3,6 +3,8 @@ from CodeBase.misc.config import Config
 from CodeBase.misc.gui import Gui
 
 class WriteGcode(OutputParent):
+
+    # USING https://marlinfw.org/docs/gcode/G000-G001.html AS A BIBLE
     def __init__(self):
         super().__init__()
 
@@ -10,6 +12,8 @@ class WriteGcode(OutputParent):
         #
         # Gerber code output
         #
+
+        G
 
         # NEEDS TO BE RE-WRITTEN TO BE SCALABLE WITH MULTIPLE LAYERS AND INTAKE MULTIPLE POSSIBLE INTERSECTING
         # TRACES FROM COMMON FORMAT.

@@ -10,3 +10,6 @@ class CFCircleTrace(CFComplexParent):
         self.point_list.append(center_x_y)
         self.omitted_hole = omitted_hole
         self.infill = infill  # 0:No infill, 1: Fill w/ Material
+        # ALLOWS FOR SPECIFYING OF omitted trace type.
+        # Another smaller circle/polygon can be added as an 'omitted' shape if the infill = 1
+        self.omitted_hole = omitted_hole
