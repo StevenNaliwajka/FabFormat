@@ -60,6 +60,9 @@ if __name__ == "__main__":
 
     # Common Form: Stores Universal File Data
     common_form = CommonForm()
+
+    ## SWAP INFILE OBJECT LIST TO CREATE THE INFILE OBJECT inside of a method and discard it when
+    ## it is done so that way more memory is not required.
     # Populates list with each infile
     input_file_obj_list = []
     for i in range(len(config.inputFileList)):
