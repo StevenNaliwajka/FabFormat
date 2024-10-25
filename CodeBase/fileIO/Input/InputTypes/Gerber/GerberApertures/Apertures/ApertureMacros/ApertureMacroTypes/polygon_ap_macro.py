@@ -12,3 +12,9 @@ class PolygonAPMacro(APMacroParent):
         self.center_y = center_y
         self.diameter = diameter
         self.rotation = rotation  # IN DEGREES CC
+        self.common_form = []
+
+        self.to_common_form()
+
+    def to_common_form(self):
+        pass

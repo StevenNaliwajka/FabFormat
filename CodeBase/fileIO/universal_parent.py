@@ -5,6 +5,7 @@ class UniversalParent:
         #TBH. Still Zero clue what EXACTLY these do. They seem arbitrary at a glance..
         # Will be handled once everything is working. May go to config if it matters. If else they will be removed.
         self.file_name = "UNIVERSAL PARENT"
+        self.extension = 'UNKNOWN'
         # TILL FIGURED OUT HOW THIS CHANGES IT LIVES HERE
         self.SIZE = 1  # WAS SIZE
         self.WIDTH = 1  # WAS WIDTH

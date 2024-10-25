@@ -13,3 +13,9 @@ class VectorAPMacro(APMacroParent):
         self.end_x = end_x
         self.end_y = end_y
         self.rotation = rotation  # IN DEGREES CC
+        self.common_form = []
+
+        self.to_common_form()
+
+    def to_common_form(self):
+        pass

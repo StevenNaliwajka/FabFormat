@@ -11,3 +11,9 @@ class CircleAPMacro(APMacroParent):
         self.center_x = center_x
         self.center_y = center_y
         self.rotation = rotation  # IN DEGREES CC
+        self.common_form = []
+
+        self.to_common_form()
+
+    def to_common_form(self):
+        pass

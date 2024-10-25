@@ -32,13 +32,10 @@ class ReadGerber(InputParent):
         # FLAGS
         self._arc_quad_mode = 0  # FLAG. Can be 0 (0-90°), or 1 (0-360°), Specifies how far an arc can turn.
         self._conv_from_polar = 0  # FLAG. set 1 if LP command, must convert cordinates to cartesian(linear) from polar.
-                ## ^ WILL BE A FLAG INSIDE OF THE "%FS" Method..... NOT GLOBAL. SET EACH TIME.
-        self._current_infill = 0 # FLAG. set 1 if infil of polygon/circle. 0 if empty.
+        ## ^ WILL BE A FLAG INSIDE OF THE "%FS" Method..... NOT GLOBAL. SET EACH TIME.
+        self._current_infill = 0  # FLAG. set 1 if infil of polygon/circle. 0 if empty.
         self._current_tool = None  # "D10" and higher. Used when loading lines into CF. Updated by "D#" Command.
         self._current_line_type = 1  # 1 = "G01":LINEAR, 2 = "G02":Clockwise, 3 = "G03":CounterClockwise.
-
-        ## NOT SURE HOW APERTURE SELECTION CODE "AM" WORK WITH CF. MAYBE AM CREATES COMMON FORM REGULAR TRACES
-
 
 
 
@@ -46,6 +43,7 @@ class ReadGerber(InputParent):
         # NEW GERBER PARSER. INPUTS TRACES BY LINE INTO common_form object
 
         gerber_switcher = {
+            ## ORGANIZE  BASED ON WHAT HAPPENS MOST OFTEN... PREVENT IT FROM ITTERATING 10X EVERY TIME.
             "g04": self.do_nothing(),  # COMMENT
             "g74": lambda: setattr(self, 'arc_quad_mode', 0),  # SINGLE QUAD MODE. ARCS 0-90
             "g75": lambda: setattr(self, 'arc_quad_mode', 1),  # MULTI QUAD MODE ARCS 0-360
@@ -55,8 +53,8 @@ class ReadGerber(InputParent):
             "%lpd%": lambda: setattr(self, 'current_infill', 1),  # POLYGONS/CIRCLES FILL INSIDE
             "%lpc%": lambda: setattr(self, 'current_infill', 0),  # POLYGONS/CIRCLES DONT FILL INSIDE
             "%in": self.do_nothing(),  # SETS FILE NAME, CONSIDERED A COMMENT
-            "%ippos*%": lambda: setattr(self, 'current_infill', 1),  # DEPRECATED BUT APPEARS THE SAME TO %LPD%, IN EAGLE FILES.
-            "%ipneg*%": lambda: setattr(self, 'current_infill', 0),  # DEPRECATED BUT APPEARS THE SAME TO %LPC%, IN EAGLE FILES.
+            "%ippos*%": lambda: setattr(self, 'current_infill', 1),  # DEPRECATED BUT APPEARS THE SAME TO %LPD%
+            "%ipneg*%": lambda: setattr(self, 'current_infill', 0),  # DEPRECATED BUT APPEARS THE SAME TO %LPC%
             "%ad": self.create_aperture(),  # Creates an aperture, assigns D code to it.
             "%am": self.create_aperture_macro(),  # BEGINS CREATION OF AN APERTURE MACRO.
             "g36*": xxx,  # BEGINS POLYGON, reads lines till "g37*"
@@ -96,7 +94,6 @@ class ReadGerber(InputParent):
         # Required to represent in a form that General Form can understand.
         current_aperture = self.aperture_macro_list[-1]
         current_aperture.rationalize_aperture_macro()
-
 
     def populate_latest_aperture_macro(self):
         # Iterates through the txt file and populated the most recent aperture macro created
@@ -233,7 +230,7 @@ class ReadGerber(InputParent):
         # EX: Aperture #10 is in index 9.
         if len(self.aperture_list) <= index:
             self.aperture_list.extend([None] * (index + 1 - len(self.aperture_list)))
-        self.aperture_list[index-1] = new_aperture
+        self.aperture_list[index - 1] = new_aperture
 
     def format_string(self):
         match = re.search(r'x(\d)(\d)y(\d)(\d)', self.file_by_line_list[self.line])
@@ -249,10 +246,6 @@ class ReadGerber(InputParent):
             self.y_number_format = f"{y1}:{y2}"
         else:
             raise ValueError("String does not match the expected format")
-
-    def create_aperture(self):
-        # CREATES A COMMON FORM TOOLHEAD.
-        self.common_form.
 
     @property
     def conv_from_polar(self):
@@ -276,12 +269,12 @@ class ReadGerber(InputParent):
 
     @conv_from_polar.setter
     def conv_from_polar(self, new_value):
-        if new_value in (0,1):
+        if new_value in (0, 1):
             self._conv_from_polar = new_value
 
     @arc_quad_mode.setter
     def arc_quad_mode(self, new_value):
-        if new_value in (0,1):
+        if new_value in (0, 1):
             self._arc_quad_mode = new_value
 
     @current_infill.setter

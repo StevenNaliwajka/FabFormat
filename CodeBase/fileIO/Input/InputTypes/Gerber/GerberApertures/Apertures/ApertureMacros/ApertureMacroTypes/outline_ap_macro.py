@@ -12,3 +12,9 @@ class OutlineAPMacro(APMacroParent):
         self.start_y = start_y
         self.point_list = point_list
         self.rotation = rotation  # IN DEGREES CC
+        self.common_form = []
+
+        self.to_common_form()
+
+    def to_common_form(self):
+        pass

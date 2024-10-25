@@ -12,3 +12,9 @@ class ThermalAPMacro(APMacroParent):
         self.inner_diameter = inner_diameter
         self.gap = gap
         self.rotation = rotation  # IN DEGREES CC
+        self.common_form = []
+
+        self.to_common_form()
+
+    def to_common_form(self):
+        pass

@@ -46,29 +46,27 @@ import os
 import sys
 
 from CodeBase.fileIO.CommonFormat.common_form import CommonForm
-from CodeBase.fileIO.Input.input_manager import input_manager
+from CodeBase.fileIO.Input.input_manager import input_manager, read_infiles, convert_infiles_to_common_form
 
 from CodeBase.fileIO.Output.output_manager import output_manager
 from CodeBase.misc.config import Config
 
 if __name__ == "__main__":
-    infileDirectoryPath = sys.argv[1]
-    outfileDirectoryPath = sys.argv[2]
+    print(f"DIY Slicer {chr(3486)}")
+    infile_directory_path = sys.argv[1]
+    outfile_directory_path = sys.argv[2]
 
     # Create new config object for global slicer settings.
-    config = Config(infileDirectoryPath, outfileDirectoryPath)
+    config = Config(infile_directory_path, outfile_directory_path)
 
     # Common Form: Stores Universal File Data
     common_form = CommonForm()
 
-    ## SWAP INFILE OBJECT LIST TO CREATE THE INFILE OBJECT inside of a method and discard it when
-    ## it is done so that way more memory is not required.
-    # Populates list with each infile
-    input_file_obj_list = []
-    for i in range(len(config.inputFileList)):
-        infile_path = os.path.join(infileDirectoryPath, config.inputFileList[i])
-        new_infile = input_manager(infile_path, common_form, config)
-        input_file_obj_list.append(new_infile)
+    # Populates list with each infile obj
+    input_file_obj_list = read_infiles(infile_directory_path, common_form, config)
+
+    # Converts infiles in list to Common Form
+    convert_infiles_to_common_form(input_file_obj_list, config)
 
     print("CREATING OUTFILE")
     # Create new Output object
