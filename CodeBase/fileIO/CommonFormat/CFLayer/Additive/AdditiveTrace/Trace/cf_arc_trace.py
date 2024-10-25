@@ -3,7 +3,7 @@ from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.cf_trace_parent
 
 
 class CFArcTrace(CFComplexParent):
-    def __init__(self, size_of_line, start_x_y, end_x_y, center_x, center_y, radius):
+    def __init__(self, size_of_line, start_x, start_y, end_x, end_y, center_x, center_y, radius):
         super().__init__()
         self.type = "a"
         self.size_of_line = size_of_line

@@ -63,8 +63,6 @@ class ApertureMacro(ApertureParent):
         # and there is that this also converts unique shapes to common form shapes.
         # CF overlap will be a copy of the first part here.
 
-        ## Could probably be optimized...
-
         # Gets First Shape from aperturelist
         first_instruction = self.aperture_instructions_list.pop(0)
 
