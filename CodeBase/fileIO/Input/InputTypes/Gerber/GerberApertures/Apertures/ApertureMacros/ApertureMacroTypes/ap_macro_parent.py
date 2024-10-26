@@ -1,4 +1,5 @@
 import math
+from abc import abstractmethod
 
 
 class APMacroParent:
@@ -7,7 +8,8 @@ class APMacroParent:
         self.exposure = None
         self.common_form = None
 
-    def to_common_form(self):
+    @abstractmethod
+    def to_common_form(self, *args, **kwargs):
         pass
 
     def rotate_point_around_origin_cc(self, point_x, point_y, cc_degrees):
