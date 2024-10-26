@@ -2,14 +2,13 @@ from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.cf_complex_pare
 
 
 class CFCircleTrace(CFComplexParent):
-    def __init__(self, size_of_line, radius, center_x_y, infill=0, omitted_hole=None):
+    def __init__(self, center_x, center_y, radius, inner_radius=0):
         super().__init__()
         self.type = "c"
-        self.size_of_line = size_of_line
+        self.center_x = center_x
+        self.center_y = center_y
         self.radius = radius
-        self.point_list.append(center_x_y)
-        self.omitted_hole = omitted_hole
-        self.infill = infill  # 0:No infill, 1: Fill w/ Material
-        # ALLOWS FOR SPECIFYING OF omitted trace type.
-        # Another smaller circle/polygon can be added as an 'omitted' shape if the infill = 1
-        self.omitted_hole = omitted_hole
+        # If = 0, entire circle is filled. If else, there is a hole in the middle of circle
+        if inner_radius > radius:
+            raise ValueError(f"CFCircle: Inner Radius of {inner_radius} is larger than the outer radius of {radius}.")
+        self.inner_radius = inner_radius

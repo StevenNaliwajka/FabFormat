@@ -2,13 +2,16 @@ from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.cf_complex_pare
 
 
 class CFPolygonTrace(CFComplexParent):
-    def __init__(self, size_of_line, point_list, infill=0, omitted_hole=None):
+    def __init__(self, point_list):
         super().__init__()
         self.type = "p"
-        self.size_of_line = size_of_line
-        self.point_list.append(point_list)
-        self.omitted_hole = omitted_hole
-        self.infill = infill  # 0:No infill, 1: Fill w/ Material
-        # ALLOWS FOR SPECIFYING OF omitted trace type.
-        # Another smaller circle/polygon can be added as an 'omitted' shape if the infill = 1
-        self.omitted_hole = omitted_hole
+        # 100% INFILL. IF YOU NEED A HOLE. SLICE THE SHAPE INTO MULTIPLE PARTS.
+        # POINT LIST STARTS AND ENDS AT SAME POINTS.
+        # POINT LIST SAVED AS [x1, y1, x2, y2 ...]
+        if point_list[0] is not point_list[-1]:
+            raise ValueError(f"CFPolygon: Start({point_list[0]}) and end({point_list[-1]}) X cordinates of CF"
+                             f" polygon do not match.")
+        if point_list[1] is not point_list[-2]:
+            raise ValueError(f"CFPolygon: Start({point_list[1]}) and end({point_list[-2]}) Y cordinates of CF"
+                             f" polygon do not match.")
+        self.point_list = point_list

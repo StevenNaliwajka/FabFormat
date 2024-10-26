@@ -5,9 +5,6 @@ class CFTraceParent:
 
         # What type it is "c","a","p","l"
         self._type = None
-        # Size of trace
-        self.size_of_line = None
-        self.point_list = []
 
     @property
     def type(self):

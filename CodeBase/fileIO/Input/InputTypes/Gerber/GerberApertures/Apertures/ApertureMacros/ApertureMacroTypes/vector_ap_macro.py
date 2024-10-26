@@ -1,3 +1,4 @@
+from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_polygon_trace import CFPolygonTrace
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.ApertureMacroTypes.ap_macro_parent import \
     APMacroParent
 
@@ -18,4 +19,29 @@ class VectorAPMacro(APMacroParent):
         self.to_common_form()
 
     def to_common_form(self):
-        pass
+        coordinate_list = []
+        # Convert to polygon. Solve for vertices.
+        # Bottom left
+        new_x_coordinate = self.start_x
+        new_y_coordinate = self.start_y - (self.width/2)
+        coordinate_list.append(new_x_coordinate)
+        coordinate_list.append(new_y_coordinate)
+
+        # Top left
+        new_y_coordinate = self.start_y + self.width
+        coordinate_list.append(new_x_coordinate)
+        coordinate_list.append(new_y_coordinate)
+
+        # Top right
+        new_x_coordinate = self.end_y
+        coordinate_list.append(new_x_coordinate)
+        coordinate_list.append(new_y_coordinate)
+
+        # Bottom Right
+        new_y_coordinate = self.start_y - self.width
+        coordinate_list.append(new_x_coordinate)
+        coordinate_list.append(new_y_coordinate)
+
+        # Create Polygon OBJ
+        self.common_form = CFPolygonTrace(coordinate_list)
+
