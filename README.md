@@ -1,25 +1,38 @@
-## SHOULD BE NOTED AS NOT WORKING YET... IN PROG
-I was provided a python file "cam1.py" by my professor Theodore Grosch.
+# IN PROG: 100% by Nov 29 (70%:Oct 25)
+The cumulation of a semester of work for my senior project "Affordable 3D PCB Printing for Prototyping".
 
-Prof. Grosch created "cam1.py" from Neil Gershenfeld's script "GTG.py".
+Goal is to have a modular file converter and slicer. 
+So that PCBs can be printed on a standard dual extrusion FDM 3D printer using conductive fillament in place of copper.
+Components can be surface mounted by hand using conductive epoxy. 
+While any number of input layers are allowed, embedded components are not supported.
 
-Definition of standing on the shoulders of giants.
+Inspriation gained from BA Neil Gershenfeld (GTG.py) and my professor Theodore Grosch (cam1.py).
+Even though I think I have rewritten every inherited code block, I could not have gotten this far without their prior work.
 
-This project has a few steps.
-1) Put a better front end on the code so, it is easier scalable for bulk execution and allows for headless.
-   1) Config based approach. Headless currently works. Gonna get the combining of files working before gui.
-2) Format "cam1.py": break it down into similar subfiles.
-   1) Broken down. Object oriented and scalable. Nice.
-3) Once "cam1.py" has been digested, debug the outputs.
-   1) Done. Can slice single files and outputs a usable gcode file.
-   2) So far used default gerber parser (no issues). Have updated the Excellion parser to work better.
-   2) RN, working on how the best way to merge the copper and insulator files to be able to print on a dual extruder FDM printer.
-   3) I realize a lot of values were hard coded. These need to be extracted and placed into config. (eg. nozzle settings, bed heat. etc...)
-   4) Still digging through understanding how the 'cam1.py' handled itself so I can splice together two or more files...
-# Gerber-DrilltoGcode
-A project to convert gerber and drill files to gcode for "Affordable 3D printed PCB's for prototyping" senior project.
+---------------------------------------------------------------------------------------------------------
 
-Prog goal is to leave it scalable so its 'easy' to add differnt output file types, input file types for future use cases.
+CodeFlow:
+
+1)Using a config file based approach, a user adds any number of supported input file types: 
+   - Excellon Drill
+   - Gerber
+
+2)Infiles are read in and converted and stored in a common format.
+
+3)This is then converted to a single supported output file type: 
+   - Gcode
+   - PNG
+
+Its not completed 100%, more like 70%. Infiles -> Common form is done. Common form -> 2 extruder Gcode is in the works.   
+
+
+Notes:
+- Currently Headless mode is only supported, had to drop Gershenfeld's GUI when refactoring to opject oriented.
+- Modular so adding new input or output file types is as easy as converting to or from common form.
+- I *think* all modern gerber features are supported. AM(aperture macros) etc.. more testing required to be sure.
+
+---------------------------------------------------------------------------------------------------------
+
 
 ### Folders:
 Codebase
