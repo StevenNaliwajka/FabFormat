@@ -1,0 +1,10 @@
+Arcs are the most complex shapes.
+I have still not made up my mind. I can get away with traditional symmetrical arcs for
+everything I have done so far.
+This may be overcomplicating things, but I have to believe that eventually supporting some form
+of complex arc will be required.
+Whether that ends up being asymmetrical arcs, splines or b-splines.
+What form requires it. I'm not sure, but I have to believe that its required.
+
+
+TLDR: RN ONLY SYMMETRICAL ARCS ARE SUPPORTED

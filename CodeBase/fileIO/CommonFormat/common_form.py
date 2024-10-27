@@ -1,5 +1,5 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_arc_trace import CFArcTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_circle_trace import CFCircleTrace
+from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.curves.cf_arc_trace import CFArcTrace
+from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.curves.cf_circle_trace import CFCircleTrace
 from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_linear_trace import CFLinearTrace
 from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_polygon_trace import CFPolygonTrace
 from CodeBase.fileIO.CommonFormat.CFLayer.Additive.additive_layer import AdditiveLayer

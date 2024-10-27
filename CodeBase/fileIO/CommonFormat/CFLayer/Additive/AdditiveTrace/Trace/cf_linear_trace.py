@@ -3,6 +3,9 @@ from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.cf_trace_parent
 
 class CFLinearTrace(CFTraceParent):
     def __init__(self, start_x, start_y, end_x, end_y, size_of_line):
+        # SEE CurrentCFCheatSheat.PNG in
+        # ...CFLayer/Additive/AdditiveTrace/Trace/CurrentCFCheatSheat.png
+
         super().__init__()
         self.type = "l"
         self.start_x = start_x

@@ -3,6 +3,9 @@ from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.cf_complex_pare
 
 class CFPolygonTrace(CFComplexParent):
     def __init__(self, point_list):
+        # SEE CurrentCFCheatSheat.PNG in
+        # ...CFLayer/Additive/AdditiveTrace/Trace/CurrentCFCheatSheat.png
+
         super().__init__()
         self.type = "p"
         # 100% INFILL. IF YOU NEED A HOLE. SLICE THE SHAPE INTO MULTIPLE PARTS.

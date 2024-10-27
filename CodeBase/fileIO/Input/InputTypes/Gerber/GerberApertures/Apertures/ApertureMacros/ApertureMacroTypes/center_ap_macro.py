@@ -5,6 +5,12 @@ from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureM
 
 class CenterAPMacro(APMacroParent):
     def __init__(self, exposure, width, height, center_x, center_y, rotation=0):
+        # See Page 63:
+        # https://www.ucamco.com/files/downloads/file_en/456/gerber-layer-format-specification-revision-2023-08_en.pdf
+
+        # For Reference on Gerber to Common Form Conversion see picture here:
+        # XXX No photo ref, Lazy
+
         super().__init__()
         self.code = 21
         self.exposure = exposure
