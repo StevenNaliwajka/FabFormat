@@ -1,7 +1,7 @@
 from math import *
-from CodeBase.misc.gui import Gui
+from CodeBase.gui.gui import Gui
 from CodeBase.fileIO.universal_parent import UniversalParent
-from CodeBase.misc.config import Config
+from CodeBase.config.config import Config
 
 
 # Contains Universal Methods for converting files.

@@ -8,7 +8,6 @@ class CircleAPMacro(APMacroParent):
         super().__init__()
         self.code = 1
         self.exposure = exposure
-        self.common_form = []
         # Rotation in DEG CC
         self.to_common_form(diameter, center_x, center_y, rotation)
 
@@ -22,4 +21,4 @@ class CircleAPMacro(APMacroParent):
 
         radius = diameter / 2
         new_cf_object = CFCircleTrace(center_x, center_y, radius)
-        self.common_form = new_cf_object
+        self.common_form.append(new_cf_object)

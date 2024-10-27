@@ -1,8 +1,12 @@
 import tkinter as tk
-from CodeBase.misc.config import Config
+from CodeBase.config.config import Config
 
 class Gui:
     def __init__(self, CONFIG:Config):
+
+        # CODE BY Neil Gershenfeld.
+        # NOT WORKING WITH MY CURRENT DESIGN.
+        # HAVE TO RE-WRITE THINGS.
         root = tk.Tk()
         root.title('cam2.py')
         root.bind('q', 'exit')

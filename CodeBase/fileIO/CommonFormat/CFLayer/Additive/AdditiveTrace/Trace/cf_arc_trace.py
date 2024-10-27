@@ -3,7 +3,7 @@ from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.cf_trace_parent
 
 
 class CFArcTrace(CFComplexParent):
-    def __init__(self, center_x, center_y, outer_x, outer_y, degree_cw, inner_x=None, inner_y=None):
+    def __init__(self, center_x, center_y, outer_start_x, outer_start_y, outer_end_x, outer_end_y, inner_dif):
         super().__init__()
         self.type = "a"
         self.center_x = center_x

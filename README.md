@@ -6,7 +6,7 @@ So that PCBs can be printed on a standard dual extrusion FDM 3D printer using co
 Components can be surface mounted by hand using conductive epoxy. 
 While any number of input layers are allowed, embedded components are not supported.
 
-Inspriation gained from BA Neil Gershenfeld (GTG.py) and my professor Theodore Grosch (cam1.py).
+Inspriation gained from Neil Gershenfeld (GTG.py) and my professor Theodore Grosch (cam1.py).
 Even though I think I have rewritten every inherited code block, I could not have gotten this far without their prior work.
 
 ---------------------------------------------------------------------------------------------------------

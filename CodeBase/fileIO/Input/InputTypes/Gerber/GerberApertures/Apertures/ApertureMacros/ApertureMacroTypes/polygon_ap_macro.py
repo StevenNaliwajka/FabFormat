@@ -8,7 +8,6 @@ class PolygonAPMacro(APMacroParent):
         super().__init__()
         self.code = 5
         self.exposure = exposure
-        self.common_form = []
         # Rotation in DEG CC
         self.to_common_form(num_vertices, center_x, center_y, diameter, rotation)
 
@@ -40,4 +39,5 @@ class PolygonAPMacro(APMacroParent):
                 coordinate_list[(point - 1) * 2] = new_x
                 coordinate_list[((point - 1) * 2) + 1] = new_y
 
-        self.common_form = CFPolygonTrace(coordinate_list)
+        new_common_form = CFPolygonTrace(coordinate_list)
+        self.common_form.append(new_common_form)

@@ -1,6 +1,6 @@
 from CodeBase.fileIO.Output.OutputTypes.output_parent import OutputParent
-from CodeBase.misc.config import Config
-from CodeBase.misc.gui import Gui
+from CodeBase.config.config import Config
+from CodeBase.gui.gui import Gui
 
 class WriteGcode(OutputParent):
 

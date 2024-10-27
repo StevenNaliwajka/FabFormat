@@ -6,7 +6,7 @@ class APMacroParent:
     def __init__(self):
         self.code = None
         self.exposure = None
-        self.common_form = None
+        self.common_form = []
 
     @abstractmethod
     def to_common_form(self, *args, **kwargs):

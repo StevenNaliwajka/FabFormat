@@ -3,7 +3,7 @@ import os
 from CodeBase.fileIO.Input.InputTypes.DXF.read_dxf import ReadDxf
 from CodeBase.fileIO.Input.InputTypes.Gerber.read_gerber import ReadGerber
 from CodeBase.fileIO.Input.InputTypes.ExcellonDrill.read_excellon_drill import ReadExcellonDrill
-from CodeBase.misc.config import Config
+from CodeBase.config.config import Config
 
 
 def read_infiles(infile_directory_path, common_form, config: Config):
@@ -18,6 +18,8 @@ def read_infiles(infile_directory_path, common_form, config: Config):
 def convert_infiles_to_common_form(input_file_obj_list, config):
     for infile in input_file_obj_list:
         # Interprets file, some-times CONFIG is required...
+
+        ## NOT NEEDED RN. CONVERTING TO CF IS DONE ON OBJ INIT.
         try:
             infile.path = infile.parse_into_cf()
         except TypeError:

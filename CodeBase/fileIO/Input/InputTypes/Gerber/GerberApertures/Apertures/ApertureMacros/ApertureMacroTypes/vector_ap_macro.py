@@ -8,7 +8,6 @@ class VectorAPMacro(APMacroParent):
         super().__init__()
         self.code = 20
         self.exposure = exposure
-        self.common_form = []
 
         self.to_common_form(width, start_x, start_y, end_x, end_y, rotation)
 
@@ -52,5 +51,5 @@ class VectorAPMacro(APMacroParent):
                 coordinate_list[((point - 1) * 2) + 1] = new_y
 
         # Create Polygon OBJ
-        self.common_form = CFPolygonTrace(coordinate_list)
-
+        new_common_form = CFPolygonTrace(coordinate_list)
+        self.common_form.append(new_common_form)

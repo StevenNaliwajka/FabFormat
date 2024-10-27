@@ -42,14 +42,13 @@
 # THIS CAN BE DONE BY RAW MIN/MAX OF THE FILE TO RESULT IN SQUARE OR USING AN OUTLINE FILE PROVIDED.
 # MUST TAKE INTO CONSIDERATION PRINTING CONDUCTIVE PLASTIC WITH NOZZLE #1 AND NON-CONDUCTIVE PLASTIC WITH NOZZLE #2
 # FOR NOW.. 100% INFIL. NOT MY PROBLEM TO BE CONSERVITAVE WITH NON CONDUCTIVE FILLAMENT TILL IT WORKS.
-import os
 import sys
 
 from CodeBase.fileIO.CommonFormat.common_form import CommonForm
-from CodeBase.fileIO.Input.input_manager import input_manager, read_infiles, convert_infiles_to_common_form
+from CodeBase.fileIO.Input.input_manager import read_infiles, convert_infiles_to_common_form
 
 from CodeBase.fileIO.Output.output_manager import output_manager
-from CodeBase.misc.config import Config
+from CodeBase.config.config import Config
 
 if __name__ == "__main__":
     print(f"DIY Slicer {chr(3486)}")

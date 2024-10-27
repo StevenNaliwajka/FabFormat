@@ -9,7 +9,6 @@ class ThermalAPMacro(APMacroParent):
         super().__init__()
         self.code = 7
         self.exposure = 1
-        self.common_form = []
 
         self.to_common_form(center_x, center_y, outer_diameter, inner_diameter, gap, rotation)
 
@@ -57,5 +56,5 @@ class ThermalAPMacro(APMacroParent):
             outer_x, outer_y = self.rotate_point_around_origin_cc(outer_x, outer_y, rotation)
             inner_x, inner_y = self.rotate_point_around_origin_cc(inner_x, inner_y, rotation)
 
-            new_cf_instruction = CFArcTrace(arc_center_x, arc_center_y, outer_x, outer_y, degree_cw, inner_x, inner_y)
-            self.common_form.append(new_cf_instruction)
+        new_cf_instruction = CFArcTrace(arc_center_x, arc_center_y, outer_x, outer_y, degree_cw, inner_x, inner_y)
+        self.common_form.append(new_cf_instruction)

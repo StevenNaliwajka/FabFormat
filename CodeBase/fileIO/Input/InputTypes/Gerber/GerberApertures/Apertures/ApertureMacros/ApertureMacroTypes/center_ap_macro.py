@@ -8,7 +8,6 @@ class CenterAPMacro(APMacroParent):
         super().__init__()
         self.code = 21
         self.exposure = exposure
-        self.common_form = []
         # Rotation in DEG CC
         self.to_common_form(width, height, center_x, center_y, rotation)
 
@@ -48,4 +47,5 @@ class CenterAPMacro(APMacroParent):
                 coordinate_list[(point - 1) * 2] = new_x
                 coordinate_list[((point - 1) * 2) + 1] = new_y
         # Create Polygon OBJ
-        self.common_form = CFPolygonTrace(coordinate_list)
+        new_common_form = CFPolygonTrace(coordinate_list)
+        self.common_form.append(new_common_form)

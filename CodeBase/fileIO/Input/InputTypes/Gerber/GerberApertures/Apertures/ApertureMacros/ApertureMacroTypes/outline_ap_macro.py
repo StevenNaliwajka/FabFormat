@@ -8,7 +8,6 @@ class OutlineAPMacro(APMacroParent):
         super().__init__()
         self.code = 4
         self.exposure = exposure
-        self.common_form = []
         # Rotation in DEG CC
         self.to_common_form(num_vertices, point_list, rotation)
 
@@ -26,4 +25,5 @@ class OutlineAPMacro(APMacroParent):
                 point_list[((point - 1) * 2) + 1] = new_y
 
         # Create Polygon OBJ
-        self.common_form = CFPolygonTrace(point_list)
+        new_common_form = CFPolygonTrace(point_list)
+        self.common_form.append(new_common_form)

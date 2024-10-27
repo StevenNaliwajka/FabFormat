@@ -43,7 +43,7 @@ class InputParent(UniversalParent):
         self._zero_type = "TZ"
 
     @abstractmethod
-    def parse_into_cf(self):
+    def parse_into_cf(self, *args, **kwargs):
         # Implemented by child. Parses the read in data.
         pass
 
