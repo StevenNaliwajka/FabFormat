@@ -19,7 +19,7 @@ class ObroundAperture(ApertureParent):
         self.aperture_number = ap_number
         self.to_common_form(x_size, y_size, inside_hole_diam)
 
-    def to_common_form(self, x_size, y_size, inside_hole_diam):
+    def to_common_form(self, x_size, y_size, inside_hole_diam=None):
         if inside_hole_diam:
             self.complex_obround_to_cf(x_size, y_size, inside_hole_diam)
         else:
@@ -27,64 +27,47 @@ class ObroundAperture(ApertureParent):
 
     def obround_to_cf(self, x_size, y_size):
         if x_size == y_size:
-            # It's a circle.
             self.common_form.append(CFCircleTrace(0, 0, x_size / 2))
         else:
-            self.create_obround_common_form(x_size, y_size)
-
-    def create_obround_common_form(self, x_size, y_size):
-        smallest = min(x_size, y_size)
-        sagitta = smallest / 2
-        distance_to_center_arc_from_center = abs((max(x_size, y_size) / 2) - sagitta)
-
-        if smallest == x_size:
-            self.create_rectangle_and_arcs(0, distance_to_center_arc_from_center, x_size, y_size, sagitta, "vertical")
-        else:
-            self.create_rectangle_and_arcs(distance_to_center_arc_from_center, 0, x_size, y_size, sagitta, "horizontal")
+            self.create_obround(x_size, y_size)
 
     def complex_obround_to_cf(self, x_size, y_size, inside_hole_diam):
         if x_size == y_size:
             self.common_form.append(CFCircleTrace(0, 0, x_size / 2, inside_hole_diam))
         else:
-            smallest = min(x_size, y_size)
-            circle_diameter = smallest
-            self.common_form.append(CFCircleTrace(0, 0, circle_diameter, inside_hole_diam))
-            arc_len = (circle_diameter * (2 ** 0.5)) - circle_diameter
-            self.create_four_arcs(circle_diameter, arc_len)
+            self.create_complex_obround(x_size, y_size, inside_hole_diam)
 
-            if smallest == x_size:
-                self.create_polygons_for_complex(x_size, y_size, inside_hole_diam, offset_axis="y")
-            else:
-                self.create_polygons_for_complex(y_size, x_size, inside_hole_diam, offset_axis="x")
+    def create_obround(self, x_size, y_size):
+        smallest = min(x_size, y_size)
+        if smallest == x_size:
+            self.create_rectangle_and_arcs(x_size, y_size - x_size, x_size / 2, (y_size - x_size) / 2)
+        else:
+            self.create_rectangle_and_arcs(x_size - y_size, y_size, y_size / 2, (x_size - y_size) / 2)
 
-    def create_rectangle_and_arcs(self, center_x, center_y, x_size, y_size, sagitta, orientation):
-        # Create rectangle
-        polygon_x, polygon_y = (x_size, y_size - x_size) if orientation == "vertical" else (x_size - y_size, y_size)
-        self.rectangle_to_cf(0, 0, polygon_x, polygon_y)
+    def create_complex_obround(self, x_size, y_size, inside_hole_diam):
+        smallest = min(x_size, y_size)
+        self.common_form.append(CFCircleTrace(0, 0, smallest, inside_hole_diam))
+        arc_len = sqrt((smallest ** 2) + (smallest ** 2)) - smallest
+        self.create_corner_arcs(smallest, arc_len)
+        if smallest == x_size:
+            self.create_rectangle_and_arcs(x_size, y_size - x_size, x_size / 2, (y_size - x_size) / 2)
+        else:
+            self.create_rectangle_and_arcs(x_size - y_size, y_size, y_size / 2, (x_size - y_size) / 2)
 
-        # Create two CF symmetrical arcs
-        for sign in (-1, 1):
-            arc_center = (center_x * sign, center_y * sign) if orientation == "horizontal" else (
-            center_x * sign, center_y)
-            self.common_form.append(
-                CFSymmetricalArcTrace(*arc_center, arc_center[0] - sagitta, arc_center[1], arc_center[0] + sagitta,
-                                      arc_center[1], sagitta))
+    def create_rectangle_and_arcs(self, rect_x, rect_y, sagitta, dist_center):
+        self.rectangle_to_cf(0, 0, rect_x, rect_y)
+        self.common_form.append(
+            CFSymmetricalArcTrace(0, dist_center, -sagitta, dist_center, sagitta, dist_center, sagitta))
+        self.common_form.append(
+            CFSymmetricalArcTrace(0, -dist_center, sagitta, -dist_center, -sagitta, -dist_center, sagitta))
 
-    def create_four_arcs(self, diameter, arc_len):
-        for cx, cy in [(-diameter, -diameter), (-diameter, diameter), (diameter, diameter), (diameter, -diameter)]:
-            self.common_form.append(
-                CFSymmetricalArcTrace(cx, cy, cx + (cx // abs(cx)) * diameter, cy, cx, cy + (cy // abs(cy)) * diameter,
-                                      arc_len))
+    def create_corner_arcs(self, size, arc_len):
+        corner_offsets = [(-size, -size), (-size, size), (size, size), (size, -size)]
+        for offset_x, offset_y in corner_offsets:
+            s_x, s_y = offset_x, 0 if offset_y else -size
+            e_x, e_y = 0 if offset_x else -size, offset_y
+            self.common_form.append(CFSymmetricalArcTrace(offset_x, offset_y, s_x, s_y, e_x, e_y, arc_len))
 
-    def create_polygons_for_complex(self, x_size, y_size, inside_hole_diam, offset_axis="y"):
-        center_offset = ((max(x_size, y_size) / 2) - (min(x_size, y_size) - 2)) / 2 + (min(x_size, y_size) / 2)
-        for sign in (-1, 1):
-            if offset_axis == "y":
-                self.rectangle_to_cf(0, center_offset * sign, x_size, y_size)
-            else:
-                self.rectangle_to_cf(center_offset * sign, 0, x_size, y_size)
-
-    # Above code was simplified from below code I wrote. Hopefully it works
     '''
     def to_common_form(self, x_size, y_size, inside_hole_diam):
         if inside_hole_diam:
@@ -222,11 +205,34 @@ class ObroundAperture(ApertureParent):
                 self.common_form.append(new_common_form)
 
                 # Create two Polygons
-                # Poly1
-                center_y = (((y_size/2)-(x_size-2))/2) + (x_size/2)
+                polygon_x_size = x_size
+                polygon_y_size = y_size/2 - x_size
+                center_y = (polygon_y_size/2) + (x_size/2)
                 center_x = 0
-                self.rectangle_to_cf(center_x, center_y, x_size, y_size)
-                self.rectangle_to_cf(center_x, -center_y, x_size, y_size)
+                self.rectangle_to_cf(center_x, center_y, polygon_x_size, polygon_y_size)
+                self.rectangle_to_cf(center_x, -center_y, polygon_x_size, polygon_y_size)
+
+                # Create two arcs
+                distance_to_arc_center = (y_size/2) - (x_size/2)
+                # ARC1
+                c_x = 0
+                c_y = 0 + distance_to_arc_center
+                s_x = 0 - (x_size/2)
+                s_y = 0 + distance_to_arc_center
+                e_x = 0 + (x_size/2)
+                e_y = 0 + distance_to_arc_center
+                new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, (x_size/2))
+                self.common_form.append(new_common_form)
+                # ARC2
+                c_x = 0
+                c_y = 0 - distance_to_arc_center
+                s_x = 0 + (x_size / 2)
+                s_y = 0 - distance_to_arc_center
+                e_x = 0 - (x_size / 2)
+                e_y = 0 - distance_to_arc_center
+                new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, (x_size / 2))
+                self.common_form.append(new_common_form)
+
 
             else:
                 # Create CF circle
@@ -275,10 +281,31 @@ class ObroundAperture(ApertureParent):
                 self.common_form.append(new_common_form)
 
                 # Create two Polygons
-                # Poly1
+                polygon_x_size = x_size / 2 - y_size
+                polygon_y_size = y_size
                 center_y = 0
-                center_x = (((x_size / 2) - (y_size - 2)) / 2) + (y_size / 2)
-                self.rectangle_to_cf(-center_x, center_y, x_size, y_size)
-                self.rectangle_to_cf(center_x, center_y, x_size, y_size)
+                center_x = (polygon_x_size / 2) + (y_size / 2)
+                self.rectangle_to_cf(-center_x, center_y, polygon_x_size, polygon_y_size)
+                self.rectangle_to_cf(center_x, center_y, polygon_x_size, polygon_y_size)
 
-    '''
+                # Create two arcs
+                distance_to_arc_center = (x_size / 2) - (y_size / 2)
+                # ARC1
+                c_x = 0 - distance_to_arc_center
+                c_y = 0
+                s_x = 0 - distance_to_arc_center
+                s_y = 0 - (y_size / 2)
+                e_x = 0 - distance_to_arc_center
+                e_y = 0 + (y_size / 2)
+                new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, (y_size / 2))
+                self.common_form.append(new_common_form)
+                # ARC2
+                c_x = 0 + distance_to_arc_center
+                c_y = 0
+                s_x = 0 + distance_to_arc_center
+                s_y = 0 + (y_size / 2)
+                e_x = 0 + distance_to_arc_center
+                e_y = 0 - (y_size / 2)
+                new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, (y_size / 2))
+                self.common_form.append(new_common_form)
+        '''
