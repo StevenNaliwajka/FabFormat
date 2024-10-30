@@ -1,8 +1,6 @@
 import math
 
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.curves.cf_arc_trace import CFArcTrace
-
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.curves.cf_symmetrical_arc import \
+from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.curves.cf_symmetrical_arc_trace import \
     CFSymmetricalArcTrace
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.ApertureMacroTypes.ap_macro_parent import \
     APMacroParent

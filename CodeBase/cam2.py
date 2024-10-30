@@ -55,6 +55,7 @@ if __name__ == "__main__":
     infile_directory_path = sys.argv[1]
     outfile_directory_path = sys.argv[2]
 
+    ## CONVERT CONFIG FILE TO USE .JSON FORMAT
     # Create new config object for global slicer settings.
     config = Config(infile_directory_path, outfile_directory_path)
 
