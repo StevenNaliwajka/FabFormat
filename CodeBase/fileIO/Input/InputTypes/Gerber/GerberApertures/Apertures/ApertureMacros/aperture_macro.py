@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.support_methods import check_for_cf_intersection, handle_additive_intersection, \
+from CodeBase.fileIO.CommonFormat.SupportMethods.support_methods import check_for_cf_intersection, handle_additive_intersection, \
     subtract_shape_from_shape
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.ApertureMacroTypes.center_ap_macro import \
     CenterAPMacro

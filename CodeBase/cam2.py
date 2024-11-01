@@ -44,7 +44,7 @@
 # FOR NOW.. 100% INFIL. NOT MY PROBLEM TO BE CONSERVITAVE WITH NON CONDUCTIVE FILLAMENT TILL IT WORKS.
 import sys
 
-from CodeBase.fileIO.CommonFormat.common_form import CommonForm
+from CodeBase.fileIO.CommonFormat.CFLayer.common_form import CommonForm
 from CodeBase.fileIO.Input.input_manager import read_infiles, convert_infiles_to_common_form
 
 from CodeBase.fileIO.Output.output_manager import output_manager
