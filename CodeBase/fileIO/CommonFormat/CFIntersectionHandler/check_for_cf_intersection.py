@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFIntersectionHandler.support.test_intersection import *
+from CodeBase.fileIO.CommonFormat.CFIntersectionHandler.intersection_operations.test_intersection import *
 
 
 def check_for_cf_intersection(list_of_cf, new_cf, pos_in_list):
@@ -45,16 +45,5 @@ def check_for_cf_intersection(list_of_cf, new_cf, pos_in_list):
         # Gets unique intersection switcher
         intersection_method_id = new_cf_prime * existing_cf_prime
         # Runs the intersection method, returns a new corrected CF list if there was an intersection
-        old_cf = existing_cf
         result_method = intersection_method_switcher.get(intersection_method_id)
-        result = result_method(old_cf, new_cf)
-
-        if result is not None:
-            # Remove old CF value.
-            list_of_cf.pop(index)
-            list_of_cf.extend(result)
-            ## DECIDE HOW TO HANDLE WHETHER TO REPLCE OLD_CF OR NEW_CF OR BOTH.
-            # Recursive. Runs till all intersections are handled.
-            check_for_cf_intersection(result, new_cf, index)
-
-    return None
+        result_method(list_of_cf, new_cf, index)
