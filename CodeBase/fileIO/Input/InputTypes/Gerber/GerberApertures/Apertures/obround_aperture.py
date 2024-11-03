@@ -1,6 +1,5 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_polygon_trace import CFPolygonTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.curves.cf_circle_trace import CFCircleTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.curves.cf_symmetrical_arc_trace import \
+from CodeBase.fileIO.CommonFormat.CFTraces.curves.cf_circle_trace import CFCircleTrace
+from CodeBase.fileIO.CommonFormat.CFTraces.curves.cf_symmetrical_arc_trace import \
     CFSymmetricalArcTrace
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.aperture_parent import ApertureParent
 from math import sqrt

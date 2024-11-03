@@ -1,11 +1,9 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_linear_trace import CFLinearTrace
-
-
-class AdditiveLayer:
+class LayerParent:
     def __init__(self, layer_number):
         # EXISTS TO STORE DATA FOR TRACES OR DETAILS.
         # MAKE SEPERATE OBJ FOR TRACES + DETAILS.
         self.layer_number = layer_number
+        self.layer_type = None
 
         # STORES TRACE INFO
         self.linear_trace_list = []

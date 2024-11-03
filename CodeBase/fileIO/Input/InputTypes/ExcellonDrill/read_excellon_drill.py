@@ -17,8 +17,6 @@ class ReadExcellonDrill(InputParent):
         self.readfile(filepath)
         self.common_form = common_form
 
-        self.common_form = SubtractiveCF()
-
         self.current_drill = "T1"  # DEFAULT T1
 
     def parse_into_cf(self):

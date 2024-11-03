@@ -1,5 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.cf_complex_parent import CFComplexParent
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.cf_trace_parent import CFTraceParent
+from CodeBase.fileIO.CommonFormat.CFTraces.cf_complex_parent import CFComplexParent
 
 
 class CFSymmetricalArcTrace(CFComplexParent):

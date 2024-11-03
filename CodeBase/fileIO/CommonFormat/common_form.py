@@ -1,8 +1,8 @@
 from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.curves.cf_arc_trace import CFArcTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.curves.cf_circle_trace import CFCircleTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_linear_trace import CFLinearTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_polygon_trace import CFPolygonTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.additive_layer import AdditiveLayer
+from CodeBase.fileIO.CommonFormat.CFTraces.curves.cf_circle_trace import CFCircleTrace
+from CodeBase.fileIO.CommonFormat.CFTraces.cf_linear_trace import CFLinearTrace
+from CodeBase.fileIO.CommonFormat.CFTraces.cf_polygon_trace import CFPolygonTrace
+from CodeBase.fileIO.CommonFormat.CFLayer.LayerTypes.MaterialLayer.additive_layer import AdditiveLayer
 
 
 class CommonForm:
@@ -30,24 +30,24 @@ class CommonForm:
         # [0], Defiles info for tool 1, Area
         self.holes_toolinfo = []
 
-    def add_arc(self, layer, type_of_layer, size_of_line, start_x_y, end_x_y, radius):
+    def add_arc(self, layer, type_of_layer, c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off):
         # Creates new CF ARC obj, adds it to the correct list + layer
-        new_trace = CFArcTrace(size_of_line, start_x_y, end_x_y, radius)
+        new_trace = CFArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off)
         self.add_trace_to_type(layer, type_of_layer, new_trace)
 
-    def add_circle(self, layer, type_of_layer, size_of_line, radius, center_x_y, infill, omitted_hole=None):
+    def add_circle(self, layer, type_of_layer, center_x, center_y, radius, inner_radius=None):
         # Creates new CF CIRCLE obj, adds it to the correct list + layer
-        new_trace = CFCircleTrace(size_of_line, radius, center_x_y, infill, omitted_hole)
+        new_trace = CFCircleTrace(center_x, center_y, radius, inner_radius)
         self.add_trace_to_type(layer, type_of_layer, new_trace)
 
-    def add_linear(self, layer, type_of_layer, size_of_line, start_x_y, end_x_y):
+    def add_linear(self, layer, type_of_layer, start_x, start_y, end_x, end_y, size_of_line):
         # Creates new CF LINEAR obj, adds it to the correct list + layer
-        new_trace = CFLinearTrace(size_of_line, start_x_y, end_x_y)
+        new_trace = CFLinearTrace(start_x, start_y, end_x, end_y, size_of_line)
         self.add_trace_to_type(layer, type_of_layer, new_trace)
 
-    def add_polygon(self, layer, type_of_layer, point_list, infill=0, omitted_hole=None):
+    def add_polygon(self, layer, type_of_layer, point_list):
         # Creates new CF POLYGON obj, adds it to the correct list + layer
-        new_trace = CFPolygonTrace(point_list, infill, omitted_hole)
+        new_trace = CFPolygonTrace(point_list)
         self.add_trace_to_type(layer, type_of_layer, new_trace)
 
     def add_trace_to_type(self, layer, type_of_layer, trace_object):

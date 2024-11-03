@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.cf_complex_parent import CFComplexParent
+from CodeBase.fileIO.CommonFormat.CFTraces.cf_complex_parent import CFComplexParent
 
 
 class CFCircleTrace(CFComplexParent):

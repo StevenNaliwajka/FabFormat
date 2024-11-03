@@ -44,7 +44,7 @@
 # FOR NOW.. 100% INFIL. NOT MY PROBLEM TO BE CONSERVITAVE WITH NON CONDUCTIVE FILLAMENT TILL IT WORKS.
 import sys
 
-from CodeBase.fileIO.CommonFormat.CFLayer.common_form import CommonForm
+from CodeBase.fileIO.CommonFormat.common_form import CommonForm
 from CodeBase.fileIO.Input.input_manager import read_infiles, convert_infiles_to_common_form
 
 from CodeBase.fileIO.Output.output_manager import output_manager
@@ -68,6 +68,13 @@ if __name__ == "__main__":
     # Converts infiles in list to Common Form
     convert_infiles_to_common_form(input_file_obj_list, config)
 
+    # Handle subtractive cf traces
+    xxx
+
+    # if outfile requires no-overlap traces
+    # handle overlaping additive cf traces
+    xxx
+
     print("CREATING OUTFILE")
     # Create new Output object
     outfile = output_manager(config.outfile_type)
@@ -77,6 +84,7 @@ if __name__ == "__main__":
         print("STARTING GUI")
         # GUI = Gui(CONFIG)
         pass
+        ## GUI NOT SUPPORTED YET
     else:
         print("STARTING HEADLESS")
         outfile.write_headless(input_file_obj_list=input_file_obj_list, config=config)

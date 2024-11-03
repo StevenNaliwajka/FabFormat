@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_polygon_trace import CFPolygonTrace
+from CodeBase.fileIO.CommonFormat.CFTraces.cf_polygon_trace import CFPolygonTrace
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.ApertureMacroTypes.ap_macro_parent import \
     APMacroParent
 

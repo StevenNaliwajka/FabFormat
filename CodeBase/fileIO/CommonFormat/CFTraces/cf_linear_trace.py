@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.cf_trace_parent import CFTraceParent
+from CodeBase.fileIO.CommonFormat.CFTraces.cf_trace_parent import CFTraceParent
 
 
 class CFLinearTrace(CFTraceParent):

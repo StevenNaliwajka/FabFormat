@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.cf_polygon_trace import CFPolygonTrace
+from CodeBase.fileIO.CommonFormat.CFTraces.cf_polygon_trace import CFPolygonTrace
 
 
 class ApertureParent:
