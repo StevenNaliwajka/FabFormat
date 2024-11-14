@@ -25,8 +25,10 @@ class Config:
         # Generates path of INFILE CONFIG
         infile_config_path = os.path.join(self._infileDirectoryPath, "config.txt")
 
+
         # Generates  path of OutputFile
         self.output_path = os.path.join(self._outfileDirectoryPath)
+
 
         #Gets date for GUI
         self._date = date.today()

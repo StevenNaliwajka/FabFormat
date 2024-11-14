@@ -73,7 +73,7 @@ class PolygonAperture(ApertureParent):
                 # Create polygon
                 polygon_x = x_size - y_size
                 polygon_y = y_size
-                self.rectangle_to_cf(0,0 polygon_x, polygon_y)
+                self.rectangle_to_cf(0,0, polygon_x, polygon_y)
                 # Create two CF symarcs
                 # ARC 1
                 c_x = -distance_to_center_arc_from_center

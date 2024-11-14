@@ -1,6 +1,5 @@
 import re
 
-from CodeBase.fileIO.CommonFormat.CFLayer.subtractive_cf import SubtractiveCF
 from CodeBase.fileIO.Input.InputTypes.input_parent import InputParent
 
 
@@ -85,7 +84,7 @@ class ReadExcellonDrill(InputParent):
         y_real = self.interpret_number_format(y_raw)
 
         # Updates the common form object.
-        self.common_form.make_hole(drill_num,x_real,y_real)
+        self.common_form.make_hole(drill_num, x_real, y_real)
 
     def update_units(self, unit):
         # Updates Units and also checks for TZ/LZ
@@ -105,7 +104,7 @@ class ReadExcellonDrill(InputParent):
         # Removes the "T#C", gets only the diameter
         tool_diameter = self.file_by_line_list[self.line][3:]
 
-        self.common_form.new_tool(tool_number,tool_diameter)
+        self.common_form.new_tool(tool_number, tool_diameter)
 
     def toggle_run(self):
         self.run = 0

@@ -24,16 +24,18 @@ def convert_infiles_to_common_form(input_file_obj_list, config):
             infile.path = infile.parse_into_cf()
         except TypeError:
             infile.path = infile.parse_into_cf(config)
+            '''
         except AttributeError:
             print(
                 f"File type \".{infile.extension}\" not supported: See \"in_out_manager.py\" for supported file types.")
             exit()
+            '''
 
 
 def input_manager(infile_path, common_form):
     # in_switcher is a list of the supported file extension types.
     in_switcher = {
-        "dxf": ReadDxf(infile_path, common_form),
+        "dxf": ReadDxf(infile_path),
         "cmp": ReadGerber(infile_path, common_form),  # Single files. Used for only copper trace
         "sol": ReadGerber(infile_path, common_form),
         "otl": ReadGerber(infile_path, common_form),

@@ -1,8 +1,9 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.Additive.AdditiveTrace.Trace.curves.cf_arc_trace import CFArcTrace
+
 from CodeBase.fileIO.CommonFormat.CFTraces.curves.cf_circle_trace import CFCircleTrace
 from CodeBase.fileIO.CommonFormat.CFTraces.cf_linear_trace import CFLinearTrace
 from CodeBase.fileIO.CommonFormat.CFTraces.cf_polygon_trace import CFPolygonTrace
 from CodeBase.fileIO.CommonFormat.CFLayer.LayerTypes.MaterialLayer.additive_layer import AdditiveLayer
+from CodeBase.fileIO.CommonFormat.CFTraces.curves.cf_symmetrical_arc_trace import CFSymmetricalArcTrace
 
 
 class CommonForm:
@@ -32,7 +33,8 @@ class CommonForm:
 
     def add_arc(self, layer, type_of_layer, c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off):
         # Creates new CF ARC obj, adds it to the correct list + layer
-        new_trace = CFArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off)
+        print(f"(CommonForm): Adding Symmetrical arc to layer: \"{layer}\", type: \"{type_of_layer}\".'.")
+        new_trace = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off)
         self.add_trace_to_type(layer, type_of_layer, new_trace)
 
     def add_circle(self, layer, type_of_layer, center_x, center_y, radius, inner_radius=None):

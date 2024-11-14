@@ -40,12 +40,12 @@ class OutputParent(UniversalParent):
         # No clue what this does...
         self.A = 1
 
-    def write_gui(self, input_file_obj_list, CONFIG:Config):
+    def write_gui(self,  *args, **kwargs):
         # IMPLEMENTED by the write_xxxx.py file
         # Called IF CONFIG.gui_state == true
         pass
 
-    def write_headless(self, input_file_obj_list, GUI: Gui):
+    def write_headless(self, *args, **kwargs):
         # IMPLEMENTED by the write_xxxx.py file
         # Called if CONFIG.gui_state != true
         pass

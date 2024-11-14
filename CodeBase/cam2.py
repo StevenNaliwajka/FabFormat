@@ -87,4 +87,4 @@ if __name__ == "__main__":
         ## GUI NOT SUPPORTED YET
     else:
         print("STARTING HEADLESS")
-        outfile.write_headless(input_file_obj_list=input_file_obj_list, config=config)
+        outfile.write_headless(input_file_obj_list=input_file_obj_list, config=config, common_form=common_form)
