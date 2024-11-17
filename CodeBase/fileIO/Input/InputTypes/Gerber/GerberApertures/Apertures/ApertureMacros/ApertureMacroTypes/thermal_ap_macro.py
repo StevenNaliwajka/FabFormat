@@ -1,7 +1,6 @@
 import math
 
-from CodeBase.fileIO.CommonFormat.CFTraces.curves.cf_symmetrical_arc_trace import \
-    CFSymmetricalArcTrace
+from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_symmetrical_arc_trace import CFSymmetricalArcTrace
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.ApertureMacroTypes.ap_macro_parent import \
     APMacroParent
 from math import sqrt

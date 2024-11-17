@@ -24,6 +24,7 @@ class WriteGcode(OutputParent):
         # plot the conductive traces first. on T0
         # Then plot the non-conductive trace. on T1
         # For now ignore detail traces.
+        # Chat we are cooked.
         self.config = config
         self.out_file_path = os.path.join(self.config.output_path, self.config.outfile_name, ".gcode")
 

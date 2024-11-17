@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFIntersectionHandler.intersection_operations.test_intersection import *
+from CodeBase.fileIO.CommonFormat.CFLayer.CFIntersectionHandler.intersection_operations.test_intersection import *
 
 
 def check_for_cf_intersection(list_of_cf, new_cf, pos_in_list):

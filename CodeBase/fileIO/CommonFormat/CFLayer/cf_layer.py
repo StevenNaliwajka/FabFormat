@@ -1,0 +1,40 @@
+class CFTraceLayer:
+    def __init__(self, layer_number):
+        # Stores CF data for A layer
+        self.layer_numer = layer_number
+
+        # primary_traces tend to be the unique material or goal.
+        # Conductive Filament traces or the cut line for a CNC machine are examples.
+        self.primary_traces = []
+
+        # Subtractive_traces contain the traces that make up through_holes.
+        self.subtractive_traces = []
+
+        # Detail_Traces contain labels, names, numbers.
+        # a 3rd color that will not typically show up in 3D Printing.
+        # mainly shows in .jpg
+        self.annotation_traces = []
+
+        # Outline_Traces define the outer and inner edge of the creation.
+        # Only Polylines/Circles allowed.
+        self.outline_traces = []
+
+        # Innert_Traces Define the innert part of the creation.
+        # Tends to only be used in additive manufacturing to define a 2nd innert material.
+        self.core_traces = []
+
+        # SEE FLOW CHART FOR HOW CF WORKS
+
+    def add_trace_to_layer(self, trace_type, trace):
+        if trace_type.lower() in {"p", "primary", "primary_trace"}:
+            self.primary_traces.append(trace)
+        elif trace_type.lower() in {"s", "subtractive", "subtractive_trace"}:
+            self.subtractive_traces.append(trace)
+        elif trace_type.lower() in {"a", "annotation", "annotation_trace"}:
+            self.annotation_traces.append(trace)
+        elif trace_type.lower() in {"o", "outline", "outline_trace"}:
+            self.outline_traces.append(trace)
+        elif trace_type.lower() in {"c", "core", "core_trace"}:
+            self.core_traces.append(trace)
+        else:
+            raise ValueError(f"ADDITIVE LAYER: Invalid Trace type \"{trace_type}\".")

@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFTraces.cf_complex_parent import CFComplexParent
+from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_complex_parent import CFComplexParent
 
 
 class CFPolygonTrace(CFComplexParent):
