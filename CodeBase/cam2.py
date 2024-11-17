@@ -51,7 +51,8 @@ from CodeBase.fileIO.Output.output_manager import output_manager
 from CodeBase.config.config import Config
 
 if __name__ == "__main__":
-    print(f"DIY Slicer {chr(3486)}")
+    print("FabFormat")
+    print("Created by Steven Naliwajka")
     infile_directory_path = sys.argv[1]
     outfile_directory_path = sys.argv[2]
 

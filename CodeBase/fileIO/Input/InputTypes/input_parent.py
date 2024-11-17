@@ -86,7 +86,7 @@ class InputParent(UniversalParent):
         # Typically used for handling comments in files.
         pass
 
-    def interpret_number_format(self, number):
+    def interpret_number_format(self, number, x_or_y):
         # Takes in an Int. Converts it to a modified float with
         # _number_format
         # and
@@ -94,8 +94,12 @@ class InputParent(UniversalParent):
         # In mind
         if not isinstance(number, int):
             raise ValueError("The number must be an int.")
-
-        before_decimal, after_decimal = map(int, self._number_format.split(':'))
+        before_decimal = None
+        after_decimal = None
+        if x_or_y == "x":
+            before_decimal, after_decimal = map(int, self._x_number_format.split(':'))
+        elif x_or_y == "y":
+            before_decimal, after_decimal = map(int, self._y_number_format.split(':'))
         number_str = str(number)
 
         # TRIM ZEROS.

@@ -1,0 +1,33 @@
+{
+    "gui_state": "F",
+    "input_files": {
+        "gerber": [
+            {
+                "file_name_here.gbl": "additive",
+                "file_name_here.gbr": "subtractive"
+            }
+        ],
+        "dxf": [
+            {
+                "file_name_here.dxf": "additive",
+                "file_name_here.dxf": "subtractive"
+            }
+        ],
+        "excellon_drill": [
+            {
+                "file_name_here.xln":  [
+                    {
+                        "d1": ["via","1-2"],
+                        "d2": ["through_hole","1-2"]
+                    }
+                ],
+                "file_name_here.xln":  [
+                    {
+                        "d1": ["via","1-2"],
+                        "d2": ["through_hole","1-2"]
+                    }
+                ]
+            }
+        ]
+    }
+}

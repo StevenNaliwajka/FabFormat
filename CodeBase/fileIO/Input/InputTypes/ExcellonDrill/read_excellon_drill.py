@@ -1,5 +1,6 @@
 import re
 
+from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_circle_trace import CFCircleTrace
 from CodeBase.fileIO.Input.InputTypes.input_parent import InputParent
 
 
@@ -20,6 +21,10 @@ class ReadExcellonDrill(InputParent):
         self.current_drill = "T1"  # DEFAULT T1
 
         self.number_format = None
+
+        # NEED TO POPULATE FROM CONFIG OR SMART FROM GERBER NEARBY...
+        self.drill_additive_or_subtractive = []
+        self.drill_layers = []
 
         self.drill_tool_diameter = []
         self.holes = {}
@@ -86,13 +91,21 @@ class ReadExcellonDrill(InputParent):
         x_raw = int(match.group(1))
         y_raw = int(match.group(2))
         # cleans x_raw and y_raw with formating settings.
-        x_real = self.interpret_number_format(x_raw)
-        y_real = self.interpret_number_format(y_raw)
+        x_real = self.interpret_number_format(x_raw, "x")
+        y_real = self.interpret_number_format(y_raw, "y")
 
-        if drill_num not in self.holes:
-            self.holes[drill_num] = []
+        drill_radius = self.drill_tool_diameter[drill_num-1] / 2
 
-        self.holes[drill_num].append([x_real, y_real])
+        min_layer, max_layer = self.drill_layers[drill_num-1].split("-")
+        # For range of drill
+        for layer in range(min_layer, max_layer + 1):
+            # if an additive
+            if self.drill_additive_or_subtractive[layer - 1] == "additive":
+                # add new additive trace to layer
+                self.common_form.add_circle(layer, "primary", x_real, y_real, drill_radius)
+            # else add subtractive trace to layer
+            else:
+                self.common_form.add_circle(layer, "subtractive", x_real, y_real, drill_radius)
 
     def update_units(self, unit):
         # Updates Units and also checks for TZ/LZ
