@@ -105,6 +105,7 @@ class ReadExcellonDrill(InputParent):
                 self.common_form.add_circle(layer, "primary", x_real, y_real, drill_radius)
             # else add subtractive trace to layer
             else:
+
                 self.common_form.add_circle(layer, "subtractive", x_real, y_real, drill_radius)
 
     def update_units(self, unit):

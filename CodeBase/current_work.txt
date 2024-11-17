@@ -1,8 +1,16 @@
-1. polygon aperture -> cf
-2. Rectangle Aperture -> cf
-3. CF intersection detection
-4. Removing additive + subtractive CF overlap
-5. CF -> GCode.
-6. Read in config from txt.
-7. Verify Correct Units are being pulled and converted if have to be.
-8. Gcode config File
+- polygon aperture -> cf
+- Rectangle Aperture -> cf
+- CF intersection detection
+- Removing additive + subtractive CF overlap
+- CF -> GCode.
+- Read in config from txt.
+- Verify Correct Units are being pulled and converted if have to be.
+- Gcode config File
+- Verify that gerber traces are being created in the correct position and not at 0,0.
+- Verify that Excellon traces are read after all 'additive instructions' check for overlap with existing primary trace.
+
+- Finish logic on vias.
+    - Verify the logic between subtractive and exclusive subtractive traces in CF
+    - IF EXCLUSIVE SUBTRACTIVE TRACES INTERSECT WITH A PRIMARY TRACE, CONSIDERED A VIA. CARRIED BETWEEN LEVELS.
+
+- Verify that CF is general enough to work in an additive and subtractive setting.

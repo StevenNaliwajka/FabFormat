@@ -16,7 +16,7 @@ class CommonForm:
         # etc...
         self.layer_list = []
 
-    def add_arc(self, layer_num, type_of_trace, c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off):
+    def add_sym_arc(self, layer_num, type_of_trace, c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off):
         # Creates new CF ARC obj, adds it to the correct list + layer
         #print(f"(CommonForm): Adding Symmetrical arc to layer: \"{layer_num}\", type: \"{type_of_trace}\".'.")
         new_trace = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off)

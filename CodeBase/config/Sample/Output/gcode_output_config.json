@@ -1,5 +1,5 @@
 {
     "output_file_directory": "C://User//Here",
     "output_file_name": "file_name_here",
-
+    "units": "mm/inches"
 }
