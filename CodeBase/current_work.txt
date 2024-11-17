@@ -1,0 +1,8 @@
+1. polygon aperture -> cf
+2. Rectangle Aperture -> cf
+3. CF intersection detection
+4. Removing additive + subtractive CF overlap
+5. CF -> GCode.
+6. Read in config from txt.
+7. Verify Correct Units are being pulled and converted if have to be.
+8. Gcode config File
