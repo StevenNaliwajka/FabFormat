@@ -17,14 +17,14 @@
             {
                 "file_name_here.xln":  [
                     {
-                        "d1": ["via","1-2"],
-                        "d2": ["through_hole","1-2"]
+                        "d1": ["exclusive","1-2"],
+                        "d2": ["exclusive","1-2"]
                     }
                 ],
                 "file_name_here.xln":  [
                     {
-                        "d1": ["via","1-2"],
-                        "d2": ["through_hole","1-2"]
+                        "d1": ["subtractive","1-2"],
+                        "d2": ["exclusive","1-2"]
                     }
                 ]
             }

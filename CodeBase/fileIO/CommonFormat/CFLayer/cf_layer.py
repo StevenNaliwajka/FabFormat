@@ -13,7 +13,7 @@ class CFTraceLayer:
         # Exclusive Subtractive Traces only prevent core_traces from being created in an additive setting.
         # In subtractive setting they are lumped in with primary traces
         # IF EXCLUSIVE SUBTRACTIVE TRACES INTERSECT WITH A PRIMARY TRACE, CONSIDERED A VIA. CARRIED BETWEEN LEVELS.
-        self.exclusive_subtractive_traces = []
+        self.exclusive_traces = []
 
         # Detail_Traces contain labels, names, numbers.
         # a 3rd color that will not typically show up in 3D Printing.
@@ -41,7 +41,7 @@ class CFTraceLayer:
             self.outline_traces.append(trace)
         elif trace_type.lower() in {"c", "core", "core_trace"}:
             self.core_traces.append(trace)
-        elif trace_type.lower() in {"e", "exclusive", "exclusive_subtractive_trace"}:
-            self.exclusive_subtractive_traces.append(trace)
+        elif trace_type.lower() in {"e", "exclusive", "exclusive_trace"}:
+            self.exclusive_traces.append(trace)
         else:
             raise ValueError(f"ADDITIVE LAYER: Invalid Trace type \"{trace_type}\".")

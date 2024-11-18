@@ -35,6 +35,7 @@ class ReadGerber(InputParent):
         self._current_infill = 0  # FLAG. set 1 if infil of polygon/circle. 0 if empty.
         self._current_tool = None  # "D10" and higher. Used when loading lines into CF. Updated by "D#" Command.
         self._current_line_type = 1  # 1 = "G01":LINEAR, 2 = "G02":Clockwise, 3 = "G03":CounterClockwise.
+        # UNIT IS OUT THERE, 0 - METRIC, 1 - INCH
 
     def parse_into_cf(self, CONFIG: Config):
         # NEW GERBER PARSER. INPUTS TRACES BY LINE INTO common_form object

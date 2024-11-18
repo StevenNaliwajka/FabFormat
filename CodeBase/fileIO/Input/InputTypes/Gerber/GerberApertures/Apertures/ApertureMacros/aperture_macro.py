@@ -15,7 +15,7 @@ from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.aperture_parent imp
 
 
 class ApertureMacro(ApertureParent):
-    def __init__(self, ap_type):
+    def __init__(self, ap_type, unit):
         super().__init__()
         # A custom Aperture Macro, In the same category as the standard circle, obround, polygon
         # and rectangle. The issue is that has multiple types subshapes associated with it. But those types
@@ -27,6 +27,7 @@ class ApertureMacro(ApertureParent):
         # Meat: All aperture instructions. Should be read left to right due to the fact of overwriting.
         self.aperture_instructions_list = []
         self.common_form_instructions_list = []
+        self.unit = unit
 
     def assign_aperture_number(self, ap_number):
         # when aperture is created, no number

@@ -1,10 +1,14 @@
+import math
+
+from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_polygon_trace import CFPolygonTrace
 from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_circle_trace import CFCircleTrace
+from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_symmetrical_arc_trace import CFSymmetricalArcTrace
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.aperture_parent import ApertureParent
 from math import sqrt
 
 
 class PolygonAperture(ApertureParent):
-    def __init__(self, ap_number, outer_diameter, num_vertices, rotation, inside_hole_diam=None):
+    def __init__(self, ap_number, center_x, center_y, outer_diameter, num_vertices, rotation, unit, inside_hole_diam=None):
         # See Page 55:
         # https://www.ucamco.com/files/downloads/file_en/456/gerber-layer-format-specification-revision-2023-08_en.pdf
 
@@ -14,170 +18,120 @@ class PolygonAperture(ApertureParent):
         super().__init__()
         self.aperture_type = "c"
         self.aperture_number = ap_number
+        self.center_x = center_x
+        self.center_y = center_y
         self.outer_diameter = outer_diameter
+        if num_vertices < 3 or num_vertices > 12:
+            raise ValueError(f"PolygonAperture: Num_Vertices are incorrect, {num_vertices} is an unacceptable number.")
         self.num_vertices = num_vertices
         self.rotation = rotation
         self.inner_hole_diameter = inside_hole_diam
+        self.unit = unit
 
-    def to_common_form(self, x_size, y_size, inside_hole_diam):
-        if inside_hole_diam:
-            self.complex_polygon_to_cf(x_size, y_size, inside_hole_diam)
+        self.degree_per_vertice = 360 / num_vertices
+
+        self.to_common_form()
+
+    def to_common_form(self):
+        if self.inner_hole_diameter:
+            self.complex_polygon_to_cf()
         else:
-            self.polygon_to_cf(x_size, y_size)
+            self.polygon_to_cf()
 
-    def polygon_to_cf(self, x_size, y_size):
+    def polygon_to_cf(self):
+        # Creates One polygon
+        trace_list_polygon = []
+        x_pos = 0
+        y_pos = self.outer_diameter / 2
+        angle_deg = 0
+        # adds point zero
+        trace_list_polygon.append((x_pos, y_pos))
 
-        # Creates 2 CF arcs and 1 CF polygon.
-        # See picture referenced in constructor.
-        smallest = min(x_size, y_size)
-        if smallest == x_size:
-            # X IS SMALLEST
+        # Iterate through every point on polygon
+        counter = 1
+        while counter <= self.num_vertices:
+            # get angle degree
+            angle_deg = self.degree_per_vertice * counter
+            # conv to rad
+            angle_rad = math.radians(angle_deg)
 
+            # get sin and cosin value.
+            cosine_value = math.cos(angle_rad)
+            sine_value = math.sin(angle_rad)
+            # get real x and y value
+            x_pos = cosine_value * self.outer_diameter / 2
+            y_pos = sine_value * self.outer_diameter / 2
+            # add trace
+            trace_list_polygon.append((x_pos, y_pos))
+            counter += 1
+        self.common_form.append(CFPolygonTrace(trace_list_polygon))
 
-        elif smallest == y_size:
-            # Y IS SMALLEST
-            sagitta = y_size/2
-            distance_to_center_arc_from_center = (x_size / 2) - sagitta
-            # Create polygon
-            polygon_x = x_size - y_size
-            polygon_y = y_size
-            self.rectangle_to_cf(0,0, polygon_x, polygon_y)
-            # Create two CF symarcs
-            # ARC 1
-            c_x = -distance_to_center_arc_from_center
-            c_y = 0
-            s_x = c_x
-            s_y = c_y - sagitta
-            e_x = c_x
-            e_y = c_y + sagitta
-            new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, sagitta)
-            self.common_form.append(new_common_form)
-            # ARC 2
-            c_x = distance_to_center_arc_from_center
-            c_y = 0
-            s_x = c_x
-            s_y = c_y + sagitta
-            e_x = c_x
-            e_y = c_y - sagitta
-            new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, sagitta)
-            self.common_form.append(new_common_form)
+    def complex_polygon_to_cf(self):
+        # Creates 4 arcs, 2 polygons=
 
-    def complex_polygon_to_cf(self, x_size, y_size, inside_hole_diam):
+        # Determine smallest axis
+        smallest = self.inner_hole_diameter / 2
+        # Solve for arc length
+        arc_len = sqrt((smallest ** 2) + (smallest ** 2)) - smallest
 
-        # Creates 1 CF circle, 4 CF arcs and 2 CF polygons.
-        # See picture referenced in constructor.
+        corner_offsets = [
+            (-smallest, -smallest),
+            (-smallest, smallest),
+            (smallest, smallest),
+            (smallest, -smallest)
+        ]
 
-        # Create CF Circle
-        # Inner Diam from inside_hole_diam
-        # Inner Diam =  which ever is smallest (x_size or y_size)
+        for offset_x, offset_y in corner_offsets:
+            # Apply center offset to start and end points
+            s_x = self.center_x + (offset_x if offset_y == -smallest else 0)
+            s_y = self.center_y + (0 if offset_x == -smallest else offset_y)
+            e_x = self.center_x + (0 if offset_y == -smallest else offset_x)
+            e_y = self.center_y + (offset_y if offset_x == -smallest else 0)
 
-        smallest = min(x_size, y_size)
-        if smallest == x_size:
-            # Create CF circle
-            new_common_form = CFCircleTrace(0, 0, x_size, inside_hole_diam)
-            self.common_form.append(new_common_form)
+            # Append the arc trace, centered around (center_x, center_y)
+            self.common_form.append(
+                CFSymmetricalArcTrace(
+                    self.center_x + offset_x,  # Adjusted center offset
+                    self.center_y + offset_y,  # Adjusted center offset
+                    s_x,
+                    s_y,
+                    e_x,
+                    e_y,
+                    arc_len
+                )
+            )
 
-            # Create 4 CF arcs
-            rectangle_corner_len = sqrt((smallest^2) + (smallest^2))
-            arc_len = rectangle_corner_len - smallest
+        # Creates Two polygons
+        trace_list_polygon = []
+        trace_list_second_polygon = []
+        x_pos = 0
+        y_pos = self.outer_diameter / 2
+        angle_deg = 0
+        # adds point zero
+        trace_list_polygon.append((x_pos, y_pos))
 
+        halfway = self.degree_per_vertice // 2  # Integer division ensures it works for both even and odd numbers
 
-            #BL ARC
-            c_x = 0-smallest
-            c_y = 0-smallest
-            s_x = 0
-            s_y = 0-smallest
-            e_x = 0-smallest
-            e_y = 0
-            new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, arc_len)
-            self.common_form.append(new_common_form)
-            # TL ARC
-            c_x = 0 - smallest
-            c_y = 0 + smallest
-            s_x = 0 - smallest
-            s_y = 0
-            e_x = 0
-            e_y = 0 + smallest
-            new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, arc_len)
-            self.common_form.append(new_common_form)
-            # TR ARC
-            c_x = 0 + smallest
-            c_y = 0 + smallest
-            s_x = 0
-            s_y = 0 + smallest
-            e_x = 0 + smallest
-            e_y = 0
-            new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, arc_len)
-            self.common_form.append(new_common_form)
-            # BL ARC
-            c_x = 0 + smallest
-            c_y = 0 - smallest
-            s_x = 0 + smallest
-            s_y = 0
-            e_x = 0
-            e_y = 0 - smallest
-            new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, arc_len)
-            self.common_form.append(new_common_form)
+        # First half of outer points
+        for i in range(halfway):
+            # get angle degree
+            angle_deg = self.degree_per_vertice * i
+            # conv to rad
+            angle_rad = math.radians(angle_deg)
 
-            # Create two Polygons
-            polygon_x_size = x_size
-            polygon_y_size = y_size/2 - x_size
-            center_y = (polygon_y_size/2) + (x_size/2)
-            center_x = 0
-            self.rectangle_to_cf(center_x, center_y, polygon_x_size, polygon_y_size)
-            self.rectangle_to_cf(center_x, -center_y, polygon_x_size, polygon_y_size)
+            # get sin and cosin value.
+            cosine_value = math.cos(angle_rad)
+            sine_value = math.sin(angle_rad)
+            # get real x and y value
+            x_pos = cosine_value * self.outer_diameter / 2
+            y_pos = sine_value * self.outer_diameter / 2
+            # add trace
+            trace_list_polygon.append((x_pos, y_pos))
+        # Finish adding the first polygon's traces
+            ##############
 
-
-        else:
-            # Create CF circle
-            new_common_form = CFCircleTrace(0, 0, y_size, inside_hole_diam)
-            self.common_form.append(new_common_form)
-
-            # Create 4 CF arcs
-            rectangle_corner_len = sqrt((smallest ^ 2) + (smallest ^ 2))
-            arc_len = rectangle_corner_len - smallest
-
-            # BL ARC
-            c_x = 0 - smallest
-            c_y = 0 - smallest
-            s_x = 0
-            s_y = 0 - smallest
-            e_x = 0 - smallest
-            e_y = 0
-            new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, arc_len)
-            self.common_form.append(new_common_form)
-            # TL ARC
-            c_x = 0 - smallest
-            c_y = 0 + smallest
-            s_x = 0 - smallest
-            s_y = 0
-            e_x = 0
-            e_y = 0 + smallest
-            new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, arc_len)
-            self.common_form.append(new_common_form)
-            # TR ARC
-            c_x = 0 + smallest
-            c_y = 0 + smallest
-            s_x = 0
-            s_y = 0 + smallest
-            e_x = 0 + smallest
-            e_y = 0
-            new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, arc_len)
-            self.common_form.append(new_common_form)
-            # BL ARC
-            c_x = 0 + smallest
-            c_y = 0 - smallest
-            s_x = 0 + smallest
-            s_y = 0
-            e_x = 0
-            e_y = 0 - smallest
-            new_common_form = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, arc_len)
-            self.common_form.append(new_common_form)
-
-            # Create two Polygons
-            polygon_x_size = x_size / 2 - y_size
-            polygon_y_size = y_size
-            center_y = 0
-            center_x = (polygon_x_size / 2) + (y_size / 2)
-            self.rectangle_to_cf(-center_x, center_y, polygon_x_size, polygon_y_size)
-            self.rectangle_to_cf(center_x, center_y, polygon_x_size, polygon_y_size)
+        # Second half of outer points
+        for i in range(halfway, self.degree_per_vertice):
+            ######### navigate through the rest of the points
+        # Finish adding second polygon's traces
+            ###########
