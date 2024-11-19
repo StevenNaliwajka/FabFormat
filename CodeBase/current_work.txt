@@ -1,8 +1,12 @@
+- Finish re-working config.
+    - get read in config to work
+    - read in outfiles and excellon
+    - Handle the infiles and outfiles that are passed.
+    - rebuild the main method to build the files based on what the user provides. Not require the .ger or explicit..
+
 - Finish Gerber
-       - polygon aperture -> cf
        - Finish main GERBER switcher.
-- Verify Correct Units are being pulled and converted if have to be.
-    - Added 'unit' to all apertures and stuff. Maybe a problem. remember for then
+
 - Verify that Excellon traces are read after all 'additive instructions' check for overlap with existing primary trace.
 - Finish logic on vias.
     - Verify the logic between subtractive and exclusive subtractive traces in CF
@@ -21,3 +25,6 @@
     - Subtractive removes from additive and stops core
     - exclusive stops core but does not remove from additive.
     - core backfills from empty space within outline and not additive, subtractive, exclusive.
+
+- Verify Correct Units are being pulled and converted if have to be.
+    - When CF is then converted to output. CHECK that each outfile is the same unit as each CF trace.

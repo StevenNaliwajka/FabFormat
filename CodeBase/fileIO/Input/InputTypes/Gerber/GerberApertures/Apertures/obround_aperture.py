@@ -12,12 +12,11 @@ class ObroundAperture(ApertureParent):
         # For Reference on Gerber to Common Form Conversion see picture here:
         # .../Gerber/GerberApertures/Apertures/Photos_Gerber2CF/Obround.png
 
-        super().__init__()
+        super().__init__(unit)
         self.aperture_type = "o"
         self.aperture_number = ap_number
         self.center_x = center_x
         self.center_y = center_y
-        self.unit = unit
 
         # To common form.
         self.to_common_form(x_size, y_size, inside_hole_diam)

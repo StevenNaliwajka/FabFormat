@@ -4,13 +4,13 @@ from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureM
 
 
 class OutlineAPMacro(APMacroParent):
-    def __init__(self, exposure, num_vertices, point_list, rotation=0):
+    def __init__(self, exposure, num_vertices, point_list, unit, rotation=0):
         # See Page 64:
         # https://www.ucamco.com/files/downloads/file_en/456/gerber-layer-format-specification-revision-2023-08_en.pdf
 
         # For Reference on Gerber to Common Form Conversion see picture here:
         # XXX No photo ref, Lazy
-        super().__init__()
+        super().__init__(unit)
         self.code = 4
         self.exposure = exposure
         # Rotation in DEG CC
@@ -30,5 +30,5 @@ class OutlineAPMacro(APMacroParent):
                 point_list[((point - 1) * 2) + 1] = new_y
 
         # Create Polygon OBJ
-        new_common_form = CFPolygonTrace(point_list)
+        new_common_form = CFPolygonTrace(self.unit, point_list)
         self.common_form.append(new_common_form)

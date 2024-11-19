@@ -71,6 +71,8 @@ class ReadExcellonDrill(InputParent):
             # Reads Lines from M48 to %
             self.line += 1
             self.search_switcher(header_switcher)
+        else:
+            raise TypeError(f"Excellon File \"{self.filepath}\" Incorrectly Parsed, missing header at top of file")
 
         # Parses body.
         self.search_switcher(body_switcher)

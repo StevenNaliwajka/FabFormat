@@ -1,7 +1,6 @@
 def circle_circle_intersection(list_of_cf, new_cf, index):
     pass
 
-
 def circle_arc_intersection(list_of_cf, new_cf, index):
     pass
 

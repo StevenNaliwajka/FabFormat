@@ -12,13 +12,12 @@ class RectangleAperture(ApertureParent):
         # For Reference on Gerber to Common Form Conversion see picture here:
         # .../Gerber/GerberApertures/Apertures/Photos_Gerber2CF/Rectangle.png
 
-        super().__init__()
+        super().__init__(unit)
         self.aperture_type = "r"
         self.aperture_number = ap_number
         self.x_size = x_size
         self.y_size = y_size
         self.inner_hole_diameter = inside_hole_diam
-        self.unit = unit
 
         # To common form.
         self.to_common_form(center_x, center_y, x_size, y_size, inside_hole_diam)

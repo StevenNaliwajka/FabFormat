@@ -14,12 +14,18 @@ from CodeBase.config.config import Config
 # USING https://www.ucamco.com/files/downloads/file_en/456/gerber-layer-format-specification-revision-2023-08_en.pdf
 # AS A BIBLE. PG 19 is table of contents, pg 78 for arcs
 
+# G36/G37 "Regions" are not supported currently.
+
 class ReadGerber(InputParent):
-    def __init__(self, filepath, common_form):
+    def __init__(self, gerber_config, common_form):
         super().__init__()
-        self.filepath = filepath
-        self.readfile(filepath)
+        self.filepath = gerber_config.filepath
+        self.readfile(self.filepath)
         self.common_form = common_form
+
+        # Current point that the gerber code is looking at. Where the "tool" is.
+        self.current_x = 0
+        self.current_y = 0
 
         # Stores apertures. Ordered
         # EX: Aperture #11 is in index 10.
@@ -55,8 +61,8 @@ class ReadGerber(InputParent):
             "%ipneg*%": lambda: setattr(self, 'current_infill', 0),  # DEPRECATED BUT APPEARS THE SAME TO %LPC%
             "%ad": self.create_aperture(),  # Creates an aperture, assigns D code to it.
             "%am": self.create_aperture_macro(),  # BEGINS CREATION OF AN APERTURE MACRO.
-            "g36*": xxx,  # BEGINS POLYGON, reads lines till "g37*"
-            "x": xxx,  # D01(DRAWS LINE), D02(PEN UP), D03(SINGLE DOT)
+            "g36*": self.feature_error(),  # BEGINS Region, reads lines till "g37*"
+            "x": self.draw_line(),  # D01(DRAWS LINE), D02(PEN UP), D03(SINGLE DOT)
             "m02": self.do_nothing(),  # IGNORED. RUNS OFF OF LINES.
             "d": xxx,  # Aperture selection codes, Used to select prior defined apertures. D10 and higher.
             # "g75": self.do_nothing(), # Issued before first circlular plot.
@@ -68,6 +74,49 @@ class ReadGerber(InputParent):
             # LS
             # SR
         }
+        self.search_switcher(gerber_switcher)
+
+    def draw_line(self):
+        line_data = self.file_by_line_list[self.line]
+        # D01, D02, D03
+        # D01 - Draw line or ARC from current point to the new point. Update current to new point
+        # D02 - Update current to new point
+        # D03 - Creates a single object @ the new point. Update current to new point
+        pattern = r"X(\d+)Y(\d+)(I(\d+))?(J(\d+))?D(\d+)\*"
+        match = re.match(pattern, line_data)
+
+        if not match:
+            raise ValueError("Input string does not match the expected format")
+
+        # Extract the groups
+        x = self.interpret_number_format(match.group(1), "x")  # X value
+        y = self.interpret_number_format(match.group(2), "y")   # Y value
+        i = self.interpret_number_format(match.group(4), "x")  # I value (optional)
+        j = self.interpret_number_format(match.group(6), "y")   # J value (optional)
+        d = match.group(7)  # D value
+
+        if d == 1:
+            # D01 - Draw line or ARC from current point to the new point. Update current to new point
+            if i is not None and j is not None:
+
+            else:
+            self.update_current_point(x, y)
+        elif d == 2:
+            # D02 - Update current to new point
+            self.update_current_point(x,y)
+        elif d == 3:
+            # D03 - Creates a single object @ the new point. Update current to new point
+
+            self.update_current_point(x, y)
+
+
+    def update_current_point(self, new_x, new_y):
+        self.current_x = new_x
+        self.current_y = new_y
+
+    def feature_error(self):
+        line_data = self.file_by_line_list[self.line]
+        raise ValueError(f"ERROR: \"{self.filepath}\", Line is not supported \"{line_data}\"")
 
     def create_aperture_macro(self):
         # Creates a Custom Aperture + Populates
@@ -122,12 +171,11 @@ class ReadGerber(InputParent):
     def add_primitive_to_aperture_macro(self, instruction_map, line_data):
         ## POSSIBLY AN ISSUE IN THE FUTURE OF INDENTS BEING WEIRD. I MATCHED ONE USE CASE
         ## NOT PERFECT. IF FILE DOES NOT INDENT AFTER EVERY * THIS WILL NOT WORK....
-        ## NOT MY PROBLEM RN... LOL
 
         stripped_line_data = line_data.rstrip('*')
         numbers = [int(num.strip()) for num in stripped_line_data.split(',')]
         primitive_code = numbers[0]
-
+        # verify that this pulls all of the data from each aperture macro call in the line.
         if primitive_code in instruction_map:
             # Prepare arguments based on whether rotation is present
             args_without_rotation = numbers[1:-1] if len(numbers) - 1 == len(

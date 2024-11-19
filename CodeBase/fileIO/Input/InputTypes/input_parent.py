@@ -6,8 +6,8 @@ from math import *
 
 
 class InputParent(UniversalParent):
-    def __init__(self, ):
-        super().__init__()
+    def __init__(self, layer_type):
+        super().__init__(layer_type)
         self.file_by_line_list = None
         self.path = None
         self.filepath = None
@@ -23,6 +23,7 @@ class InputParent(UniversalParent):
         # 1 (RELATIVE) is rare but an option and should be considered if possible
         # RELATIVE EX: X5 means X += 5
         self._position_instruction_type = 0
+
 
         # NUMBER FORMATING
         # EX:
@@ -96,9 +97,9 @@ class InputParent(UniversalParent):
             raise ValueError("The number must be an int.")
         before_decimal = None
         after_decimal = None
-        if x_or_y == "x":
+        if x_or_y.lower() == "x":
             before_decimal, after_decimal = map(int, self._x_number_format.split(':'))
-        elif x_or_y == "y":
+        elif x_or_y.lower() == "y":
             before_decimal, after_decimal = map(int, self._y_number_format.split(':'))
         number_str = str(number)
 

@@ -2,7 +2,7 @@ from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_complex_parent import CFCo
 
 
 class CFSymmetricalArcTrace(CFComplexParent):
-    def __init__(self, c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off=None):
+    def __init__(self, unit, c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off=None):
         # Re-learning Trig for figuring out the best way to store arc data has been fun. See reference picture for my
         # take on it. There are probably better/more concise ways to store arc data. Let me know if any math person
         # knows a better solution.
@@ -11,7 +11,7 @@ class CFSymmetricalArcTrace(CFComplexParent):
         # SEE CurrentCFCheatSheat.PNG in
         # ...CFLayer/Additive/AdditiveTrace/Trace/CurrentCFCheatSheat.png
 
-        super().__init__()
+        super().__init__(unit)
         self.type = "a"
         self.center_x = c_x
         self.center_y = c_y

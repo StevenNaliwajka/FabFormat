@@ -44,6 +44,7 @@
 # FOR NOW.. 100% INFIL. NOT MY PROBLEM TO BE CONSERVITAVE WITH NON CONDUCTIVE FILLAMENT TILL IT WORKS.
 import sys
 
+from CodeBase.config.ReadConfig.main_config_read import main_config_read
 from CodeBase.fileIO.CommonFormat.common_form import CommonForm
 from CodeBase.fileIO.Input.input_manager import read_infiles, convert_infiles_to_common_form
 
@@ -56,13 +57,16 @@ if __name__ == "__main__":
     infile_directory_path = sys.argv[1]
     outfile_directory_path = sys.argv[2]
 
-    ## CONVERT CONFIG FILE TO USE .JSON FORMAT
-    # Create new config object for global slicer settings.
-    config = Config(infile_directory_path, outfile_directory_path)
+    # Read in Config Files
+    gui_config, infile_config_list, outfile_config_list = main_config_read(infile_directory_path, outfile_directory_path)
+
+    ## Create new config object for global slicer settings.
+    #config = Config(infile_directory_path, outfile_directory_path)
 
     # Common Form: Stores Universal File Data
     common_form = CommonForm()
 
+    # Creat infile objects
     # Populates list with each infile obj
     input_file_obj_list = read_infiles(infile_directory_path, common_form, config)
 

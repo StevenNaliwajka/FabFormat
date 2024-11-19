@@ -2,11 +2,11 @@ from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_complex_parent import CFCo
 
 
 class CFPolygonTrace(CFComplexParent):
-    def __init__(self, point_list):
+    def __init__(self, unit, point_list):
         # SEE CurrentCFCheatSheat.PNG in
         # ...CFLayer/Additive/AdditiveTrace/Trace/CurrentCFCheatSheat.png
 
-        super().__init__()
+        super().__init__(unit)
         self.type = "p"
         # 100% INFILL. IF YOU NEED A HOLE. SLICE THE SHAPE INTO MULTIPLE PARTS.
         # POINT LIST STARTS AND ENDS AT SAME POINTS.

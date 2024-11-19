@@ -1,10 +1,11 @@
 class CFTraceParent:
 
-    def __init__(self):
+    def __init__(self, unit):
         # Parent for CF "Common Form" trace types.
 
         # What type it is "c","a","p","l"
         self._type = None
+        self.unit = unit
 
     @property
     def type(self):

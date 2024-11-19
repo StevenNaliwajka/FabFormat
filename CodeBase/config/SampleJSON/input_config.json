@@ -1,16 +1,18 @@
 {
     "gui_state": "F",
+    "infile_directory_path": "C/path/user/name/folder/next_folder",
     "input_files": {
         "gerber": [
             {
-                "file_name_here.gbl": "additive",
-                "file_name_here.gbr": "subtractive"
+                "file_name_here.gbl": ["additive","1"],
+                "file_name_here.gbr": ["outline","A"],
+                "file_name_here.gbr": ["additive","2"]
             }
         ],
         "dxf": [
             {
-                "file_name_here.dxf": "additive",
-                "file_name_here.dxf": "subtractive"
+                "file_name_here.dxf": ["additive","1"],
+                "file_name_here.dxf": ["additive","1"]
             }
         ],
         "excellon_drill": [
@@ -18,7 +20,8 @@
                 "file_name_here.xln":  [
                     {
                         "d1": ["exclusive","1-2"],
-                        "d2": ["exclusive","1-2"]
+                        "d2": ["exclusive","1-2"],
+                        "d2": ["additive","1-2"]
                     }
                 ],
                 "file_name_here.xln":  [

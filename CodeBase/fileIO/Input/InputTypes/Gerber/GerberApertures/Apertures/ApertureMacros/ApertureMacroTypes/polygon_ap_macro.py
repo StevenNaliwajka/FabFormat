@@ -4,14 +4,14 @@ from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureM
 
 
 class PolygonAPMacro(APMacroParent):
-    def __init__(self, exposure, num_vertices, center_x, center_y, diameter, rotation=0):
+    def __init__(self, exposure, num_vertices, center_x, center_y, diameter, unit, rotation=0):
         # See Page 66:
         # https://www.ucamco.com/files/downloads/file_en/456/gerber-layer-format-specification-revision-2023-08_en.pdf
 
         # For Reference on Gerber to Common Form Conversion see picture here:
         # XXX No photo ref, Lazy
 
-        super().__init__()
+        super().__init__(unit)
         self.code = 5
         self.exposure = exposure
         # Rotation in DEG CC
@@ -45,5 +45,5 @@ class PolygonAPMacro(APMacroParent):
                 coordinate_list[(point - 1) * 2] = new_x
                 coordinate_list[((point - 1) * 2) + 1] = new_y
 
-        new_common_form = CFPolygonTrace(coordinate_list)
+        new_common_form = CFPolygonTrace(self.unit, coordinate_list)
         self.common_form.append(new_common_form)

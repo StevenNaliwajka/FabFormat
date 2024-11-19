@@ -2,11 +2,11 @@ from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_complex_parent import CFCo
 
 
 class CFCircleTrace(CFComplexParent):
-    def __init__(self, center_x, center_y, radius, inner_radius=None):
+    def __init__(self, unit, center_x, center_y, radius, inner_radius=None):
         # SEE CurrentCFCheatSheat.PNG in
         # ...CFLayer/Additive/AdditiveTrace/Trace/CurrentCFCheatSheat.png
 
-        super().__init__()
+        super().__init__(unit)
         self.type = "c"
         self.center_x = center_x
         self.center_y = center_y

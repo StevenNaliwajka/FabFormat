@@ -55,7 +55,7 @@ if __name__ == "__main__":
     parent_dir = os.path.dirname(current_dir)
 
     # Generates the File Path of Cam2.
-    cam2FilePath = os.path.join(parent_dir, "CodeBase", "cam2.py")
+    fab_format_file_path = os.path.join(parent_dir, "CodeBase", "fabformat.py")
 
     # Generates the File Path of each infile bundle.  ARG: 1
     input1Folder = "ProMicro12640"
@@ -66,4 +66,4 @@ if __name__ == "__main__":
 
     #Standard Usage, Can be called as many times as wanted. Include a new Input Directory Each time
 
-    os.system(f'py {cam2FilePath} {inputDirectoryPath} {outputDirectoryPath}')
+    os.system(f'py {fab_format_file_path} {inputDirectoryPath} {outputDirectoryPath}')

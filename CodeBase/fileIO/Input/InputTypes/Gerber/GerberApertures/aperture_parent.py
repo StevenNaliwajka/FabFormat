@@ -7,11 +7,12 @@ from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_symmetrical_arc_tra
 
 
 class ApertureParent:
-    def __init__(self):
+    def __init__(self, unit):
         self.aperture_type = None
         self.aperture_number = None
         self.inner_hole_diameter = None
         self.common_form = []
+        self.unit = unit
 
     # Comparison function to make objects comparable based on aperture_number
     def __lt__(self, other):
@@ -50,7 +51,7 @@ class ApertureParent:
         point_list.append(current_x)
         point_list.append(current_y)
 
-        new_common_form = CFPolygonTrace(point_list)
+        new_common_form = CFPolygonTrace(self.unit, point_list)
         self.common_form.append(new_common_form)
 
     def create_corner_arcs_and_inside_circle(self, center_x, center_y, x_size, y_size, inside_hole_diam):
@@ -61,7 +62,7 @@ class ApertureParent:
         # Determine smallest axis
         smallest = min(x_size, y_size)
         # In complex variation, Create Circle #1
-        self.common_form.append(CFCircleTrace(center_x, center_y, smallest, inside_hole_diam))
+        self.common_form.append(CFCircleTrace(self.unit, center_x, center_y, smallest, inside_hole_diam))
 
         # Solve for arc length
         arc_len = sqrt((smallest ** 2) + (smallest ** 2)) - smallest
@@ -83,6 +84,7 @@ class ApertureParent:
             # Append the arc trace, centered around (center_x, center_y)
             self.common_form.append(
                 CFSymmetricalArcTrace(
+                    self.unit,
                     center_x + offset_x,  # Adjusted center offset
                     center_y + offset_y,  # Adjusted center offset
                     s_x,

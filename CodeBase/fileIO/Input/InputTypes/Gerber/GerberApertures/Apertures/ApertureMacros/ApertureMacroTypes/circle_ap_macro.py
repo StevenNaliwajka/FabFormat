@@ -4,13 +4,13 @@ from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureM
 
 
 class CircleAPMacro(APMacroParent):
-    def __init__(self, exposure, diameter, center_x, center_y, rotation=0):
+    def __init__(self, exposure, diameter, center_x, center_y, unit, rotation=0):
         # See Page 61:
         # https://www.ucamco.com/files/downloads/file_en/456/gerber-layer-format-specification-revision-2023-08_en.pdf
 
         # For Reference on Gerber to Common Form Conversion see picture here:
         # XXX No photo ref, Lazy
-        super().__init__()
+        super().__init__(unit)
         self.code = 1
         self.exposure = exposure
         # Rotation in DEG CC
@@ -25,5 +25,5 @@ class CircleAPMacro(APMacroParent):
             center_y = new_y
 
         radius = diameter / 2
-        new_cf_object = CFCircleTrace(center_x, center_y, radius)
+        new_cf_object = CFCircleTrace(self.unit, center_x, center_y, radius)
         self.common_form.append(new_cf_object)

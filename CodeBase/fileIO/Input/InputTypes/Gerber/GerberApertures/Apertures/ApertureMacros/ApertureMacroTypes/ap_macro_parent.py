@@ -3,10 +3,11 @@ from abc import abstractmethod
 
 
 class APMacroParent:
-    def __init__(self):
+    def __init__(self, unit):
         self.code = None
         self.exposure = None
         self.common_form = []
+        self.unit = unit
 
     @abstractmethod
     def to_common_form(self, *args, **kwargs):

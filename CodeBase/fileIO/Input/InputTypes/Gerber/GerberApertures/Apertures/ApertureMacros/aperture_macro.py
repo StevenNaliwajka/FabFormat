@@ -16,7 +16,7 @@ from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.aperture_parent imp
 
 class ApertureMacro(ApertureParent):
     def __init__(self, ap_type, unit):
-        super().__init__()
+        super().__init__(unit)
         # A custom Aperture Macro, In the same category as the standard circle, obround, polygon
         # and rectangle. The issue is that has multiple types subshapes associated with it. But those types
         # have the option to override each other and or rotate. The fact that they can rotate and dont have infil
@@ -128,25 +128,25 @@ class ApertureMacro(ApertureParent):
             self.common_form_instructions_list.append(instruction)
 
     def add_circle_instruction(self, exposure, diameter, center_x, center_y, rotation):
-        new_instruction = CircleAPMacro(exposure, diameter, center_x, center_y, rotation)
+        new_instruction = CircleAPMacro(exposure, diameter, center_x, center_y, self.unit, rotation)
         self.aperture_instructions_list.append(new_instruction)
 
     def add_vector_instruction(self, exposure, width, start_x, start_y, end_x, end_y, rotation):
-        new_instruction = VectorAPMacro(exposure, width, start_x, start_y, end_x, end_y, rotation)
+        new_instruction = VectorAPMacro(exposure, width, start_x, start_y, end_x, end_y, self.unit, rotation)
         self.aperture_instructions_list.append(new_instruction)
 
     def add_center_instruction(self, exposure, width, height, center_x, center_y, rotation):
-        new_instruction = CenterAPMacro(exposure, width, height, center_x, center_y, rotation)
+        new_instruction = CenterAPMacro(exposure, width, height, center_x, center_y, self.unit, rotation)
         self.aperture_instructions_list.append(new_instruction)
 
-    def add_outline_instruction(self, exposure, num_vertices, start_x, start_y, point_list, rotation):
-        new_instruction = OutlineAPMacro(exposure, num_vertices, start_x, start_y, point_list, rotation)
+    def add_outline_instruction(self, exposure, num_vertices, point_list, rotation):
+        new_instruction = OutlineAPMacro(exposure, num_vertices, point_list, self.unit, rotation)
         self.aperture_instructions_list.append(new_instruction)
 
     def add_polygon_instruction(self, exposure, num_vertices, center_x, center_y, diameter, rotation):
-        new_instruction = PolygonAPMacro(exposure, num_vertices, center_x, center_y, diameter, rotation)
+        new_instruction = PolygonAPMacro(exposure, num_vertices, center_x, center_y, diameter, self.unit, rotation)
         self.aperture_instructions_list.append(new_instruction)
 
     def add_thermal_instruction(self, center_x, center_y, outer_diameter, inner_diameter, gap, rotation):
-        new_instruction = ThermalAPMacro(center_x, center_y, outer_diameter, inner_diameter, gap, rotation)
+        new_instruction = ThermalAPMacro(center_x, center_y, outer_diameter, inner_diameter, gap, self.unit, rotation)
         self.aperture_instructions_list.append(new_instruction)

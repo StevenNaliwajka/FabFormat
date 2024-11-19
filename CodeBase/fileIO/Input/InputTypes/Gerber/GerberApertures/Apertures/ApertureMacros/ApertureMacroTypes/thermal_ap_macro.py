@@ -7,14 +7,14 @@ from math import sqrt
 
 
 class ThermalAPMacro(APMacroParent):
-    def __init__(self, center_x, center_y, outer_diameter, inner_diameter, gap, rotation=0):
+    def __init__(self, center_x, center_y, outer_diameter, inner_diameter, gap, unit, rotation=0):
         # See Page 67:
         # https://www.ucamco.com/files/downloads/file_en/456/gerber-layer-format-specification-revision-2023-08_en.pdf
 
         # For Reference on Gerber to Common Form Conversion see picture here:
         # XXX No photo ref, Lazy
 
-        super().__init__()
+        super().__init__(unit)
         self.code = 7
         self.exposure = 1
 
@@ -64,7 +64,7 @@ class ThermalAPMacro(APMacroParent):
             arc_center_x, arc_center_y = self.rotate_point_around_origin_cc(arc_center_x, arc_center_y, rotation)
             outer_x, outer_y = self.rotate_point_around_origin_cc(outer_x, outer_y, rotation)
 
-        new_cf_instruction = CFSymmetricalArcTrace(arc_center_x, arc_center_y, outer_x, outer_y, end_x, end_y,
+        new_cf_instruction = CFSymmetricalArcTrace(self.unit, arc_center_x, arc_center_y, outer_x, outer_y, end_x, end_y,
                                                    outer_radius, inner_radius)
         self.common_form.append(new_cf_instruction)
 

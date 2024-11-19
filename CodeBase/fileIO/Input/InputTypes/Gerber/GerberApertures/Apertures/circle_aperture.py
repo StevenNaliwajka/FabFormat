@@ -10,10 +10,9 @@ class CircleAperture(ApertureParent):
         # For Reference on Gerber to Common Form Conversion see picture here:
         # XXX No Photo Ref. Lazy
 
-        super().__init__()
+        super().__init__(unit)
         self.aperture_type = "c"
         self.aperture_number = ap_number
-        self.unit = unit
 
         # To common form.
         self.to_common_form(center_x, center_y, diameter, inside_hole_diam)

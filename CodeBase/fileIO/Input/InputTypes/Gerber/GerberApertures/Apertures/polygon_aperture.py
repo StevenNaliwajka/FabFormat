@@ -15,7 +15,11 @@ class PolygonAperture(ApertureParent):
         # For Reference on Gerber to Common Form Conversion see picture here:
         # XXX No photo ref, Lazy
 
-        super().__init__()
+        # Sorry for this one. 110% can be improved.
+        # Garuneed issue in complex_polygon_to_cf if the rotation is above like 50 degrees or something...
+        # the arcs are not rotated aswell which cause issues from using fixed points...
+
+        super().__init__(unit)
         self.aperture_type = "c"
         self.aperture_number = ap_number
         self.center_x = center_x
@@ -26,32 +30,38 @@ class PolygonAperture(ApertureParent):
         self.num_vertices = num_vertices
         self.rotation = rotation
         self.inner_hole_diameter = inside_hole_diam
-        self.unit = unit
 
         self.degree_per_vertice = 360 / num_vertices
 
         self.to_common_form()
 
     def to_common_form(self):
+        # Determine rotation
+        #  to rad
+        angle_rad = math.radians(self.rotation)
+        # get sin and cosin value.
+        cosine_value = math.cos(angle_rad)
+        sine_value = math.sin(angle_rad)
+        starting_x = (cosine_value*self.outer_diameter/2) + self.center_x
+        starting_y = (sine_value * self.outer_diameter / 2) + self.center_y
         if self.inner_hole_diameter:
-            self.complex_polygon_to_cf()
+            self.complex_polygon_to_cf(starting_x, starting_y)
         else:
-            self.polygon_to_cf()
+            self.polygon_to_cf(starting_x, starting_y)
 
-    def polygon_to_cf(self):
+    def polygon_to_cf(self, starting_x, starting_y):
         # Creates One polygon
         trace_list_polygon = []
-        x_pos = 0
-        y_pos = self.outer_diameter / 2
+
         angle_deg = 0
         # adds point zero
-        trace_list_polygon.append((x_pos, y_pos))
+        trace_list_polygon.append((starting_x, starting_y))
 
         # Iterate through every point on polygon
         counter = 1
         while counter <= self.num_vertices:
             # get angle degree
-            angle_deg = self.degree_per_vertice * counter
+            angle_deg = (self.degree_per_vertice * counter) + self.rotation
             # conv to rad
             angle_rad = math.radians(angle_deg)
 
@@ -59,14 +69,14 @@ class PolygonAperture(ApertureParent):
             cosine_value = math.cos(angle_rad)
             sine_value = math.sin(angle_rad)
             # get real x and y value
-            x_pos = cosine_value * self.outer_diameter / 2
-            y_pos = sine_value * self.outer_diameter / 2
+            x_pos = (cosine_value * self.outer_diameter / 2) + self.center_x
+            y_pos = (sine_value * self.outer_diameter / 2) + self.center_y
             # add trace
             trace_list_polygon.append((x_pos, y_pos))
             counter += 1
         self.common_form.append(CFPolygonTrace(trace_list_polygon))
 
-    def complex_polygon_to_cf(self):
+    def complex_polygon_to_cf(self, starting_x, starting_y):
         # Creates 4 arcs, 2 polygons=
 
         # Determine smallest axis
@@ -104,18 +114,23 @@ class PolygonAperture(ApertureParent):
         # Creates Two polygons
         trace_list_polygon = []
         trace_list_second_polygon = []
-        x_pos = 0
-        y_pos = self.outer_diameter / 2
         angle_deg = 0
         # adds point zero
-        trace_list_polygon.append((x_pos, y_pos))
+        trace_list_polygon.append((starting_x, starting_y))
 
-        halfway = self.degree_per_vertice // 2  # Integer division ensures it works for both even and odd numbers
+        # Determine split point: the first half gets the larger part if the size is odd
+        split_point = (self.num_vertices + 1) // 2  # This ensures the first half is larger for odd n
+
+        # First half indices
+        half1_indices = list(range(split_point))
+
+        # Second half indices (overlaps the last index of the first half)
+        half2_indices = list(range(split_point - 1, self.num_vertices)) + [0]
 
         # First half of outer points
-        for i in range(halfway):
+        for i in half1_indices:
             # get angle degree
-            angle_deg = self.degree_per_vertice * i
+            angle_deg = (self.degree_per_vertice * i) + self.rotation
             # conv to rad
             angle_rad = math.radians(angle_deg)
 
@@ -123,15 +138,53 @@ class PolygonAperture(ApertureParent):
             cosine_value = math.cos(angle_rad)
             sine_value = math.sin(angle_rad)
             # get real x and y value
-            x_pos = cosine_value * self.outer_diameter / 2
-            y_pos = sine_value * self.outer_diameter / 2
+            x_pos = (cosine_value * self.outer_diameter / 2) + self.center_x
+            y_pos = (sine_value * self.outer_diameter / 2) + self.center_y
             # add trace
             trace_list_polygon.append((x_pos, y_pos))
-        # Finish adding the first polygon's traces
-            ##############
 
-        # Second half of outer points
-        for i in range(halfway, self.degree_per_vertice):
-            ######### navigate through the rest of the points
-        # Finish adding second polygon's traces
-            ###########
+        # top left of arcs cord
+        trace_list_polygon.append(((-(self.inner_hole_diameter/2)+self.center_x), (self.inner_hole_diameter/2+self.center_y)))
+        # top right of arcs cord
+        trace_list_polygon.append((((self.inner_hole_diameter / 2) + self.center_x), (self.inner_hole_diameter / 2) + self.center_y))
+        # Starting cord
+        trace_list_polygon.append((starting_x, starting_y))
+
+        # Create First polygon
+        # I KINDA BUILT THIS LIKE AIDS....
+        # COULD BE IMPROVED
+        new_list = self.flatten_traces(trace_list_polygon)
+        new_polygon = CFPolygonTrace(new_list)
+        self.common_form.append(new_polygon)
+
+        # Second polygon
+        # Starting cord
+        trace_list_second_polygon.append((starting_x, starting_y))
+        # top right of arcs cord
+        trace_list_second_polygon.append((self.inner_hole_diameter / 2, self.inner_hole_diameter / 2))
+        # bottom right of arcs cord
+        trace_list_second_polygon.append(((-self.inner_hole_diameter / 2), self.inner_hole_diameter / 2))
+        # bottom left of arcs cord
+        trace_list_second_polygon.append(((-self.inner_hole_diameter / 2), -self.inner_hole_diameter / 2))
+        # top left of arcs cord
+        trace_list_second_polygon.append((-(self.inner_hole_diameter / 2), self.inner_hole_diameter / 2))
+        for i in half2_indices:
+            # get angle degree
+            angle_deg = (self.degree_per_vertice * i) + self.rotation
+            # conv to rad
+            angle_rad = math.radians(angle_deg)
+
+            # get sin and cosin value.
+            cosine_value = math.cos(angle_rad)
+            sine_value = math.sin(angle_rad)
+            # get real x and y value
+            x_pos = (cosine_value * self.outer_diameter / 2) + self.center_x
+            y_pos = (sine_value * self.outer_diameter / 2) + self.center_y
+            # add trace
+            trace_list_second_polygon.append((x_pos, y_pos))
+        new_list = self.flatten_traces(trace_list_second_polygon)
+        new_polygon = CFPolygonTrace(new_list)
+        self.common_form.append(new_polygon)
+
+    def flatten_traces(self, trace_list):
+        return [coord for pair in trace_list for coord in pair]
