@@ -1,6 +1,13 @@
 CONFIG COMPLETED
 EXCELLON COMPLETED
 
+- Add CommonForm complex shapes.
+    - Cublic Spline trace object that takes in a list of points and creates a list of formulas for
+        all curves in the overall curve.
+    - Rework Linear Trace to be a point to point line to only be used for the creation of rectangles etc..
+        - rework rectangle to take linear traces.? maybe...
+    - Create a complex shape that can be bounded by curves or Linear traces. 100% fill... maybe. probably...
+        - on creation test for the bounded curves or linear traces crossing anywhere besides the end points.
 - Finish Gerber
     - Finish main GERBER switcher.
 - Finish CFMethods
