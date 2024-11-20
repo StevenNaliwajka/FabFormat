@@ -4,7 +4,7 @@ from CodeBase.fileIO.Input.InputTypes.input_parent import InputParent
 # DFX NOT SUPPORTED RN.
 
 class ReadDxf(InputParent):
-    def __init__(self, filepath):
+    def __init__(self, dxf_config, common_form):
         super().__init__()
         self.readfile(filepath)
 

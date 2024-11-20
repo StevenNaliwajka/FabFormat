@@ -1,5 +1,47 @@
 {
-    "output_file_directory": "C://User//Here",
-    "output_file_name": "file_name_here",
-    "units": "mm/inches"
+    "gcode_output_files": {
+        "3d_print_file_name_here": [
+            {
+                "output_file_directory": "C://User//Here",
+                "units": "mm",
+                "gcode_flavor": "Marlin",
+                "bed_temp_c": "60",
+                "layer_height": "0.2",
+                "nozzles": {
+                    "primary_nozzle": [
+                        {
+                            "active": "T",
+                            "nozzle_code": "0",
+                            "nozzle_size_mm": "0.4",
+                            "filament_diameter_mm": "1.75",
+                            "nozzle_temp_c": "250",
+                            "cooling_fan_%": "100",
+                            "infill_%": "100",
+                            "print_speed_mm/s": "50",
+                            "travel_speed_mm/s": "100",
+                            "initial_layer_speed_mm/s": "100",
+                            "retraction_distance_mm": "5",
+                            "retraction_speed_mm/s": "25"
+                        }
+                    ],
+                    "secondary_nozzle": [
+                        {
+                            "active": "T",
+                            "nozzle_code": "1",
+                            "nozzle_size_mm": "0.4",
+                            "filament_diameter_mm": "1.75",
+                            "nozzle_temp_C": "140",
+                            "cooling_fan_%": "100",
+                            "infill_%": "100",
+                            "print_speed_mm/s": "50",
+                            "travel_speed_mm/s": "100",
+                            "initial_layer_speed_mm/s": "100",
+                            "retraction_distance_mm": "5",
+                            "retraction_speed_mm/s": "25"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
 }

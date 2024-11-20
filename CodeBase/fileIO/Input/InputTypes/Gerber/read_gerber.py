@@ -18,10 +18,7 @@ from CodeBase.config.config import Config
 
 class ReadGerber(InputParent):
     def __init__(self, gerber_config, common_form):
-        super().__init__()
-        self.filepath = gerber_config.filepath
-        self.readfile(self.filepath)
-        self.common_form = common_form
+        super().__init__(gerber_config.filepath, gerber_config.layer_type, gerber_config.active_layers, common_form)
 
         # Current point that the gerber code is looking at. Where the "tool" is.
         self.current_x = 0
@@ -79,7 +76,7 @@ class ReadGerber(InputParent):
     def draw_line(self):
         line_data = self.file_by_line_list[self.line]
         # D01, D02, D03
-        # D01 - Draw line or ARC from current point to the new point. Update current to new point
+        # D01 - Draw line using the current aperture or ARC from current point to the new point. Update current to new point
         # D02 - Update current to new point
         # D03 - Creates a single object @ the new point. Update current to new point
         pattern = r"X(\d+)Y(\d+)(I(\d+))?(J(\d+))?D(\d+)\*"
@@ -98,8 +95,15 @@ class ReadGerber(InputParent):
         if d == 1:
             # D01 - Draw line or ARC from current point to the new point. Update current to new point
             if i is not None and j is not None:
-
+                tool = self.aperture_list[self.current_tool-1]
+                # Draw ARC using the current aperture as the
+                if tool.aperture_type is not "c":
+                    self.feature_error()
+                else:
+                    
+                # I have to implement complex curves into COMMON form before I can handle dynamic shapes.
             else:
+                # Draw Line
             self.update_current_point(x, y)
         elif d == 2:
             # D02 - Update current to new point

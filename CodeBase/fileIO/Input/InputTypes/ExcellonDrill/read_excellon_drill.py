@@ -12,22 +12,14 @@ from CodeBase.fileIO.Input.InputTypes.input_parent import InputParent
 ## CORRECT TO USE CF STANDARD CIRCLES....
 
 class ReadExcellonDrill(InputParent):
-    def __init__(self, filepath, common_form):
-        super().__init__()
-        self.filepath = filepath
-        self.readfile(filepath)
-        self.common_form = common_form
+    def __init__(self, excellon_drill_config, common_form):
+        super().__init__(excellon_drill_config.filepath, excellon_drill_config.layer_type, excellon_drill_config.active_layers, common_form)
 
         self.current_drill = "T1"  # DEFAULT T1
 
         self.number_format = None
 
-        # NEED TO POPULATE FROM CONFIG OR SMART FROM GERBER NEARBY...
-        self.drill_additive_or_subtractive = []
-        self.drill_layers = []
-
         self.drill_tool_diameter = []
-        self.holes = {}
 
     def parse_into_cf(self):
         # SWITCHER OF EXCELLON HEADER SYNTAX OPTIONS.
@@ -98,17 +90,9 @@ class ReadExcellonDrill(InputParent):
 
         drill_radius = self.drill_tool_diameter[drill_num-1] / 2
 
-        min_layer, max_layer = self.drill_layers[drill_num-1].split("-")
-        # For range of drill
-        for layer in range(min_layer, max_layer + 1):
-            # if an additive
-            if self.drill_additive_or_subtractive[layer - 1] == "additive":
-                # add new additive trace to layer
-                self.common_form.add_circle(layer, "primary", x_real, y_real, drill_radius)
-            # else add subtractive trace to layer
-            else:
-
-                self.common_form.add_circle(layer, "subtractive", x_real, y_real, drill_radius)
+        for layer in self.active_layer[drill_num-1]:
+            type_of_layer = self.layer_type[drill_num-1]
+            self.common_form.add_circle(layer, type_of_layer, x_real, y_real, drill_radius)
 
     def update_units(self, unit):
         # Updates Units and also checks for TZ/LZ

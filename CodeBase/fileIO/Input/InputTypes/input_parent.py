@@ -6,11 +6,18 @@ from math import *
 
 
 class InputParent(UniversalParent):
-    def __init__(self, layer_type):
-        super().__init__(layer_type)
+    def __init__(self, file_path, layer_type, active_layer, common_form):
+        super().__init__(file_path, common_form)
+        self.file_path = file_path
+
+        # Reads in input file
         self.file_by_line_list = None
-        self.path = None
-        self.filepath = None
+        self.readfile(file_path)
+
+        # saves layertype
+        self.layer_type = layer_type
+        # saves active layers for the file or tool.
+        self.active_layer = active_layer
 
         # Used to stop while loops
         self.run = 0

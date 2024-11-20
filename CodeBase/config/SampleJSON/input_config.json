@@ -1,6 +1,7 @@
 {
     "gui_state": "F",
     "infile_directory_path": "C/path/user/name/folder/next_folder",
+    "outfile_directry_path": "C/path/user/name/folder/next_folder",
     "input_files": {
         "gerber": [
             {

@@ -44,52 +44,45 @@
 # FOR NOW.. 100% INFIL. NOT MY PROBLEM TO BE CONSERVITAVE WITH NON CONDUCTIVE FILLAMENT TILL IT WORKS.
 import sys
 
+from CodeBase.config.ReadConfig.CreateIO.input_manager import read_infiles, convert_infiles_to_common_form
+from CodeBase.config.ReadConfig.CreateIO.output_manager import get_outfiles
 from CodeBase.config.ReadConfig.main_config_read import main_config_read
 from CodeBase.fileIO.CommonFormat.common_form import CommonForm
-from CodeBase.fileIO.Input.input_manager import read_infiles, convert_infiles_to_common_form
-
-from CodeBase.fileIO.Output.output_manager import output_manager
-from CodeBase.config.config import Config
 
 if __name__ == "__main__":
     print("FabFormat")
     print("Created by Steven Naliwajka")
     infile_directory_path = sys.argv[1]
-    outfile_directory_path = sys.argv[2]
+    #outfile_directory_path = sys.argv[2]
 
     # Read in Config Files
-    gui_config, infile_config_list, outfile_config_list = main_config_read(infile_directory_path, outfile_directory_path)
+    gui_config, input_config, output_config = main_config_read(infile_directory_path)
 
     ## Create new config object for global slicer settings.
     #config = Config(infile_directory_path, outfile_directory_path)
 
     # Common Form: Stores Universal File Data
-    common_form = CommonForm()
+    common_form = CommonForm(input_config, output_config)
 
     # Creat infile objects
     # Populates list with each infile obj
-    input_file_obj_list = read_infiles(infile_directory_path, common_form, config)
+    input_file_obj_list = read_infiles(input_config, common_form)
 
     # Converts infiles in list to Common Form
-    convert_infiles_to_common_form(input_file_obj_list, config)
+    convert_infiles_to_common_form(input_file_obj_list)
 
-    # Handle subtractive cf traces
-    xxx
+    output_file_obj_list = get_outfiles(output_config, common_form)
 
-    # if outfile requires no-overlap traces
-    # handle overlaping additive cf traces
-    xxx
+    # Generate core traces and handle subtractive traces depending on what output forms have been chosen.
+    common_form.format_layers()
 
-    print("CREATING OUTFILE")
-    # Create new Output object
-    outfile = output_manager(config.outfile_type)
-    print("OUTFILE CREATED")
-    gui = None
-    if config.gui_state.lower() == "true":
+    if gui_config is not None:
         print("STARTING GUI")
         # GUI = Gui(CONFIG)
         pass
         ## GUI NOT SUPPORTED YET
     else:
         print("STARTING HEADLESS")
-        outfile.write_headless(input_file_obj_list=input_file_obj_list, config=config, common_form=common_form)
+        for file in output_file_obj_list:
+            common_form.verify_units(file)
+            file.write_headless()

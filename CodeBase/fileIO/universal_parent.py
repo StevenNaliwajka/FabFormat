@@ -1,7 +1,7 @@
 
 class UniversalParent:
 
-    def __init__(self, layer_type):
+    def __init__(self, file_path, common_form):
         ## IS THIS STUFF INPORTANT?? REVIEW*************
         # GOTTEN FROM THE PARSED INFILE....
         # USED to determine the type of Aperture Hole
@@ -15,8 +15,9 @@ class UniversalParent:
         # 1 (IMPERIAL) is an option. :(
         self._unit = 0
 
-        # Stores LayerType, could be Additive, Subtractive or exclusive.
-        self.layer_type = layer_type
+        self.file_path = file_path
+
+        self.common_form = common_form
 
     @property
     def unit(self):

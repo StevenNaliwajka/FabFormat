@@ -6,7 +6,7 @@ from CodeBase.fileIO.CommonFormat.CFLayer.cf_layer import CFTraceLayer
 
 
 class CommonForm:
-    def __init__(self):
+    def __init__(self, input_config, output_config):
         # STORES CF(CommonForm) data
         # 1 Instance per creation.
 
@@ -15,6 +15,8 @@ class CommonForm:
         # [1], layer 2.
         # etc...
         self.layer_list = []
+        self.input_config = input_config
+        self.output_config = output_config
 
     def add_sym_arc(self, layer_num, type_of_trace, c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off):
         # Creates new CF ARC obj, adds it to the correct list + layer
@@ -48,4 +50,10 @@ class CommonForm:
             self.layer_list.append(new_layer)
         # adds trace to layer
         self.layer_list[layer].add_trace_to_layer(type_of_layer, trace_object)
+
+    def verify_units(self, outfile):
+        pass
+
+    def format_layers(self):
+        pass
 

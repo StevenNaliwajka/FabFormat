@@ -3,9 +3,14 @@ class CFTraceLayer:
         # Stores CF data for A layer
         self.layer_numer = layer_number
 
+        # raw primary_trace_data
         # primary_traces tend to be the unique material or goal.
         # Conductive Filament traces or the cut line for a CNC machine are examples.
         self.primary_traces = []
+
+        # modified primary_trace_data
+        # primary trace data that has been removed by subtractive_trace ends up here.
+        self.modified_primary_traces = []
 
         # Subtractive_traces contain the traces that make up through_holes.
         self.subtractive_traces = []
@@ -33,6 +38,8 @@ class CFTraceLayer:
     def add_trace_to_layer(self, trace_type, trace):
         if trace_type.lower() in {"p", "primary", "primary_trace"}:
             self.primary_traces.append(trace)
+        elif trace_type.lower() in {"m", "modified", "modified_primary_trace"}:
+            self.modified_primary_traces.append(trace)
         elif trace_type.lower() in {"s", "subtractive", "subtractive_trace"}:
             self.subtractive_traces.append(trace)
         elif trace_type.lower() in {"a", "annotation", "annotation_trace"}:
