@@ -1,99 +1,63 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_complex_parent import CFComplexParent
+import numpy as np
+import scipy.interpolate as si
+import matplotlib.pyplot as plt
 
+class ParametricCubicSpline:
+    def __init__(self, x_cord_list, y_cord_list):
+        if len(x_cord_list) != len(y_cord_list):
+            raise ValueError("x_cord_list and y_cord_list must have the same length.")
 
-class CFCublicSplineTrace(CFComplexParent):
-    def __init__(self, unit, x_cord_list, y_cord_List):
-        super().__init__(unit)
-        coefficients = self.cubic_spline(x_cord_list, y_cord_List)
-        # List of X points on curve
-        self.x_cord_list = self.generate_points(x_cord_list, num_points=100)
-        # List of Y points on curve
-        self.y_cord_list = self.evaluate_spline(x_cord_list, coefficients, self.x_cord_list)
+        self.x_cord_list = np.array(x_cord_list)
+        self.y_cord_list = np.array(y_cord_list)
 
-    def evaluate_spline(self, x_cord_list, coefficients, x_points):
+        # Calculate cumulative distances to use as 't' (parameter)
+        distances = np.sqrt(np.diff(self.x_cord_list)**2 + np.diff(self.y_cord_list)**2)
+        self.t = np.concatenate([[0], np.cumsum(distances)])
+
+        # Normalize t to range [0, 1] for parametric control
+        self.t_normalized = self.t / self.t[-1]
+
+        # Fit cubic splines for x(t) and y(t)
+        self.x_spline = si.CubicSpline(self.t_normalized, self.x_cord_list)
+        self.y_spline = si.CubicSpline(self.t_normalized, self.y_cord_list)
+
+    def get_point(self, t_value):
         """
-        Evaluate the cubic spline at given x_points.
-        Args:
-            x_cord_list (list): Original x-coordinates.
-            coefficients (list): Coefficients [(a, b, c, d), ...].
-            x_points (list): Points to evaluate the spline at.
-        Returns:
-            List of evaluated y-coordinates.
+        Calculate the exact (x, y) point on the curve for a given parameter t_value.
+        t_value must be in the range [0, 1].
         """
-        y_points = []
-        for xp in x_points:
-            for i in range(len(x_cord_list) - 1):
-                if x_cord_list[i] <= xp <= x_cord_list[i + 1]:
-                    a, b, c, d = coefficients[i]
-                    dx = xp - x_cord_list[i]
-                    y_points.append(a + b * dx + c * dx ** 2 + d * dx ** 3)
-                    break
-        return y_points
+        if t_value < 0 or t_value > 1:
+            raise ValueError("t_value must be in the range [0, 1].")
 
-    def cubic_spline(self, x, y):
+        x = self.x_spline(t_value)
+        y = self.y_spline(t_value)
+        return x, y
+
+    def plot_curve(self, num_points=100):
         """
-        Compute cubic spline coefficients for given points.
-        Args:
-            x (list): x-coordinates of points.
-            y (list): y-coordinates of points.
-        Returns:
-            List of coefficients [(a, b, c, d), ...] for each interval.
+        Plot the parametric cubic spline.
         """
-        n = len(x) - 1  # Number of intervals
-        h = [x[i + 1] - x[i] for i in range(n)]  # Step sizes
+        t_values = np.linspace(0, 1, num_points)
+        x_values = self.x_spline(t_values)
+        y_values = self.y_spline(t_values)
 
-        # Step 1: Set up the tridiagonal system
-        alpha = [0] * (n + 1)  # Right-hand side of the system
-        for i in range(1, n):
-            alpha[i] = (3 / h[i] * (y[i + 1] - y[i]) -
-                        3 / h[i - 1] * (y[i] - y[i - 1]))
+        plt.figure(figsize=(8, 6))
+        plt.plot(x_values, y_values, label="Parametric Cubic Spline")
+        plt.scatter(self.x_cord_list, self.y_cord_list, color='red', label="Control Points")
+        plt.title("Parametric Cubic Spline")
+        plt.xlabel("X")
+        plt.ylabel("Y")
+        plt.legend()
+        plt.grid()
+        plt.show()
 
-        # Tridiagonal matrix
-        l = [1] + [0] * n
-        mu = [0] * (n + 1)
-        z = [0] * (n + 1)
+# Example Usage
+x_cord_list = [0, 1, 2, 3, 4]
+y_cord_list = [0, 1, 0, 1, 0]
 
-        for i in range(1, n):
-            l[i] = 2 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1]
-            mu[i] = h[i] / l[i]
-            z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i]
+spline = ParametricCubicSpline(x_cord_list, y_cord_list)
+spline.plot_curve()
 
-        # Step 2: Back substitution to find second derivatives
-        l[n] = 1
-        z[n] = 0
-        c = [0] * (n + 1)
-        b = [0] * n
-        d = [0] * n
-
-        for j in range(n - 1, -1, -1):
-            c[j] = z[j] - mu[j] * c[j + 1]
-            b[j] = ((y[j + 1] - y[j]) / h[j] -
-                    h[j] * (c[j + 1] + 2 * c[j]) / 3)
-            d[j] = (c[j + 1] - c[j]) / (3 * h[j])
-
-        # Step 3: Compute coefficients
-        coefficients = []
-        for i in range(n):
-            a = y[i]
-            coefficients.append((a, b[i], c[i], d[i]))
-
-        return coefficients
-
-    def generate_points(self, x, num_points=100):
-        """
-        Generate evenly spaced points between the minimum and maximum of x.
-
-        Args:
-            x (list or array): Input x-coordinates.
-            num_points (int): Number of points to generate (default: 100).
-
-        Returns:
-            list: A list of evenly spaced points.
-        """
-        x_min = min(x)
-        x_max = max(x)
-        return [x_min + i * (x_max - x_min) / (num_points - 1) for i in range(num_points)]
-
-    # Example usage
-    x = [0, 1, 2, 3, 4]
-    x_new = generate_points(x, num_points=50)  # Generate 50 points dynamically
+# Get exact (x, y) point for t = 0.5
+point = spline.get_point(0.5)
+print(f"Point at t=0.5: {point}")
