@@ -1,0 +1,14 @@
+As of 11/23
+
+Composites:
+com - CFComplexShape
+pol - CFPolygon
+
+Primitives:
+lin - CFLinearPrim
+pcs - CFParametricCubicSplinePrim
+sap - CFSymmetricalArcPrim
+
+Solids
+cir - CFCircle
+fsa - CFFilledSymmetricalArc

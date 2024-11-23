@@ -1,13 +1,13 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_complex_parent import CFComplexParent
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.cf_shape_parent import CFShapeParent
 
 
-class CFCircleTrace(CFComplexParent):
+class CFCircle(CFShapeParent):
     def __init__(self, unit, center_x, center_y, radius, inner_radius=None):
         # SEE CurrentCFCheatSheat.PNG in
         # ...CFLayer/Additive/AdditiveTrace/Trace/CurrentCFCheatSheat.png
 
         super().__init__(unit)
-        self.type = "c"
+        self.type = "cir"
         self.center_x = center_x
         self.center_y = center_y
         self.radius = radius

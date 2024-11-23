@@ -1,6 +1,11 @@
 CONFIG COMPLETED
 EXCELLON COMPLETED
 
+- REMOVE ALL LINEAR TRACE CALLS FROM GERBER/EXCELLON or update and replace with CF POLYGONS.
+- MAKE ALL POLYGONS CREATE CF LINEAR OBJECTS AND STORE.
+
+- Methods in cf_composite_parent to verify.
+
 - Add CommonForm complex shapes.
     - Update CFComplexParent to contain all 'squared shapes' all shapes that are bounded, so polygons and that curve
     - Cublic Spline trace object that takes in a list of points and creates a list of formulas for

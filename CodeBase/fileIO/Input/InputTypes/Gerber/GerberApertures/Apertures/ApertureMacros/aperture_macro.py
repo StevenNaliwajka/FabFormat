@@ -18,9 +18,7 @@ class ApertureMacro(ApertureParent):
     def __init__(self, ap_type, unit):
         super().__init__(unit)
         # A custom Aperture Macro, In the same category as the standard circle, obround, polygon
-        # and rectangle. The issue is that has multiple types subshapes associated with it. But those types
-        # have the option to override each other and or rotate. The fact that they can rotate and dont have infil
-        # prevents me from using the existing 4 shapes. gotta make custom ones. :(
+        # and rectangle.
 
         # Aperture type, stored the same as typ. obround, polygon, circle, rectangle
         self.aperture_type = ap_type
