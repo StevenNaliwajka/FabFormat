@@ -39,6 +39,9 @@ class CommonForm:
         new_trace = CFPolygonTrace(point_list)
         self.add_trace_to_type(layer_num, type_of_trace, new_trace)
 
+    def add_parametric_cubic_spline(self, x_cord_list, y_cord_list, unit):
+
+
     def add_trace_to_type(self, layer, type_of_layer, trace_object):
         # Checks if layer exists
         if layer <= len(self.layer_list):

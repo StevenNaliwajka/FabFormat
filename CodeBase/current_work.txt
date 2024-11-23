@@ -2,6 +2,7 @@ CONFIG COMPLETED
 EXCELLON COMPLETED
 
 - Add CommonForm complex shapes.
+    - Update CFComplexParent to contain all 'squared shapes' all shapes that are bounded, so polygons and that curve
     - Cublic Spline trace object that takes in a list of points and creates a list of formulas for
         all curves in the overall curve.
     - Rework Linear Trace to be a point to point line to only be used for the creation of rectangles etc..
@@ -19,3 +20,7 @@ EXCELLON COMPLETED
 - GCode.
     - Write primary traces to print additive
     - Write secondary traces to print core
+
+
+Future:
+- Roll own CF Parametric Cubic Spline solution to save from having to be dependent on package.

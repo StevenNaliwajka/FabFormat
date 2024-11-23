@@ -2,8 +2,15 @@ import numpy as np
 import scipy.interpolate as si
 import matplotlib.pyplot as plt
 
-class ParametricCubicSpline:
-    def __init__(self, x_cord_list, y_cord_list):
+from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_complex_parent import CFComplexParent
+
+
+class CFParametricCubicSpline(CFComplexParent):
+    # Ill roll my own solution to this after DEC 2nd to drop the scipy requirement.
+    #  - Famous last words.
+
+    def __init__(self, x_cord_list, y_cord_list, unit):
+        super().__init__(unit)
         if len(x_cord_list) != len(y_cord_list):
             raise ValueError("x_cord_list and y_cord_list must have the same length.")
 
@@ -50,14 +57,3 @@ class ParametricCubicSpline:
         plt.legend()
         plt.grid()
         plt.show()
-
-# Example Usage
-x_cord_list = [0, 1, 2, 3, 4]
-y_cord_list = [0, 1, 0, 1, 0]
-
-spline = ParametricCubicSpline(x_cord_list, y_cord_list)
-spline.plot_curve()
-
-# Get exact (x, y) point for t = 0.5
-point = spline.get_point(0.5)
-print(f"Point at t=0.5: {point}")
