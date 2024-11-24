@@ -1,4 +1,5 @@
 import math
+from abc import abstractmethod
 
 
 class CFShapeParent:
@@ -9,6 +10,7 @@ class CFShapeParent:
         # What type it is "c","a","p","l"
         self._type = None
         self.unit = unit
+        self.extreme_points = []
 
     @property
     def type(self):
@@ -18,5 +20,17 @@ class CFShapeParent:
     def type(self, new_value):
         self._type = new_value
 
-    def _calculate_distance(self, x1, y1, x2, y2):
-        return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    def get_extreme_points(self):
+        if self.extreme_points is None:
+            # "if empty calculate"
+            self._calculate_extreme_points()
+        return self.extreme_points
+
+    @abstractmethod
+    def _calculate_extreme_points(self):
+        # "calculates extreme pts"
+        pass
+
+    @abstractmethod
+    def change_unit(self, new_unit):
+        pass

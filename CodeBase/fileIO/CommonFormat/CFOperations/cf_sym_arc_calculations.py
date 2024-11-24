@@ -1,7 +1,7 @@
 import math
 
 
-def get_cf_symmetrical_arc_radius_point(degree, start, center, radius):
+def get_cf_symmetrical_arc_radius_point(degree, start_pt, center_pt, radius):
     """
     Calculate the point on an arc at half the given degree.
 
@@ -21,8 +21,8 @@ def get_cf_symmetrical_arc_radius_point(degree, start, center, radius):
     half_angle_rad = math.radians(half_angle_deg)
 
     # Vector from center to start
-    x_s, y_s = start
-    x_c, y_c = center
+    x_s, y_s = start_pt
+    x_c, y_c = center_pt
     v1 = (x_s - x_c, y_s - y_c)
 
     # Length of the vector (should match the radius)
@@ -94,3 +94,25 @@ def calculate_sym_arc_degree(start, end, center):
         theta_deg = 360 - theta_deg
 
     return theta_deg
+
+
+def find_sym_arc_radius(center, point, new_distance):
+    # takes a center and a point and converts to a vector.
+    # normalizes the vector and multiplies by the new distance.
+
+    # Calculate the vector from the center to the point
+    vector = (point[0] - center[0], point[1] - center[1])
+
+    # Calculate the magnitude of the vector
+    magnitude = math.sqrt(vector[0] ** 2 + vector[1] ** 2)
+
+    # Normalize the vector
+    unit_vector = (vector[0] / magnitude, vector[1] / magnitude)
+
+    # Scale the vector by the new distance
+    scaled_vector = (unit_vector[0] * new_distance, unit_vector[1] * new_distance)
+
+    # Calculate the new point
+    new_point = (center[0] + scaled_vector[0], center[1] + scaled_vector[1])
+
+    return new_point

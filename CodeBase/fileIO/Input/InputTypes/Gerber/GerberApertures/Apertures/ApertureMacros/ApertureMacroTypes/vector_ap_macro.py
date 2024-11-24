@@ -1,4 +1,3 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_polygon_trace import CFPolygonTrace
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.ApertureMacroTypes.ap_macro_parent import \
     APMacroParent
 
@@ -21,41 +20,27 @@ class VectorAPMacro(APMacroParent):
         coordinate_list = []
         # Convert to polygon. Solve for vertices.
         # Bottom left
-        new_x_coordinate = start_x
-        new_y_coordinate = start_y - (width/2)
-        coordinate_list.append(new_x_coordinate)
-        coordinate_list.append(new_y_coordinate)
+        new_coordinate = (start_x, start_y - (width/2))
+        coordinate_list.append(new_coordinate)
 
         # Top left
-        new_y_coordinate = start_y + width
-        coordinate_list.append(new_x_coordinate)
-        coordinate_list.append(new_y_coordinate)
+        new_coordinate = (start_x, start_y + width)
+        coordinate_list.append(new_coordinate)
 
         # Top right
-        new_x_coordinate = end_x
-        coordinate_list.append(new_x_coordinate)
-        coordinate_list.append(new_y_coordinate)
+        new_coordinate = (end_x, start_y + width)
+        coordinate_list.append(new_coordinate)
 
         # Bottom Right
-        new_y_coordinate = start_y - width
-        coordinate_list.append(new_x_coordinate)
-        coordinate_list.append(new_y_coordinate)
+        new_coordinate = (end_x, start_y - width)
+        coordinate_list.append(new_coordinate)
 
         # Bottom left again. To return to OG
-        new_x_coordinate = start_x
-        coordinate_list.append(new_x_coordinate)
-        coordinate_list.append(new_y_coordinate)
+        new_coordinate = (start_x, start_y - width)
+        coordinate_list.append(new_coordinate)
 
         if rotation is not 0:
-            for point in range(5):
-                # Iterates through each point pair and rotates each.
-                current_x = coordinate_list[(point - 1) * 2]
-                current_y = coordinate_list[((point - 1) * 2) + 1]
-                new_x, new_y = self.rotate_point_around_origin_cc(current_x, current_y, rotation)
-                # Set new point
-                coordinate_list[(point - 1) * 2] = new_x
-                coordinate_list[((point - 1) * 2) + 1] = new_y
+            self._rotate_list(coordinate_list, rotation)
 
         # Create Polygon OBJ
-        new_common_form = CFPolygonTrace(self.unit, coordinate_list)
-        self.common_form.append(new_common_form)
+        self._am_create_polygon_cf(coordinate_list)

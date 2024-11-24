@@ -26,7 +26,7 @@ def handle_gcode_out(directory, output_config):
             new_gcode = GCodeFile(output_path, file_name)
 
             # Fill gcode config
-            new_gcode.units = file_details["units"]
+            new_gcode.unit = file_details["unit"]
             new_gcode.gcode_flavor = file_details["gcode_flavor"]
             new_gcode.bed_temp_C = file_details["bed_temp_c"]
             new_gcode.layer_height = file_details["layer_height"]

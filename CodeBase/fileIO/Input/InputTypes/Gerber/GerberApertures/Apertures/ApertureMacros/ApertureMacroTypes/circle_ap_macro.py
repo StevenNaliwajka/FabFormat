@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_circle_trace import CFCircleTrace
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFSolids.cf_circle import CFCircle
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.ApertureMacroTypes.ap_macro_parent import \
     APMacroParent
 
@@ -14,16 +14,14 @@ class CircleAPMacro(APMacroParent):
         self.code = 1
         self.exposure = exposure
         # Rotation in DEG CC
-        self.to_common_form(diameter, center_x, center_y, rotation)
+        self.to_common_form(diameter, (center_x, center_y), rotation)
 
-    def to_common_form(self, diameter, center_x, center_y, rotation):
+    def to_common_form(self, diameter, center_pt, rotation):
         if rotation is not 0:
             # Handle Rotation.
-            new_x, new_y = self.rotate_point_around_origin_cc(center_x, center_y, rotation)
-
-            center_x = new_x
-            center_y = new_y
+            new_pt = self.rotate_point_around_origin_cc(center_pt, rotation)
+            center_pt = new_pt
 
         radius = diameter / 2
-        new_cf_object = CFCircleTrace(self.unit, center_x, center_y, radius)
+        new_cf_object = CFCircle(self.unit, center_pt, radius)
         self.common_form.append(new_cf_object)

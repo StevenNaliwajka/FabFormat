@@ -1,17 +1,19 @@
 import numpy as np
 import scipy.interpolate as si
 import matplotlib.pyplot as plt
-from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.cf_shape_parent import CFShapeParent
+
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.cf_curve_parent import CFCurveParent
 
 
-class CFParametricCubicSplinePrim(CFShapeParent):
+class CFParametricCubicSplinePrim(CFCurveParent):
     # I'll roll my own solution to this after DEC 2nd to drop the scipy requirement.
     #  - Famous last words.
 
-    def __init__(self, x_cord_list, y_cord_list, unit):
-        super().__init__(unit)
-        shared_value =
+    def __init__(self, unit, x_cord_list, y_cord_list):
+        qty_points_on_curve = 30
+        super().__init__(unit, qty_points_on_curve)
         self.type = "pcs"
+
         if len(x_cord_list) != len(y_cord_list):
             raise ValueError("x_cord_list and y_cord_list must have the same length.")
 
@@ -19,7 +21,7 @@ class CFParametricCubicSplinePrim(CFShapeParent):
         self.y_cord_list = np.array(y_cord_list)
 
         # Calculate cumulative distances to use as 't' (parameter)
-        distances = np.sqrt(np.diff(self.x_cord_list)**2 + np.diff(self.y_cord_list)**2)
+        distances = np.sqrt(np.diff(self.x_cord_list) ** 2 + np.diff(self.y_cord_list) ** 2)
         self.t = np.concatenate([[0], np.cumsum(distances)])
 
         # Normalize t to range [0, 1] for parametric control
@@ -29,9 +31,20 @@ class CFParametricCubicSplinePrim(CFShapeParent):
         self.x_spline = si.CubicSpline(self.t_normalized, self.x_cord_list)
         self.y_spline = si.CubicSpline(self.t_normalized, self.y_cord_list)
 
-        # This number is mutable. IDK what exact number to choose so ill go with 30 for now.
-        t_qty = 30
-        t_list = self._generate_sym_arc_t_values(t_qty)
+        self.t_list = []
+
+    def _calculate_points_on_curve(self):
+        # for every point generated
+        for t in self.t_list:
+            # get the X,y for the equation
+            gotten_pt = self.get_point(t)
+            # Check further
+            self.list_of_outer_pts.append(gotten_pt)
+
+    def _calculate_extreme_points(self):
+        if self.list_of_outer_pts is None:
+            self._calculate_points_on_curve()
+        self.extreme_points = self.list_of_outer_pts
 
     def get_point(self, t_value):
         """
@@ -63,20 +76,33 @@ class CFParametricCubicSplinePrim(CFShapeParent):
         plt.grid()
         plt.show()
 
-    def _generate_sym_arc_t_values(self, quantity):
+    def _generate_t_list(self):
         """
         Generate evenly spaced values between 0 and 1 based on the quantity.
 
         :param quantity: Number of values to generate.
         :return: A list of values between 0 and 1.
         """
-        if quantity <= 0:
+        if self.qty_point_on_curve <= 0:
             raise ValueError("Quantity must be a positive integer.")
 
-        if quantity == 1:
+        if self.qty_point_on_curve == 1:
             return [0]  # Special case: only one value at 0
-        elif quantity == 2:
+        elif self.qty_point_on_curve == 2:
             return [0, 1]  # Special case: two values at 0 and 1
 
         # Generate evenly spaced values
-        return [i / (quantity - 1) for i in range(quantity)]
+        return [i / (self.qty_point_on_curve - 1) for i in range(self.qty_point_on_curve)]
+
+    def change_unit(self, new_unit):
+        conversion_factor = None
+        if new_unit == "mm":
+            conversion_factor = 0.0393701
+        else:
+            conversion_factor: 25.4
+        self.x_cord_list = tuple(element * conversion_factor for element in self.x_cord_list)
+        self.y_cord_list = tuple(element * conversion_factor for element in self.y_cord_list)
+        self.x_spline = si.CubicSpline(self.x_spline.x, self.x_spline.c * conversion_factor, extrapolate=True)
+        self.y_spline = si.CubicSpline(self.y_spline.x, self.y_spline.c * conversion_factor, extrapolate=True)
+        self.list_of_outer_pts = tuple(element * conversion_factor for element in self.list_of_outer_pts)
+        self.unit = new_unit

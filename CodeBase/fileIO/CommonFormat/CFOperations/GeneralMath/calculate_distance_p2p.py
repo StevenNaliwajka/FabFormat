@@ -1,5 +1,5 @@
 import math
 
 
-def calculate_distance(x1, y1, x2, y2):
-    return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+def calculate_distance(pt_one, pt_two):
+    return math.sqrt((pt_two[0] - pt_one[0]) ** 2 + (pt_two[1] - pt_one[1]) ** 2)

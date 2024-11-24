@@ -6,11 +6,12 @@ from CodeBase.gui.gui import Gui
 
 class WriteGcode(OutputParent):
 
+    # CREATE METHOD TO GET LAYERS. AND HAVE IT CALL _verify_units_in_layer
+
     # USING https://marlinfw.org/docs/gcode/G000-G001.html AS A BIBLE
     def __init__(self, gcode_config, common_form):
-        super().__init__()
+        super().__init__(gcode_config.filepath, gcode_config.unit, common_form)
         self.config = None
-        self.out_file_path = None
 
         self.current_tool = "T0"  # T1 is the Conductive Material, T2 is Non-conductive.
 

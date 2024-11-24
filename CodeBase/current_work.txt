@@ -2,18 +2,10 @@ CONFIG COMPLETED
 EXCELLON COMPLETED
 
 - REMOVE ALL LINEAR TRACE CALLS FROM GERBER/EXCELLON or update and replace with CF POLYGONS.
-- MAKE ALL POLYGONS CREATE CF LINEAR OBJECTS AND STORE.
-
 - Methods in cf_composite_parent to verify.
 
 - Add CommonForm complex shapes.
     - Update CFComplexParent to contain all 'squared shapes' all shapes that are bounded, so polygons and that curve
-    - Cublic Spline trace object that takes in a list of points and creates a list of formulas for
-        all curves in the overall curve.
-    - Rework Linear Trace to be a point to point line to only be used for the creation of rectangles etc..
-        - rework rectangle to take linear traces.? maybe...
-    - Create a complex shape that can be bounded by curves or Linear traces. 100% fill... maybe. probably...
-        - on creation test for the bounded curves or linear traces crossing anywhere besides the end points.
 - Finish Gerber
     - Finish main GERBER switcher.
 - Finish CFMethods
@@ -29,3 +21,9 @@ EXCELLON COMPLETED
 
 Future:
 - Roll own CF Parametric Cubic Spline solution to save from having to be dependent on package.
+- Add a math config to add variables when calculating math.
+    -the number of samples from segment arc,
+    -the number of samples from curves,
+    -the number of samples from parametricCubSpline
+- Update the logic behind circle segments when calculating distance too and from. Add some optimizations.
+- Normalize code to have all points just use tupples [x,y]

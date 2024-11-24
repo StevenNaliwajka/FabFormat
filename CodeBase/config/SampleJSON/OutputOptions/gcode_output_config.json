@@ -3,7 +3,7 @@
         "3d_print_file_name_here": [
             {
                 "output_file_directory": "C://User//Here",
-                "units": "mm",
+                "unit": "mm",
                 "gcode_flavor": "Marlin",
                 "bed_temp_c": "60",
                 "layer_height": "0.2",

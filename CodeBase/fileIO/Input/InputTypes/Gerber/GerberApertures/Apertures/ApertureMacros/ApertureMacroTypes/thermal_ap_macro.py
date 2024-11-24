@@ -1,6 +1,6 @@
 import math
 
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_symmetrical_arc_trace import CFSymmetricalArcTrace
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFSolids.cf_filled_symmetrical_arc import CFFilledSymmetricalArc
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.ApertureMacroTypes.ap_macro_parent import \
     APMacroParent
 from math import sqrt
@@ -61,11 +61,11 @@ class ThermalAPMacro(APMacroParent):
         end_x, end_y = self.rotate_point(outer_x, outer_y, arc_center_x, arc_center_y, degree_cw)
 
         if rotation is not 0:
-            arc_center_x, arc_center_y = self.rotate_point_around_origin_cc(arc_center_x, arc_center_y, rotation)
-            outer_x, outer_y = self.rotate_point_around_origin_cc(outer_x, outer_y, rotation)
+            arc_center_x, arc_center_y = self.rotate_point_around_origin_cc((arc_center_x, arc_center_y), rotation)
+            outer_x, outer_y = self.rotate_point_around_origin_cc((outer_x, outer_y), rotation)
 
-        new_cf_instruction = CFSymmetricalArcTrace(self.unit, arc_center_x, arc_center_y, outer_x, outer_y, end_x, end_y,
-                                                   outer_radius, inner_radius)
+        new_cf_instruction = CFFilledSymmetricalArc(self.unit, (arc_center_x, arc_center_y), (outer_x, outer_y),
+                                                    (end_x, end_y), outer_radius, inner_radius)
         self.common_form.append(new_cf_instruction)
 
     def rotate_point(self, x, y, cx, cy, angle_degrees):

@@ -97,11 +97,7 @@ class ReadGerber(InputParent):
             if i is not None and j is not None:
                 tool = self.aperture_list[self.current_tool-1]
                 # Draw ARC using the current aperture as the
-                if tool.aperture_type is not "c":
-                    self.feature_error()
-                else:
-                    
-                # I have to implement complex curves into COMMON form before I can handle dynamic shapes.
+
             else:
                 # Draw Line
             self.update_current_point(x, y)

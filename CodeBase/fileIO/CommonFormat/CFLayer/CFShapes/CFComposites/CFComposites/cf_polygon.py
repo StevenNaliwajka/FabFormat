@@ -17,3 +17,12 @@ class CFPolygon(CFCompositeParent):
         for primitive in primitive_list:
             if primitive.type in {"pcs", "sap"}:
                 raise TypeError(f"Not allowed to add CF curves to a CF polygon, {primitive.type}: registers as a curve.")
+
+    def _calculate_extreme_points(self):
+        for primitive in self.primitive_list:
+            self.extreme_points = primitive.get_extreme_points()
+
+    def change_unit(self, new_unit):
+        for primitive in self.primitive_list:
+            primitive.change_unit()
+        self.unit = new_unit

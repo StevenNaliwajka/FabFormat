@@ -1,4 +1,3 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_polygon_trace import CFPolygonTrace
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.ApertureMacroTypes.ap_macro_parent import \
     APMacroParent
 
@@ -15,35 +14,23 @@ class PolygonAPMacro(APMacroParent):
         self.code = 5
         self.exposure = exposure
         # Rotation in DEG CC
-        self.to_common_form(num_vertices, center_x, center_y, diameter, rotation)
+        self.to_common_form(num_vertices, (center_x, center_y), diameter, rotation)
 
-    def to_common_form(self, num_vertices, center_x, center_y, diameter, rotation):
+    def to_common_form(self, num_vertices, center_pt, diameter, rotation):
         # In this form it's easier to handle the shape definition then handle rotation.
         coordinate_list = []
 
         # First Point
-        new_x = center_x + (diameter/2)
-        new_y = center_y
-        coordinate_list.append(new_x)
-        coordinate_list.append(new_y)
+        new_pt = (center_pt[0] + (diameter / 2), center_pt[1])
+        coordinate_list.append(new_pt)
 
-        vertices_degree = 360/num_vertices
+        vertices_degree = 360 / num_vertices
 
         for _ in num_vertices:
-            new_x, new_y = self.rotate_point_around_origin_cc(new_x, new_y, vertices_degree)
-            coordinate_list.append(new_x)
-            coordinate_list.append(new_y)
+            new_pt = self.rotate_point_around_origin_cc(new_pt, vertices_degree)
+            coordinate_list.append(new_pt)
 
         if rotation is not 0:
-            # Handle Rotation.
-            for point in num_vertices:
-                # Iterates through each point pair and rotates each.
-                current_x = coordinate_list[(point - 1) * 2]
-                current_y = coordinate_list[((point - 1) * 2) + 1]
-                new_x, new_y = self.rotate_point_around_origin_cc(current_x, current_y, rotation)
-                # Set new point
-                coordinate_list[(point - 1) * 2] = new_x
-                coordinate_list[((point - 1) * 2) + 1] = new_y
+            self._rotate_list(coordinate_list, rotation)
 
-        new_common_form = CFPolygonTrace(self.unit, coordinate_list)
-        self.common_form.append(new_common_form)
+        self._am_create_polygon_cf(coordinate_list)

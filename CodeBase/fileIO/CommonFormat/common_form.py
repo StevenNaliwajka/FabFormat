@@ -1,9 +1,12 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_linear_trace import CFLinearTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_polygon_trace import CFPolygonTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_circle_trace import CFCircleTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_parametric_cubic_spline_trace import \
-    CFParametricCubicSpline
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_symmetrical_arc_trace import CFSymmetricalArcTrace
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFComposites.CFComposites.cf_complex_shape import CFComplexShape
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFComposites.CFComposites.cf_polygon import CFPolygon
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFComposites.CFPrimitives.cf_linear_prim import CFLinearPrim
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFComposites.CFPrimitives.cf_parametric_cubic_spline_prim import \
+    CFParametricCubicSplinePrim
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFComposites.CFPrimitives.cf_symmetrical_arc_prim import \
+    CFSymmetricalArcPrim
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFSolids.cf_circle import CFCircle
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFSolids.cf_filled_symmetrical_arc import CFFilledSymmetricalArc
 from CodeBase.fileIO.CommonFormat.CFLayer.cf_layer import CFTraceLayer
 
 
@@ -20,30 +23,29 @@ class CommonForm:
         self.input_config = input_config
         self.output_config = output_config
 
-    def add_sym_arc(self, layer_num, type_of_trace, c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off):
+    # Composites
+    def add_polygon(self, layer_num, type_of_trace, unit, primitive_list):
+        # Creates new CF POLYGON obj, adds it to the correct list + layer
+        new_trace = CFPolygon(unit, primitive_list)
+        # VERIFY THAT ALL THE PRIMITIVES IN THE TRACE HAVE THE SAME UNIT. IF NOT CONVERT.
+        self.add_trace_to_type(layer_num, type_of_trace, new_trace)
+
+    def add_complex_shape(self, layer_num, type_of_trace, unit, primitive_list):
+        # Creates new CF POLYGON obj, adds it to the correct list + layer
+        new_trace = CFComplexShape(unit, primitive_list)
+        # VERIFY THAT ALL THE PRIMITIVES IN THE TRACE HAVE THE SAME UNIT. IF NOT CONVERT.
+        self.add_trace_to_type(layer_num, type_of_trace, new_trace)
+
+    # Shapes
+    def add_sym_arc(self, layer_num, type_of_trace, unit, center_pt, start_pt, end_pt, arc_radius, inner_off=None):
         # Creates new CF ARC obj, adds it to the correct list + layer
         #print(f"(CommonForm): Adding Symmetrical arc to layer: \"{layer_num}\", type: \"{type_of_trace}\".'.")
-        new_trace = CFSymmetricalArcTrace(c_x, c_y, s_x, s_y, e_x, e_y, radius, inner_off)
+        new_trace = CFFilledSymmetricalArc(unit, center_pt, start_pt, end_pt, arc_radius, inner_off)
         self.add_trace_to_type(layer_num, type_of_trace, new_trace)
 
-    def add_circle(self, layer_num, type_of_trace, center_x, center_y, radius, inner_radius=None):
+    def add_circle(self, layer_num, type_of_trace, unit, center_pt, radius, inner_radius=None):
         # Creates new CF CIRCLE obj, adds it to the correct list + layer
-        new_trace = CFCircleTrace(center_x, center_y, radius, inner_radius)
-        self.add_trace_to_type(layer_num, type_of_trace, new_trace)
-
-    def add_linear(self, layer_num, type_of_trace, start_x, start_y, end_x, end_y):
-        # Creates new CF LINEAR obj, adds it to the correct list + layer
-        new_trace = CFLinearTrace(start_x, start_y, end_x, end_y)
-        self.add_trace_to_type(layer_num, type_of_trace, new_trace)
-
-    def add_polygon(self, layer_num, type_of_trace, point_list):
-        # Creates new CF POLYGON obj, adds it to the correct list + layer
-        new_trace = CFPolygonTrace(point_list)
-        self.add_trace_to_type(layer_num, type_of_trace, new_trace)
-
-    def add_parametric_cubic_spline(self, layer_num, type_of_trace, x_cord_list, y_cord_list, unit):
-        # Creates new CF Parametric cubic spline obj, adds it to the correct list + layer
-        new_trace = CFParametricCubicSpline(x_cord_list, y_cord_list, unit)
+        new_trace = CFCircle(unit, center_pt, radius, inner_radius)
         self.add_trace_to_type(layer_num, type_of_trace, new_trace)
 
     def add_trace_to_type(self, layer, type_of_layer, trace_object):
@@ -60,9 +62,26 @@ class CommonForm:
         # adds trace to layer
         self.layer_list[layer].add_trace_to_layer(type_of_layer, trace_object)
 
-    def verify_units(self, outfile):
-        pass
+    # Primitives
+    def create_linear_prim(self, unit, start_pt, end_pt):
+        # Creates new CF LINEAR obj, adds it to the correct list + layer
+        new_trace = CFLinearPrim(unit, start_pt, end_pt)
+        return new_trace
+
+    def create_parametric_cubic_spline(self, unit, x_cord_list, y_cord_list):
+        # Creates new CF Parametric cubic spline obj, adds it to the correct list + layer
+        new_trace = CFParametricCubicSplinePrim(x_cord_list, y_cord_list, unit)
+        return new_trace
+
+    def add_sym_arc_prim(self, unit, center_pt, start_pt, end_pt, arc_radius):
+        # Creates new CF ARC obj, adds it to the correct list + layer
+        #print(f"(CommonForm): Adding Symmetrical arc to layer: \"{layer_num}\", type: \"{type_of_trace}\".'.")
+        new_trace = CFSymmetricalArcPrim(unit, center_pt, start_pt, end_pt, arc_radius)
+        return new_trace
+
+    def verify_units(self, outfile_config):
+        for layer in self.layer_list:
+            layer.verify_units(outfile_config)
 
     def format_layers(self):
         pass
-
