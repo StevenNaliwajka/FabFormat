@@ -27,3 +27,4 @@ Future:
     -the number of samples from parametricCubSpline
 - Update the logic behind circle segments when calculating distance too and from. Add some optimizations.
 - Normalize code to have all points just use tupples [x,y]
+- Put Gerber Aperture Macro and Aperture types under one parent to allow for similar methods to be merged.

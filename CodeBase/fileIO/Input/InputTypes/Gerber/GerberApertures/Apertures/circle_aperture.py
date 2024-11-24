@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_circle_trace import CFCircleTrace
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFSolids.cf_circle import CFCircle
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.aperture_parent import ApertureParent
 
 
@@ -15,8 +15,8 @@ class CircleAperture(ApertureParent):
         self.aperture_number = ap_number
 
         # To common form.
-        self.to_common_form(center_x, center_y, diameter, inside_hole_diam)
+        self.to_common_form(unit, (center_x, center_y), diameter, inside_hole_diam)
 
-    def to_common_form(self, center_x, center_y, diameter, inside_hole_diam):
-        new_common_form = CFCircleTrace(center_x, center_y, (diameter / 2), inside_hole_diam)
+    def to_common_form(self, unit, center_pt, diameter, inside_hole_diam):
+        new_common_form = CFCircle(unit, center_pt, (diameter / 2), inside_hole_diam)
         self.common_form.append(new_common_form)

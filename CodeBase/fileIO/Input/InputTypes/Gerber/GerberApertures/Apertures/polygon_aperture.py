@@ -1,8 +1,7 @@
 import math
 
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.cf_polygon_trace import CFPolygonTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_circle_trace import CFCircleTrace
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_symmetrical_arc_trace import CFSymmetricalArcTrace
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFComposites.CFComposites.cf_polygon import CFPolygon
+from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFSolids.cf_filled_symmetrical_arc import CFFilledSymmetricalArc
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.aperture_parent import ApertureParent
 from math import sqrt
 
@@ -22,8 +21,7 @@ class PolygonAperture(ApertureParent):
         super().__init__(unit)
         self.aperture_type = "c"
         self.aperture_number = ap_number
-        self.center_x = center_x
-        self.center_y = center_y
+        self.center_pt = (center_x, center_y)
         self.outer_diameter = outer_diameter
         if num_vertices < 3 or num_vertices > 12:
             raise ValueError(f"PolygonAperture: Num_Vertices are incorrect, {num_vertices} is an unacceptable number.")
@@ -42,8 +40,8 @@ class PolygonAperture(ApertureParent):
         # get sin and cosin value.
         cosine_value = math.cos(angle_rad)
         sine_value = math.sin(angle_rad)
-        starting_x = (cosine_value*self.outer_diameter/2) + self.center_x
-        starting_y = (sine_value * self.outer_diameter / 2) + self.center_y
+        starting_x = (cosine_value*self.outer_diameter/2) + self.center_pt[0]
+        starting_y = (sine_value * self.outer_diameter / 2) + self.center_pt[0]
         if self.inner_hole_diameter:
             self.complex_polygon_to_cf(starting_x, starting_y)
         else:
@@ -69,12 +67,12 @@ class PolygonAperture(ApertureParent):
             cosine_value = math.cos(angle_rad)
             sine_value = math.sin(angle_rad)
             # get real x and y value
-            x_pos = (cosine_value * self.outer_diameter / 2) + self.center_x
-            y_pos = (sine_value * self.outer_diameter / 2) + self.center_y
+            x_pos = (cosine_value * self.outer_diameter / 2) + self.center_pt[0]
+            y_pos = (sine_value * self.outer_diameter / 2) + self.center_pt[0]
             # add trace
             trace_list_polygon.append((x_pos, y_pos))
             counter += 1
-        self.common_form.append(CFPolygonTrace(trace_list_polygon))
+        self._a_create_polygon_cf(trace_list_polygon)
 
     def complex_polygon_to_cf(self, starting_x, starting_y):
         # Creates 4 arcs, 2 polygons=
@@ -93,20 +91,18 @@ class PolygonAperture(ApertureParent):
 
         for offset_x, offset_y in corner_offsets:
             # Apply center offset to start and end points
-            s_x = self.center_x + (offset_x if offset_y == -smallest else 0)
-            s_y = self.center_y + (0 if offset_x == -smallest else offset_y)
-            e_x = self.center_x + (0 if offset_y == -smallest else offset_x)
-            e_y = self.center_y + (offset_y if offset_x == -smallest else 0)
+            s_x = self.center_pt[0] + (offset_x if offset_y == -smallest else 0)
+            s_y = self.center_pt[1] + (0 if offset_x == -smallest else offset_y)
+            e_x = self.center_pt[0] + (0 if offset_y == -smallest else offset_x)
+            e_y = self.center_pt[1] + (offset_y if offset_x == -smallest else 0)
 
             # Append the arc trace, centered around (center_x, center_y)
             self.common_form.append(
-                CFSymmetricalArcTrace(
-                    self.center_x + offset_x,  # Adjusted center offset
-                    self.center_y + offset_y,  # Adjusted center offset
-                    s_x,
-                    s_y,
-                    e_x,
-                    e_y,
+                CFFilledSymmetricalArc(
+                    self.unit,
+                    (self.center_pt[0] + offset_x, self.center_pt[1] + offset_y),  # Adjusted center offset
+                    (s_x, s_y),
+                    (e_x, e_y),
                     arc_len
                 )
             )
@@ -138,24 +134,22 @@ class PolygonAperture(ApertureParent):
             cosine_value = math.cos(angle_rad)
             sine_value = math.sin(angle_rad)
             # get real x and y value
-            x_pos = (cosine_value * self.outer_diameter / 2) + self.center_x
-            y_pos = (sine_value * self.outer_diameter / 2) + self.center_y
+            x_pos = (cosine_value * self.outer_diameter / 2) + self.center_pt[0]
+            y_pos = (sine_value * self.outer_diameter / 2) + self.center_pt[1]
             # add trace
             trace_list_polygon.append((x_pos, y_pos))
 
         # top left of arcs cord
-        trace_list_polygon.append(((-(self.inner_hole_diameter/2)+self.center_x), (self.inner_hole_diameter/2+self.center_y)))
+        trace_list_polygon.append(((-(self.inner_hole_diameter/2)+self.center_pt[0]), (self.inner_hole_diameter/2+self.center_pt[1])))
         # top right of arcs cord
-        trace_list_polygon.append((((self.inner_hole_diameter / 2) + self.center_x), (self.inner_hole_diameter / 2) + self.center_y))
+        trace_list_polygon.append((((self.inner_hole_diameter / 2) + self.center_pt[0]), (self.inner_hole_diameter / 2) + self.center_pt[1]))
         # Starting cord
         trace_list_polygon.append((starting_x, starting_y))
 
         # Create First polygon
         # I KINDA BUILT THIS LIKE AIDS....
         # COULD BE IMPROVED
-        new_list = self.flatten_traces(trace_list_polygon)
-        new_polygon = CFPolygonTrace(new_list)
-        self.common_form.append(new_polygon)
+        self._a_create_polygon_cf(trace_list_polygon)
 
         # Second polygon
         # Starting cord
@@ -178,13 +172,8 @@ class PolygonAperture(ApertureParent):
             cosine_value = math.cos(angle_rad)
             sine_value = math.sin(angle_rad)
             # get real x and y value
-            x_pos = (cosine_value * self.outer_diameter / 2) + self.center_x
-            y_pos = (sine_value * self.outer_diameter / 2) + self.center_y
+            x_pos = (cosine_value * self.outer_diameter / 2) + self.center_pt[0]
+            y_pos = (sine_value * self.outer_diameter / 2) + self.center_pt[1]
             # add trace
             trace_list_second_polygon.append((x_pos, y_pos))
-        new_list = self.flatten_traces(trace_list_second_polygon)
-        new_polygon = CFPolygonTrace(new_list)
-        self.common_form.append(new_polygon)
-
-    def flatten_traces(self, trace_list):
-        return [coord for pair in trace_list for coord in pair]
+        self._a_create_polygon_cf(trace_list_second_polygon)
