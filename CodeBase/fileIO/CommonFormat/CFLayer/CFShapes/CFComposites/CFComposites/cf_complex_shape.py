@@ -7,7 +7,6 @@ class CFComplexShape(CFCompositeParent):
         # XXX has to be remade
 
         # 100% infil
-
         super().__init__(unit, primitive_list)
         self.type = "com"
 

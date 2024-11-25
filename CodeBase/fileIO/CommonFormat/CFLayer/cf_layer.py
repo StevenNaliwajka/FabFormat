@@ -52,3 +52,7 @@ class CFTraceLayer:
             self.exclusive_traces.append(trace)
         else:
             raise ValueError(f"ADDITIVE LAYER: Invalid Trace type \"{trace_type}\".")
+
+    def map_shapes(self):
+        # calls a method to map the shapes relations with each other, whats overlaping, whats touching etc....
+        # passes in a certain layer.

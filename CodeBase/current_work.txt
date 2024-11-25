@@ -1,6 +1,14 @@
 - Methods in cf_composite_parent to verify.
 - "cf_find_edge_route"
 - Handling overlaps with CF shapes.
+    - Create method called map shapes.
+    - Travels along each shape checking for intersections with one another.
+        - Checks if an overlap or touching.
+        - If overlap add to the overlap method.
+        - If touching add to the touching method.
+    - Once this is done. Allows for shapes to be subtracted from effectively.
+        - Also allows for more efficient plotting to be done in the future.
+
 
 - Finish Gerber
     - Finish main GERBER switcher.

@@ -15,6 +15,25 @@ class CFShapeParent:
 
         CFShapeParent._id_counter+=1
 
+        # When finally finishing, calculated overlaping between CF can be done here.
+        # STORED AS TOUPLE:
+        # [(ID, pt_1, pt_2),....]
+        # EX:
+        # [(15,(0.5,3.4),(3.45,4.5)),(70,(3.4,4.5),(2.4,2.4)),...]
+        # This CF intersects CF:15 between  (0.5,3.4) and (3.45,4.5)
+        # It also intersects CF:70 between  (3.4,4.5) and (2.4,2.4)
+        self.is_intersecting_other_shapes = []
+
+        # After calculating overlaps, calculated touching between CF can be saved here.
+        # STORED AS TOUPLE:
+        # [(ID, pt_1, pt_2),....]
+        # EX:
+        # [(15,(0.5,3.4),(3.45,4.5)),(70,(3.4,4.5),(2.4,2.4)),...]
+        # This CF touches CF:15 between  (0.5,3.4) and (3.45,4.5)
+        # It also touches CF:70 between  (3.4,4.5) and (2.4,2.4)
+        self.is_touching_other_shapes = []
+
+
     def get_extreme_points(self):
         if self.extreme_points is None:
             # "if empty calculate"
