@@ -1,11 +1,7 @@
-CONFIG COMPLETED
-EXCELLON COMPLETED
-
-- REMOVE ALL LINEAR TRACE CALLS FROM GERBER/EXCELLON or update and replace with CF POLYGONS.
 - Methods in cf_composite_parent to verify.
+- "cf_find_edge_route"
+- Handling overlaps with CF shapes.
 
-- Add CommonForm complex shapes.
-    - Update CFComplexParent to contain all 'squared shapes' all shapes that are bounded, so polygons and that curve
 - Finish Gerber
     - Finish main GERBER switcher.
 - Finish CFMethods
@@ -21,10 +17,16 @@ EXCELLON COMPLETED
 
 Future:
 - Roll own CF Parametric Cubic Spline solution to save from having to be dependent on package.
-- Add a math config to add variables when calculating math.
+- Add a math config to add variables when calculating math. Currently values hardcoded. ;(
     -the number of samples from segment arc,
     -the number of samples from curves,
     -the number of samples from parametricCubSpline
 - Update the logic behind circle segments when calculating distance too and from. Add some optimizations.
-- Normalize code to have all points just use tupples [x,y]
 - Put Gerber Aperture Macro and Aperture types under one parent to allow for similar methods to be merged.
+- Update gerber D01 arcs to handle edge cases
+    - CF:"cf_determine_extreme_point" needs to be able to handle
+        - CF shapes not touching... (happens if Aperture Macro has two seperated shapes)
+        - Instances where there are two+ extreme points are at the same distance.
+    - Update Gerber D01 Arcs to interpret all cf_determine_extreme_point returns.
+- UPDATE CF:
+    - Add a CF memory value that stores what cf shapes are touching that shape.

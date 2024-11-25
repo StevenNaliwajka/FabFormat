@@ -41,3 +41,11 @@ class CFCircle(CFCurveParent):
         self.list_of_inner_pts = tuple(element * conversion_factor for element in self.list_of_inner_pts)
         self.list_of_outer_pts = tuple(element * conversion_factor for element in self.list_of_outer_pts)
         self.unit = new_unit
+
+    def shift_cf(self, shift_x, shift_y):
+        self.center_pt = (self.center_pt[0] + shift_x, self.center_pt[1] + shift_y)
+        for index, pt in enumerate(self.list_of_outer_pts):
+             self.list_of_outer_pts[index] = (pt[0]+shift_x, pt[1]+shift_y)
+
+        for index, pt in enumerate(self.list_of_inner_pts):
+             self.list_of_inner_pts[index] = (pt[0]+shift_x, pt[1]+shift_y)

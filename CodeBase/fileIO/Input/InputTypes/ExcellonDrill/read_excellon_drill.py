@@ -1,6 +1,5 @@
 import re
 
-from CodeBase.fileIO.CommonFormat.CFLayer.CFTraces.curves.cf_circle_trace import CFCircleTrace
 from CodeBase.fileIO.Input.InputTypes.input_parent import InputParent
 
 
@@ -64,7 +63,7 @@ class ReadExcellonDrill(InputParent):
             self.line += 1
             self.search_switcher(header_switcher)
         else:
-            raise TypeError(f"Excellon File \"{self.filepath}\" Incorrectly Parsed, missing header at top of file")
+            raise TypeError(f"Excellon File \"{self.file_path}\" Incorrectly Parsed, missing header at top of file")
 
         # Parses body.
         self.search_switcher(body_switcher)

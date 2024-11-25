@@ -9,10 +9,15 @@ class CFParametricCubicSplinePrim(CFCurveParent):
     # I'll roll my own solution to this after DEC 2nd to drop the scipy requirement.
     #  - Famous last words.
 
+    # This thing is a POS but, it's tested in isolation, and it works, Shift and update unit works.
+    t_list = []
+
     def __init__(self, unit, x_cord_list, y_cord_list):
         qty_points_on_curve = 30
         super().__init__(unit, qty_points_on_curve)
+
         self.type = "pcs"
+        self.list_of_outer_pts = []
 
         if len(x_cord_list) != len(y_cord_list):
             raise ValueError("x_cord_list and y_cord_list must have the same length.")
@@ -26,25 +31,37 @@ class CFParametricCubicSplinePrim(CFCurveParent):
 
         # Normalize t to range [0, 1] for parametric control
         self.t_normalized = self.t / self.t[-1]
+        # print(f"Normalized T: {self.t_normalized}")
 
         # Fit cubic splines for x(t) and y(t)
         self.x_spline = si.CubicSpline(self.t_normalized, self.x_cord_list)
         self.y_spline = si.CubicSpline(self.t_normalized, self.y_cord_list)
 
-        self.t_list = []
-
     def _calculate_points_on_curve(self):
-        # for every point generated
-        for t in self.t_list:
+        # print("Calculating points on curve")
+        if not CFParametricCubicSplinePrim.t_list:
+            self._generate_t_list()
+        # print(f"TList: {CFParametricCubicSplinePrim.t_list}")
+        for t in CFParametricCubicSplinePrim.t_list:
             # get the X,y for the equation
             gotten_pt = self.get_point(t)
-            # Check further
-            self.list_of_outer_pts.append(gotten_pt)
+
+            # Convert numpy arrays to native types
+            x = float(gotten_pt[0]) if isinstance(gotten_pt[0], np.ndarray) else gotten_pt[0]
+            y = float(gotten_pt[1]) if isinstance(gotten_pt[1], np.ndarray) else gotten_pt[1]
+
+            # Append as a tuple of native Python numbers
+            self.list_of_outer_pts.append((x, y))
 
     def _calculate_extreme_points(self):
-        if self.list_of_outer_pts is None:
+        if not self.list_of_outer_pts:
             self._calculate_points_on_curve()
         self.extreme_points = self.list_of_outer_pts
+
+    def get_points_on_curve(self):
+        if not self.list_of_outer_pts:
+            self._calculate_points_on_curve()
+        return self.list_of_outer_pts
 
     def get_point(self, t_value):
         """
@@ -79,9 +96,6 @@ class CFParametricCubicSplinePrim(CFCurveParent):
     def _generate_t_list(self):
         """
         Generate evenly spaced values between 0 and 1 based on the quantity.
-
-        :param quantity: Number of values to generate.
-        :return: A list of values between 0 and 1.
         """
         if self.qty_point_on_curve <= 0:
             raise ValueError("Quantity must be a positive integer.")
@@ -92,17 +106,39 @@ class CFParametricCubicSplinePrim(CFCurveParent):
             return [0, 1]  # Special case: two values at 0 and 1
 
         # Generate evenly spaced values
-        return [i / (self.qty_point_on_curve - 1) for i in range(self.qty_point_on_curve)]
+        new_t_list = [i / (self.qty_point_on_curve - 1) for i in range(self.qty_point_on_curve)]
+        CFParametricCubicSplinePrim.t_list = new_t_list
+        # print(f"Current T-List: {CFParametricCubicSplinePrim.t_list}")
 
     def change_unit(self, new_unit):
-        conversion_factor = None
         if new_unit == "mm":
-            conversion_factor = 0.0393701
+            conversion_factor = 0.0393701  # inches to mm
         else:
-            conversion_factor: 25.4
-        self.x_cord_list = tuple(element * conversion_factor for element in self.x_cord_list)
-        self.y_cord_list = tuple(element * conversion_factor for element in self.y_cord_list)
-        self.x_spline = si.CubicSpline(self.x_spline.x, self.x_spline.c * conversion_factor, extrapolate=True)
-        self.y_spline = si.CubicSpline(self.y_spline.x, self.y_spline.c * conversion_factor, extrapolate=True)
-        self.list_of_outer_pts = tuple(element * conversion_factor for element in self.list_of_outer_pts)
+            conversion_factor = 25.4  # mm to inches
+
+        # Update coordinates
+        self.x_cord_list = self.x_cord_list * conversion_factor
+        self.y_cord_list = self.y_cord_list * conversion_factor
+
+        # Recreate the splines
+        self.x_spline = si.CubicSpline(self.t_normalized, self.x_cord_list)
+        self.y_spline = si.CubicSpline(self.t_normalized, self.y_cord_list)
+
+        # Clear cached points and recalculate
+        self.list_of_outer_pts = []  # Clear previously calculated points
+        self._calculate_points_on_curve()
+
         self.unit = new_unit
+
+    def shift_cf(self, shift_x, shift_y):
+        # Update coordinates by shifting
+        self.x_cord_list = self.x_cord_list + shift_x
+        self.y_cord_list = self.y_cord_list + shift_y
+
+        # Recreate the splines
+        self.x_spline = si.CubicSpline(self.t_normalized, self.x_cord_list)
+        self.y_spline = si.CubicSpline(self.t_normalized, self.y_cord_list)
+
+        # Clear cached points and recalculate
+        self.list_of_outer_pts = []  # Clear previously calculated points
+        self._calculate_points_on_curve()

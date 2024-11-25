@@ -3,6 +3,7 @@ from CodeBase.fileIO.CommonFormat.CFOperations.GeneralMath.calculate_distance_p2
 
 def cf_determine_extreme_point(list_of_cf, check_pt, type_code):
     # Given a list of CF and a point.
+    # returns 1 extreme point (closest, or furthest)
     # What point in the total list of CF is the furthest or closest away from the chosen point.
 
     # adding logic to curve calculation could spead things up so I dont have to brute force everything..... TBD

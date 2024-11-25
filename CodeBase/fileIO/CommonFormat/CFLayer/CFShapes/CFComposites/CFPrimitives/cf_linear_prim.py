@@ -26,3 +26,11 @@ class CFLinearPrim(CFShapeParent):
         self.start_pt = tuple(element * conversion_factor for element in self.start_pt)
         self.end_pt = tuple(element * conversion_factor for element in self.end_pt)
         self.unit = new_unit
+
+    def shift_cf(self, shift_x, shift_y):
+        # Shift Start PT
+        self.start_pt[0] = self.start_pt[0] + shift_x
+        self.start_pt[1] = self.start_pt[1] + shift_y
+        # Shift End PT
+        self.end_pt[0] = self.end_pt[0] + shift_x
+        self.end_pt[1] = self.end_pt[1] + shift_y

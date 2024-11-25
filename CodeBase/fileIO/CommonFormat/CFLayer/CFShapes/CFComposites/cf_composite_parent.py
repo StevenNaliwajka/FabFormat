@@ -20,3 +20,6 @@ class CFCompositeParent(CFShapeParent):
         # verifies composites dont intersect.
         pass
 
+    def shift_cf(self, shift_x, shift_y):
+        for primitive in self.primitive_list:
+            primitive.shift_cf(shift_x, shift_y)
