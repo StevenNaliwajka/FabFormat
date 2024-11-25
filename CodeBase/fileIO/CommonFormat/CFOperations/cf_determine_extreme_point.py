@@ -20,25 +20,29 @@ def cf_determine_extreme_point(list_of_cf, check_pt, type_code):
     # TYPE CODE INFORMATION
     # 0 - CLOSEST
     # 1 - FURTHEST
-
+    extreme_index = None
     if type_code == 1:
         for cf in list_of_cf:
             extreme_points_list = cf.get_extreme_points()
-            for point in extreme_points_list:
-                _is_furthest(point, extreme_points_list)
+            for index, point in enumerate(extreme_points_list):
+                if _is_furthest(point, extreme_points_list):
+                    extreme_index = point
+
 
     elif type_code == 0:
         for cf in list_of_cf:
             extreme_points_list = cf.get_extreme_points()
-            for point in extreme_points_list:
-                _is_closest(point, extreme_points_list)
+            for index, point in enumerate(extreme_points_list):
+                if _is_closest(point, extreme_points_list):
+                    extreme_index = point
 
     # Once iterated through all. Return the furthest.
-    return extreme_points_list[0], extreme_points_list[1]
+    return (extreme_points_list[0], extreme_points_list[1]), extreme_index
 
 
 def _is_furthest(check_pt, furthest_point_list):
     # Checks if the check_X and check_Y are further away
+    # returns true if further
 
     # get distance between Start cords and check cords
     new_distance = calculate_distance(check_pt, (furthest_point_list[3], furthest_point_list[4]))
@@ -46,10 +50,14 @@ def _is_furthest(check_pt, furthest_point_list):
         furthest_point_list[2] = new_distance
         furthest_point_list[0] = check_pt[0]
         furthest_point_list[1] = check_pt[1]
+        return True
+    else:
+        return False
 
 
 def _is_closest(check_pt, furthest_point_list):
     # Checks if the check_X and check_Y are further away
+    # returns true if closer
 
     # get distance between Start cords and check cords
     new_distance = calculate_distance(check_pt, (furthest_point_list[3], furthest_point_list[4]))
@@ -57,3 +65,6 @@ def _is_closest(check_pt, furthest_point_list):
         furthest_point_list[2] = new_distance
         furthest_point_list[0] = check_pt[0]
         furthest_point_list[1] = check_pt[1]
+        return True
+    else:
+        return False
