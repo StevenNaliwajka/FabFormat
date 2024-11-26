@@ -6,7 +6,7 @@ from math import *
 
 
 class InputParent(UniversalParent):
-    def __init__(self, file_path, layer_type, active_layer, common_form):
+    def __init__(self, file_path, layer_type, active_layers, common_form):
         super().__init__(file_path, common_form)
         self.file_path = file_path
 
@@ -17,7 +17,7 @@ class InputParent(UniversalParent):
         # saves layertype
         self.layer_type = layer_type
         # saves active layers for the file or tool.
-        self.active_layer = active_layer
+        self.active_layers = active_layers
 
         # Used to stop while loops
         self.run = 0

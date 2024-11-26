@@ -1,0 +1,18 @@
+{
+    "gcode_output_files": {
+        "3d_print_file_name_here": [
+            {
+                "output_file_directory": "C://User//Here",
+                "unit": "mm",
+                "gcode_flavor":
+                ***********
+                "output_form": "subtractive",
+                "active_layers": {
+                    "primary": "1",
+                    "core": "0",
+                    "annotation": "2"
+                }
+            }
+        ]
+    }
+}

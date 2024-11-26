@@ -24,43 +24,43 @@ class CommonForm:
         self.output_config = output_config
 
     # Composites
-    def add_polygon(self, layer_num, type_of_trace, unit, primitive_list):
+    def add_polygon(self, layer_list, type_of_trace, unit, primitive_list):
         # Creates new CF POLYGON obj, adds it to the correct list + layer
         new_trace = CFPolygon(unit, primitive_list)
         # VERIFY THAT ALL THE PRIMITIVES IN THE TRACE HAVE THE SAME UNIT. IF NOT CONVERT.
-        self.add_trace_to_type(layer_num, type_of_trace, new_trace)
+        self.add_trace_to_type(layer_list, type_of_trace, new_trace)
 
-    def add_complex_shape(self, layer_num, type_of_trace, unit, primitive_list):
+    def add_complex_shape(self, layer_list, type_of_trace, unit, primitive_list):
         # Creates new CF POLYGON obj, adds it to the correct list + layer
         new_trace = CFComplexShape(unit, primitive_list)
         # VERIFY THAT ALL THE PRIMITIVES IN THE TRACE HAVE THE SAME UNIT. IF NOT CONVERT.
-        self.add_trace_to_type(layer_num, type_of_trace, new_trace)
+        self.add_trace_to_type(layer_list, type_of_trace, new_trace)
 
     # Shapes
-    def add_sym_arc(self, layer_num, type_of_trace, unit, center_pt, start_pt, end_pt, arc_radius, inner_off=None):
+    def add_sym_arc(self, layer_list, type_of_trace, unit, center_pt, start_pt, end_pt, arc_radius, inner_off=None):
         # Creates new CF ARC obj, adds it to the correct list + layer
-        #print(f"(CommonForm): Adding Symmetrical arc to layer: \"{layer_num}\", type: \"{type_of_trace}\".'.")
+        #print(f"(CommonForm): Adding Symmetrical arc to layer: \"{layer_list}\", type: \"{type_of_trace}\".'.")
         new_trace = CFFilledSymmetricalArc(unit, center_pt, start_pt, end_pt, arc_radius, inner_off)
-        self.add_trace_to_type(layer_num, type_of_trace, new_trace)
+        self.add_trace_to_type(layer_list, type_of_trace, new_trace)
 
-    def add_circle(self, layer_num, type_of_trace, unit, center_pt, radius, inner_radius=None):
+    def add_circle(self, layer_list, type_of_trace, unit, center_pt, radius, inner_radius=None):
         # Creates new CF CIRCLE obj, adds it to the correct list + layer
         new_trace = CFCircle(unit, center_pt, radius, inner_radius)
-        self.add_trace_to_type(layer_num, type_of_trace, new_trace)
+        self.add_trace_to_type(layer_list, type_of_trace, new_trace)
 
-    def add_trace_to_type(self, layer, type_of_layer, trace_object):
+    def add_trace_to_type(self, layer_list, type_of_layer, trace_object):
         # Directly adds a trace object to a layer and layer type if the object has been created already.
-
-        # Checks if layer exists
-        if layer <= len(self.layer_list):
+        for layer in layer_list:
+            # Checks if layer exists
+            if layer <= len(self.layer_list):
+                # adds trace to layer
+                pass
+            else:
+                # creates layer
+                new_layer = CFTraceLayer(layer)
+                self.layer_list.append(new_layer)
             # adds trace to layer
-            pass
-        else:
-            # creates layer
-            new_layer = CFTraceLayer(layer)
-            self.layer_list.append(new_layer)
-        # adds trace to layer
-        self.layer_list[layer].add_trace_to_layer(type_of_layer, trace_object)
+            self.layer_list[layer].add_trace_to_layer(type_of_layer, trace_object)
 
     # Primitives
     def create_linear_prim(self, unit, start_pt, end_pt):
@@ -75,7 +75,6 @@ class CommonForm:
 
     def add_sym_arc_prim(self, unit, center_pt, start_pt, end_pt, arc_radius):
         # Creates new CF ARC obj, adds it to the correct list + layer
-        #print(f"(CommonForm): Adding Symmetrical arc to layer: \"{layer_num}\", type: \"{type_of_trace}\".'.")
         new_trace = CFSymmetricalArcPrim(unit, center_pt, start_pt, end_pt, arc_radius)
         return new_trace
 
@@ -84,4 +83,21 @@ class CommonForm:
             layer.verify_units(outfile_config)
 
     def format_layers(self):
-        pass
+        core_flag = 0
+        depth_flag = 0
+        annotation_flag = 0
+        for config in self.output_config.outfile_list:
+            if config.generate_core_bounded_by_outline:
+                core_flag = 1
+            if config.output_material_has_depth:
+                depth_flag = 1
+            if config.annotation_flag:
+                annotation_flag = 1
+        for layer in self.layer_list:
+            if annotation_flag:
+                layer.set_annotation_flag()
+            if core_flag:
+                layer.generate_core()
+            if depth_flag:
+                layer.remove_additive_overlaps()
+                layer.remove_subtractive()

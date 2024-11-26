@@ -1,5 +1,7 @@
+import copy
 import re
 
+from CodeBase.ErrorHandling.feature_error import FeatureError
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.ApertureMacros.aperture_macro import \
     ApertureMacro
 from CodeBase.fileIO.Input.InputTypes.Gerber.GerberApertures.Apertures.circle_aperture import CircleAperture
@@ -21,9 +23,7 @@ class ReadGerber(InputParent):
         super().__init__(gerber_config.filepath, gerber_config.layer_type, gerber_config.active_layers, common_form)
 
         # Current point that the gerber code is looking at. Where the "tool" is.
-        self.current_x = 0
-        self.current_y = 0
-
+        self.current_pt = (0, 0)
         # Stores apertures. Ordered
         # EX: Aperture #11 is in index 10.
         self.aperture_list = []
@@ -36,7 +36,7 @@ class ReadGerber(InputParent):
         self._conv_from_polar = 0  # FLAG. set 1 if LP command, must convert cordinates to cartesian(linear) from polar.
         ## ^ WILL BE A FLAG INSIDE OF THE "%FS" Method..... NOT GLOBAL. SET EACH TIME.
         self._current_infill = 0  # FLAG. set 1 if infil of polygon/circle. 0 if empty.
-        self._current_tool = None  # "D10" and higher. Used when loading lines into CF. Updated by "D#" Command.
+        self._current_tool_num = None  # "D10" and higher. Used when loading lines into CF. Updated by "D#" Command.
         self._current_line_type = 1  # 1 = "G01":LINEAR, 2 = "G02":Clockwise, 3 = "G03":CounterClockwise.
         # UNIT IS OUT THERE, 0 - METRIC, 1 - INCH
 
@@ -61,7 +61,7 @@ class ReadGerber(InputParent):
             "g36*": self.feature_error(),  # BEGINS Region, reads lines till "g37*"
             "x": self.draw_line(),  # D01(DRAWS LINE), D02(PEN UP), D03(SINGLE DOT)
             "m02": self.do_nothing(),  # IGNORED. RUNS OFF OF LINES.
-            "d": xxx,  # Aperture selection codes, Used to select prior defined apertures. D10 and higher.
+            "d": self.change_current_aperture(),  # Aperture selection codes, Used to select prior defined apertures. D10 and higher.
             # "g75": self.do_nothing(), # Issued before first circlular plot.
             "g01": lambda: setattr(self, 'current_line_type', 1),  # Swaps to linear plot
             "g02": lambda: setattr(self, 'current_line_type', 2),  # Swaps to clockwise plot
@@ -87,32 +87,54 @@ class ReadGerber(InputParent):
 
         # Extract the groups
         x = self.interpret_number_format(match.group(1), "x")  # X value
-        y = self.interpret_number_format(match.group(2), "y")   # Y value
+        y = self.interpret_number_format(match.group(2), "y")  # Y value
         i = self.interpret_number_format(match.group(4), "x")  # I value (optional)
-        j = self.interpret_number_format(match.group(6), "y")   # J value (optional)
+        j = self.interpret_number_format(match.group(6), "y")  # J value (optional)
         d = match.group(7)  # D value
 
         if d == 1:
             # D01 - Draw line or ARC from current point to the new point. Update current to new point
             if i is not None and j is not None:
-                tool = self.aperture_list[self.current_tool-1]
+                tool = self.aperture_list[self.current_tool - 1]
                 # Draw ARC using the current aperture as the
-
+                raise FeatureError("Feature Error: Gerber D01 Cuves are not supported right now..")
             else:
                 # Draw Line
-            self.update_current_point(x, y)
+                # Currently only simple circles are supported.
+                # THIS IS SCUFFED. FIX and add more feature**********************************************************
+                cf_list = self.aperture_list[self._current_tool - 1].common_form
+                if len(cf_list) == 1:
+                    if cf_list[0].type == "cir":
+                        raise FeatureError("Feature Error: Gerber D01 not supported rn.")
+                    else:
+                        raise FeatureError("Feature Error: Gerber D01 with any CF not a pure circle not supported rn.")
+                else:
+                    raise FeatureError("Feature Error: Gerber D01 with more than one CF is not supported rn.")
+            self.update_current_point((x, y))
+
         elif d == 2:
             # D02 - Update current to new point
-            self.update_current_point(x,y)
+            self.update_current_point((x, y))
         elif d == 3:
-            # D03 - Creates a single object @ the new point. Update current to new point
+            # D03 - Creates a single object @ the new point.
+            # Update current to new point
+            self.update_current_point((x, y))
+            # get aperture Cf_list. Store as copy to shift
+            new_cf_list = copy.deepcopy(self.aperture_list[self._current_tool - 1].common_form)
+            for cf in new_cf_list:
+                # for every CF
+                # shift to correct cord.
+                cf.shift_cf(self.current_pt[0], self.current_pt[1])
+                # Append the traces to the layer.
+                self.common_form.add_trace_to_type(self.active_layers, self.layer_type, cf)
 
-            self.update_current_point(x, y)
+    def change_current_aperture(self):
+        line_data = self.file_by_line_list[self.line]
+        d_code = int(line_data[1:])
+        self._current_tool_num = d_code
 
-
-    def update_current_point(self, new_x, new_y):
-        self.current_x = new_x
-        self.current_y = new_y
+    def update_current_point(self, new_pt):
+        self.current_pt = new_pt
 
     def feature_error(self):
         line_data = self.file_by_line_list[self.line]
@@ -127,7 +149,7 @@ class ReadGerber(InputParent):
         aperture_macro_name = match.group(1)
 
         # Creates new aperture macro
-        new_aperture_macro = ApertureMacro(aperture_macro_name)
+        new_aperture_macro = ApertureMacro(aperture_macro_name, self.unit)
         # Adds aperture macro to the aperture macro list.
         self.aperture_macro_list.append(new_aperture_macro)
         self.line += 1

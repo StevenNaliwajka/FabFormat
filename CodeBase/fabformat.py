@@ -64,13 +64,15 @@ if __name__ == "__main__":
     # Common Form: Stores Universal File Data
     common_form = CommonForm(input_config, output_config)
 
-    # Creat infile objects
+    # Create infile objects
     # Populates list with each infile obj
     input_file_obj_list = read_infiles(input_config, common_form)
 
     # Converts infiles in list to Common Form
     convert_infiles_to_common_form(input_file_obj_list)
 
+    # Creates outfile objects
+    # populated the list with each outfile obj.
     output_file_obj_list = get_outfiles(output_config, common_form)
 
     # Generate core traces and handle subtractive traces depending on what output forms have been chosen.

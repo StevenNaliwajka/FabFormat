@@ -8,6 +8,9 @@
         - If touching add to the touching method.
     - Once this is done. Allows for shapes to be subtracted from effectively.
         - Also allows for more efficient plotting to be done in the future.
+- in layer
+    - create "generate_Core" & "remove_subtractions"
+
 
 
 - Finish Gerber
@@ -24,6 +27,9 @@
 
 
 Future:
+- Handle in CFTraceLayer annotation traces and allowing for those to be implemented logicaly into additive(deph) settings.
+- Add comments everywhere
+- improve error messages...
 - Roll own CF Parametric Cubic Spline solution to save from having to be dependent on package.
 - Add a math config to add variables when calculating math. Currently values hardcoded. ;(
     -the number of samples from segment arc,
@@ -38,3 +44,6 @@ Future:
     - Update Gerber D01 Arcs to interpret all cf_determine_extreme_point returns.
 - UPDATE CF:
     - Add a CF memory value that stores what cf shapes are touching that shape.
+
+Future Future:
+- Handle additve and subtractive gcode. 3D printing takes marlin. see what form others take.

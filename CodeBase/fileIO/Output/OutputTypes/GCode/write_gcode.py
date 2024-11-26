@@ -78,3 +78,4 @@ class WriteGcode(OutputParent):
         #
         # G code output
         #
+        pass

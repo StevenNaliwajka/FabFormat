@@ -33,6 +33,10 @@ class CFTraceLayer:
         # Tends to only be used in additive manufacturing to define a 2nd innert material.
         self.core_traces = []
 
+        # flags whether annotations are cared about
+        self.annotation_traces_flag = 0
+        # flags whether map shapes has run yet. O till not
+        self.map_shapes_flag = 0
         # SEE FLOW CHART FOR HOW CF WORKS
 
     def add_trace_to_layer(self, trace_type, trace):
@@ -54,5 +58,26 @@ class CFTraceLayer:
             raise ValueError(f"ADDITIVE LAYER: Invalid Trace type \"{trace_type}\".")
 
     def map_shapes(self):
+        self.map_shapes_flag = 1
         # calls a method to map the shapes relations with each other, whats overlaping, whats touching etc....
         # passes in a certain layer.
+
+        pass
+
+    def generate_core(self):
+        # generates core thats bounded by outline
+        # generates core everywhere thats not primary, subtractive, or annotation if boolean
+        if self.map_shapes_flag:
+            self.map_shapes()
+        # Generates core traces.
+
+    def remove_subtractive(self):
+        # Removes subtractive traces from primary.
+        if self.map_shapes_flag:
+            self.map_shapes()
+
+    def remove_additive_overlaps(self):
+        # Removes any additive overlaps for a
+
+    def set_annotation_flag(self):
+        self.annotation_traces_flag = 1

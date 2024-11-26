@@ -10,8 +10,7 @@
                 "nozzles": {
                     "primary_nozzle": [
                         {
-                            "active": "T",
-                            "nozzle_code": "0",
+                            "tool_code": "0",
                             "nozzle_size_mm": "0.4",
                             "filament_diameter_mm": "1.75",
                             "nozzle_temp_c": "250",
@@ -26,8 +25,7 @@
                     ],
                     "secondary_nozzle": [
                         {
-                            "active": "T",
-                            "nozzle_code": "1",
+                            "tool_code": "1",
                             "nozzle_size_mm": "0.4",
                             "filament_diameter_mm": "1.75",
                             "nozzle_temp_C": "140",
@@ -40,6 +38,15 @@
                             "retraction_speed_mm/s": "25"
                         }
                     ]
+                },
+                "output_form": "additive",
+                "output_material_has_depth": "T",
+                "generate_core_bounded_by_outline": "T",
+                "active_trace_types": {
+                    "primary": "1",
+                    "subtractive": "",
+                    "core": "0",
+                    "annotation": ""
                 }
             }
         ]
