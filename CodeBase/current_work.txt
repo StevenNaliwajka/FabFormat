@@ -11,6 +11,13 @@
 - in layer
     - create "generate_Core" & "remove_subtractions"
 
+- replace static compsosite lists with a boolean composite check to see if its composite with a class var
+
+- Check_for_intersection of shapes returns two extra varaibles. make sure to handle.
+    - cf.id, outer.pt, outer,py, flag, inner_pt, inner_pt.
+
+
+
 - cf_map_shapes
 - cf_generate_core_traces
 - cf_remove_additive_overlaps

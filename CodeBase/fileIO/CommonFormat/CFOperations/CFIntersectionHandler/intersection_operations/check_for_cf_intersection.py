@@ -2,7 +2,7 @@ from CodeBase.fileIO.CommonFormat.CFOperations.CFIntersectionHandler.intersectio
     bounding_box_check
 from CodeBase.fileIO.CommonFormat.CFOperations.CFIntersectionHandler.intersection_operations.test_intersection import *
 # Each common form is given a prime number
-common_form_switcher = {
+cf_shape_switcher = {
     # Shapes
     "cir": 2,  # Circle
     "fsa": 3,  # Filled_sym_arc
@@ -31,27 +31,49 @@ intersection_method_switcher = {
     121: sap_sap_intersection,
 
 }
+
 def check_for_cf_intersection(old_cf, new_cf):
     # Checks for Common Form intersections between a new_instruction and an existing instruction
     # Gets unique prime CF value
-    new_cf_prime_value = common_form_switcher.get(new_cf.type)
-    old_cf_prime_value = common_form_switcher.get(old_cf.type)
+
+    # if old CF is Composite
+    intersection_list = []
+    if isinstance(old_cf, list):
+        for cf in old_cf:
+            _check_with_formating(cf, new_cf, intersection_list)
+    else:
+        _check_with_formating(old_cf, new_cf, intersection_list)
+
+    return intersection_list
+
+def _check_with_formating(old_cf, new_cf, intersection_list):
+    composite_cf = {"com", "pol"}
+    if old_cf.type in composite_cf:
+        for cf in old_cf:
+            intersection = _check_for_cf_intersection(cf, new_cf)
+            if intersection:
+                intersection_list.append(intersection)
+    elif new_cf.type in composite_cf:
+        for cf in new_cf:
+            intersection = _check_for_cf_intersection(old_cf, cf)
+            if intersection:
+                intersection_list.append(intersection)
+    else:
+        intersection = _check_for_cf_intersection(old_cf, new_cf)
+        if intersection:
+            intersection_list.append(intersection)
+    return intersection_list
+
+def _check_for_cf_intersection(old_cf, new_cf):
+    new_cf_prime_value = cf_shape_switcher.get(new_cf.type)
+    old_cf_prime_value = cf_shape_switcher.get(old_cf.type)
 
     bounding_box_1 = old_cf.get_bounding_box()
     bounding_box_2 = new_cf.get_bounding_box()
 
     if bounding_box_check(bounding_box_1, bounding_box_2):
-        resultant = new_cf_prime_value*old_cf_prime_value
+        resultant = new_cf_prime_value * old_cf_prime_value
         result_method = intersection_method_switcher.get(resultant)
         return result_method(old_cf, new_cf)
     else:
-        return True
-
-def check_for_cf_intersection_in_list(cf_list, new_cf):
-    # Calls check for cf intersection and returns all of the indexes and methods where the new CF intersects.
-    intersection_list = []
-    for old_cf in cf_list:
-        new_intersection = check_for_cf_intersection(old_cf, new_cf)
-        if new_intersection:
-            intersection_list.append(new_intersection)
-    return intersection_list
+        return False
