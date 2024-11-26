@@ -49,3 +49,17 @@ class CFCircle(CFCurveParent):
 
         for index, pt in enumerate(self.list_of_inner_pts):
              self.list_of_inner_pts[index] = (pt[0]+shift_x, pt[1]+shift_y)
+
+    def get_bounding_box(self):
+        cx, cy = self.center_pt
+        min_x = cx - self.radius
+        max_x = cx + self.radius
+        min_y = cy - self.radius
+        max_y = cy + self.radius
+
+        # Compute bounding box center, width, and height
+        bbox_center = ((min_x + max_x) / 2, (min_y + max_y) / 2)
+        bbox_width = max_x - min_x
+        bbox_height = max_y - min_y
+
+        return bbox_center, bbox_width, bbox_height

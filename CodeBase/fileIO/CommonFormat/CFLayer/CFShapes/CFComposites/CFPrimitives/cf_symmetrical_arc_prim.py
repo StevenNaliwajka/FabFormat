@@ -69,3 +69,4 @@ class CFSymmetricalArcPrim(CFCurveParent):
         self.radius_pt = (self.radius_pt[0] + shift_x, self.radius_pt[1] + shift_y)
         for index, pt in enumerate(self.list_of_outer_pts):
              self.list_of_outer_pts[index] = (pt[0]+shift_x, pt[1]+shift_y)
+

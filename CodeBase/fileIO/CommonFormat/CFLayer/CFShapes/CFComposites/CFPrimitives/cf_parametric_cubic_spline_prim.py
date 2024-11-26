@@ -142,3 +142,37 @@ class CFParametricCubicSplinePrim(CFCurveParent):
         # Clear cached points and recalculate
         self.list_of_outer_pts = []  # Clear previously calculated points
         self._calculate_points_on_curve()
+
+    def get_bounding_box(self):
+        """
+        Calculates the bounding box for a curved line given a list of points.
+
+        Parameters:
+            points (list of tuple): List of (x, y) tuples representing the points of the curved line.
+
+        Returns:
+            tuple: A tuple containing:
+                - center_pt (tuple): Center point of the bounding box as (x, y).
+                - width (float): Width of the bounding box.
+                - height (float): Height of the bounding box.
+        """
+        if not self.list_of_outer_pts or len(self.list_of_outer_pts) < 2:
+            raise ValueError("At least two self.list_of_outer_pts are required to calculate a bounding box.")
+
+        # Extract x and y coordinates
+        x_coords = [pt[0] for pt in self.list_of_outer_pts]
+        y_coords = [pt[1] for pt in self.list_of_outer_pts]
+
+        # Calculate min and max for x and y
+        x_min, x_max = min(x_coords), max(x_coords)
+        y_min, y_max = min(y_coords), max(y_coords)
+
+        # Calculate the width and height of the bounding box
+        width = x_max - x_min
+        height = y_max - y_min
+
+        # Calculate the center point of the bounding box
+        center_pt = ((x_min + x_max) / 2, (y_min + y_max) / 2)
+
+        # Return the bounding box as a tuple
+        return center_pt, width, height

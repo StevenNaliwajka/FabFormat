@@ -34,3 +34,25 @@ class CFLinearPrim(CFShapeParent):
         # Shift End PT
         self.end_pt[0] = self.end_pt[0] + shift_x
         self.end_pt[1] = self.end_pt[1] + shift_y
+
+    def get_bounding_box(self):
+        """
+                Calculate and return the bounding box for the line.
+                :return: A tuple containing (center_pt, width, height)
+        """
+        x1, y1 = self.start_pt
+        x2, y2 = self.end_pt
+
+        # Calculate the min and max x and y values
+        min_x, max_x = min(x1, x2), max(x1, x2)
+        min_y, max_y = min(y1, y2), max(y1, y2)
+
+        # Calculate the bounding box dimensions
+        width = max_x - min_x
+        height = max_y - min_y
+
+        # Calculate the center point
+        center_pt = ((min_x + max_x) / 2, (min_y + max_y) / 2)
+
+        # Return the bounding box
+        return center_pt, width, height

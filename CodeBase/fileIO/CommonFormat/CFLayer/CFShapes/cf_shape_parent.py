@@ -60,3 +60,8 @@ class CFShapeParent:
     @abstractmethod
     def change_unit(self, new_unit):
         pass
+
+    @abstractmethod
+    def get_bounding_box(self):
+        # gets bounding box and returns it.
+        pass

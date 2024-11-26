@@ -23,3 +23,18 @@ class CFCompositeParent(CFShapeParent):
     def shift_cf(self, shift_x, shift_y):
         for primitive in self.primitive_list:
             primitive.shift_cf(shift_x, shift_y)
+
+    def get_bounding_box(self):
+        bounding_box_list = []
+        for cf in self.primitive_list:
+            bounding_box_list.append(cf.get_bounding_box())
+        return bounding_box_list
+
+    def change_unit(self, new_unit):
+        for primitive in self.primitive_list:
+            primitive.change_unit()
+        self.unit = new_unit
+
+    def _calculate_extreme_points(self):
+        for primitive in self.primitive_list:
+            self.extreme_points = primitive.get_extreme_points()

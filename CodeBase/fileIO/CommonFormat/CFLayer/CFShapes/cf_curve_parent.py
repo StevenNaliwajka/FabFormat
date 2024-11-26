@@ -37,3 +37,23 @@ class CFCurveParent(CFShapeParent):
         else:
             raise ValueError("Specify either a start_point and degree_step or num_points.")
         return list_of_new_pts
+
+    def get_bounding_box(self):
+        # Extract x and y coordinates from the list of outer points
+        x_coords = [pt[0] for pt in self.list_of_outer_pts]
+        y_coords = [pt[1] for pt in self.list_of_outer_pts]
+
+        # Find the minimum and maximum x and y values
+        min_x = min(x_coords)
+        max_x = max(x_coords)
+        min_y = min(y_coords)
+        max_y = max(y_coords)
+
+        # Compute the center of the bounding box
+        bbox_center = ((min_x + max_x) / 2, (min_y + max_y) / 2)
+
+        # Compute the width and height of the bounding box
+        bbox_width = max_x - min_x
+        bbox_height = max_y - min_y
+
+        return bbox_center, bbox_width, bbox_height

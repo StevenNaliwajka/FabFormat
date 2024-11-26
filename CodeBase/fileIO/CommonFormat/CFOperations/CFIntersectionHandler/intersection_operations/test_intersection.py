@@ -1,41 +1,64 @@
-def circle_circle_intersection(list_of_cf, new_cf, index):
+# if intersection occurs, return:
+# ---------------
+# (cf.id, pt_one, pt_two, 1/0)
+# -------------
+# CF.ID - ID OF THE OLD_CF
+# Points are sored with clockwise rotation in mind.
+# pt_one - "left" side intersection
+# pt_two - "right" side intersection
+# 1/0: 1 means it overlaps, 0 means it just touches.
+
+# if no intersection, return None.
+
+def cir_cir_intersection(old_cf, new_cf):
+    
+
     pass
 
-def circle_arc_intersection(list_of_cf, new_cf, index):
-    pass
-
-
-def circle_polygon_intersection(list_of_cf, new_cf, index):
-    pass
-
-
-def circle_linear_intersection(list_of_cf, new_cf, index):
-    pass
-
-
-def arc_arc_intersection(list_of_cf, new_cf, index):
-    pass
-
-
-def arc_polygon_intersection(list_of_cf, new_cf, index):
-    pass
-
-
-def arc_linear_intersection(list_of_cf, new_cf, index):
+def cir_fsa_intersection(old_cf, new_cf):
     pass
 
 
-def polygon_polygon_intersection(list_of_cf, new_cf, index):
+def cir_lin_intersection(old_cf, new_cf):
     pass
 
 
-def polygon_linear_intersection(list_of_cf, new_cf, index):
+def cir_pcs_intersection(old_cf, new_cf):
+    pass
+
+def cir_sap_intersection(old_cf, new_cf):
+    pass
+
+def fsa_fsa_intersection(old_cf, new_cf):
     pass
 
 
-def linear_linear_intersection(list_of_cf, new_cf, index):
+def fsa_lin_intersection(old_cf, new_cf):
     pass
 
 
-# linear, parametric_cub_splin, sym_arc
-# circle, fil_symm_arc
+def fsa_pcs_intersection(old_cf, new_cf):
+    pass
+
+
+def fsa_sap_intersection(old_cf, new_cf):
+    pass
+
+
+def lin_lin_intersection(old_cf, new_cf):
+    pass
+
+def lin_pcs_intersection(old_cf, new_cf):
+    pass
+
+def lin_sap_intersection(old_cf, new_cf):
+    pass
+
+def pcs_pcs_intersection(old_cf, new_cf):
+    pass
+
+def pcs_sap_intersection(old_cf, new_cf):
+    pass
+
+def sap_sap_intersection(old_cf, new_cf):
+    pass
