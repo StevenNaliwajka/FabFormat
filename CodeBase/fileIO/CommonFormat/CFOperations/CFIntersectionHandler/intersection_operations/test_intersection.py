@@ -35,3 +35,7 @@ def polygon_linear_intersection(list_of_cf, new_cf, index):
 
 def linear_linear_intersection(list_of_cf, new_cf, index):
     pass
+
+
+# linear, parametric_cub_splin, sym_arc
+# circle, fil_symm_arc

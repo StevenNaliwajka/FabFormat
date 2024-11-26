@@ -11,7 +11,10 @@
 - in layer
     - create "generate_Core" & "remove_subtractions"
 
-
+- cf_map_shapes
+- cf_generate_core_traces
+- cf_remove_additive_overlaps
+- cf_remove_subtractive_traces
 
 - Finish Gerber
     - Finish main GERBER switcher.

@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFLayer.CFIntersectionHandler.intersection_operations.test_intersection import *
+from CodeBase.fileIO.CommonFormat.CFOperations.CFIntersectionHandler.intersection_operations.test_intersection import *
 
 
 def check_for_cf_intersection(list_of_cf, new_cf, pos_in_list):
@@ -14,10 +14,13 @@ def check_for_cf_intersection(list_of_cf, new_cf, pos_in_list):
 
     # Each common form is given a prime number
     common_form_switcher = {
-        "c": 2,  # Circle
-        "a": 3,  # Arc
-        "p": 5,  # Polygon
-        "l": 7,  # Line
+        # Shapes
+        "cir": 2,  # Circle
+        "fsa": 3,  # Filled_sym_arc
+        # Primitives
+        "lin": 5,  # Linear_prim
+        "pcs": 7,  # Parametric_cub_spline_prim
+        "sap": 11, # symm_arc_prim
     }
 
     # CF * CF = unique number.

@@ -95,9 +95,14 @@ class CommonForm:
                 annotation_flag = 1
         for layer in self.layer_list:
             if annotation_flag:
+                # toggles annotations
                 layer.set_annotation_flag()
+            if depth_flag:
+                # removes additive overlaps
+                layer.remove_additive_overlaps()
             if core_flag:
+                # generates core
                 layer.generate_core()
             if depth_flag:
-                layer.remove_additive_overlaps()
+                # remove subtractive overlaps from additive.
                 layer.remove_subtractive()
