@@ -16,6 +16,47 @@
 - Check_for_intersection of shapes returns two extra varaibles. make sure to handle.
     - cf.id, outer.pt, outer,py, flag, inner_pt, inner_pt.
 
+- Solder Mask can be a thin layer of copper on top. Not sure how to implement but food for thought....
+
+- Additive overlaps:
+    -CIR_CIR: Maintain cir1 and create a filled symmetrical arc.
+    -CIR_FSA: Maintain cir1 and make a COM with a symprim as one edge. OR a FSA and a COM if both inner+outer overlap
+    -CIR_COM: Maintain cir1 and change com.
+    -CIR_POL:
+    -FSA_FSA:
+    -FSA_COM:
+    -FSA_POL:
+    -COM_COM:
+    -COM_POL:
+    -POL_POL:
+- Subtractive overlaps:
+    -CIR_CIR: Maintain cir1 and create a filled symmetrical arc.
+    -CIR_FSA: Maintain cir1 and make a COM with a symprim as one edge. OR a FSA and a COM if both inner+outer overlap
+    -CIR_COM: Maintain cir1 and change com.
+    -CIR_POL:
+    -FSA_FSA:
+    -FSA_COM:
+    -FSA_POL:
+    -COM_COM:
+    -COM_POL:
+    -POL_POL:
+- Intersection Detection:
+   WRITTEN BUT NOT VERIFIED. USED CHAT FOR THE BULK TO GET SOMETHING
+    -CIR_CIR:
+    -CIR_FSA;
+    -CIR_LIN:
+    -CIR_PCS:
+    -CIR_SAP:
+    -FSA_FSA:
+    -FSA_LIN:
+    -FSA_PCS:
+    -FSA_SAP:
+    -LIN_LIN:
+    -LIN_PCS:
+    -LIN_SAP:
+    -PCS_PCS:
+    -PCS_SAP:
+    -SAP_SAP:
 
 
 - cf_map_shapes
