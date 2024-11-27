@@ -1,6 +1,10 @@
+from CodeBase.fileIO.CommonFormat.CFOperations.CFIntersectionHandler.intersection_operations.CF_CF_Intersection_test import \
+    cir_cir_intersection, cir_fsa_intersection, cir_lin_intersection, cir_pcs_intersection, cir_sap_intersection, \
+    fsa_fsa_intersection, fsa_lin_intersection, fsa_pcs_intersection, fsa_sap_intersection, lin_lin_intersection, \
+    lin_sap_intersection, lin_pcs_intersection, pcs_pcs_intersection, pcs_sap_intersection, sap_sap_intersection
 from CodeBase.fileIO.CommonFormat.CFOperations.CFIntersectionHandler.intersection_operations.bounding_box_check import \
     bounding_box_check
-from CodeBase.fileIO.CommonFormat.CFOperations.CFIntersectionHandler.intersection_operations.test_intersection import *
+
 # Each common form is given a prime number
 cf_shape_switcher = {
     # Shapes
@@ -9,7 +13,7 @@ cf_shape_switcher = {
     # Primitives
     "lin": 5,  # Linear_prim
     "pcs": 7,  # Parametric_cub_spline_prim
-    "sap": 11, # symm_arc_prim
+    "sap": 11,  # symm_arc_prim
 }
 
 # CF * CF = unique number.
@@ -32,9 +36,20 @@ intersection_method_switcher = {
 
 }
 
+
 def check_for_cf_intersection(old_cf, new_cf):
     # Checks for Common Form intersections between a new_instruction and an existing instruction
     # Gets unique prime CF value
+
+    # if intersection occurs, return:
+    # ---------------
+    # (cf.id, pt_one, pt_two, 1/0)
+    # -------------
+    # CF.ID - ID OF THE OLD_CF
+    # Points are sored with clockwise rotation in mind.
+    # pt_one - "left" side intersection
+    # pt_two - "right" side intersection
+    # 1/0: 1 means it overlaps, 0 means it just touches.
 
     # if old CF is Composite
     intersection_list = []
@@ -45,6 +60,7 @@ def check_for_cf_intersection(old_cf, new_cf):
         _check_with_formating(old_cf, new_cf, intersection_list)
 
     return intersection_list
+
 
 def _check_with_formating(old_cf, new_cf, intersection_list):
     composite_cf = {"com", "pol"}
@@ -63,6 +79,7 @@ def _check_with_formating(old_cf, new_cf, intersection_list):
         if intersection:
             intersection_list.append(intersection)
     return intersection_list
+
 
 def _check_for_cf_intersection(old_cf, new_cf):
     new_cf_prime_value = cf_shape_switcher.get(new_cf.type)

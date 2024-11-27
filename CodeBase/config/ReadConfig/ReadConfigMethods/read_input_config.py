@@ -1,12 +1,8 @@
 import json
 import os
-
-from CodeBase.config.ConfigFiles.IO_Contents.InfileConfig.infiles.dxf_config import DXFFile
-from CodeBase.config.ConfigFiles.IO_Contents.InfileConfig.infiles.excellon_config import ExcellonFile
-from CodeBase.config.ConfigFiles.IO_Contents.InfileConfig.infiles.gerber_config import GerberFile
 from CodeBase.config.ReadConfig.ReadConfigMethods.Input.handle_dxf_in import handle_dxf_in
-from CodeBase.config.ReadConfig.ReadConfigMethods.Input.handle_excellon_drill_in import handle_excellon_drill
-from CodeBase.config.ReadConfig.ReadConfigMethods.Input.handle_gerber_config_in import handle_gerber
+from CodeBase.config.ReadConfig.ReadConfigMethods.Input.handle_excellon_drill_in import handle_excellon_drill_in
+from CodeBase.config.ReadConfig.ReadConfigMethods.Input.handle_gerber_in import handle_gerber_in
 
 
 def read_input_config(input_config):
@@ -31,10 +27,10 @@ def read_input_config(input_config):
     for file_type, files in input_files.items():
         print(f"\nHandling {file_type} files:")
         if file_type == "gerber":
-            handle_gerber(files, input_config)
+            handle_gerber_in(files, input_config)
         elif file_type == "dxf":
             handle_dxf_in(files, input_config)
         elif file_type == "excellon_drill":
-            handle_excellon_drill(files, input_config)
+            handle_excellon_drill_in(files, input_config)
         else:
             raise FileNotFoundError(f"Unknown file type: {file_type}")
