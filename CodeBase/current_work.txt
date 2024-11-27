@@ -57,3 +57,4 @@ Future:
 
 Future Future:
 - Handle additve and subtractive gcode. 3D printing takes marlin. see what form others take.
+- GCODE 3D print output should consider slicing with standard slicer settings, infil% etc.

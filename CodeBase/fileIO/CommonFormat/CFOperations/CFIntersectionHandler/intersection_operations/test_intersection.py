@@ -11,30 +11,6 @@ import math
 
 
 # if no intersection, return None.
-
-
-def cir_pcs_intersection(old_cf, new_cf):
-    pass
-
-def cir_sap_intersection(old_cf, new_cf):
-    pass
-
-def fsa_fsa_intersection(old_cf, new_cf):
-    pass
-
-
-def fsa_lin_intersection(old_cf, new_cf):
-    pass
-
-
-def fsa_pcs_intersection(old_cf, new_cf):
-    pass
-
-
-def fsa_sap_intersection(old_cf, new_cf):
-    pass
-
-
 def lin_lin_intersection(old_cf, new_cf):
     pass
 
