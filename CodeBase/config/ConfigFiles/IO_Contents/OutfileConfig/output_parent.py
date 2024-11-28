@@ -12,6 +12,8 @@ class OutputParent(FileParent):
         # generate_core_bounded_by_outline
         self.generate_core_bounded_by_outline = None
 
+        self.unit = None
+
         # list of active trace types and their tool
         # stored as touple (layer_type, tool)
         self.active_trace_types = None

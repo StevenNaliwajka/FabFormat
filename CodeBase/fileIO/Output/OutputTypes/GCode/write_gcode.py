@@ -32,6 +32,18 @@ class WriteGcode(OutputParent):
         self.write_file_header()
         self.write_file_settings_and_prime()
 
+        # start printing.
+        self.write_file_body()
+        # for nozzle in nozzle type
+            # call method, print shit on layer specced by nozzle
+            # method takes in nozzle and prints all the traces.
+                #
+        # once done consider solder mask layer with a thin layer of copper on top. Not for now.
+
+    def write_file_body(self):
+        for layer in self.common_form.layer_list:
+            for nozzle in self.nozzle_list:
+
 
     def write_file_header(self):
         # Writes file header information
