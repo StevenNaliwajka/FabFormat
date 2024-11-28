@@ -1,7 +1,7 @@
 from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.cf_curve_parent import CFCurveParent
 from CodeBase.fileIO.CommonFormat.CFOperations.GeneralMath.calculate_distance_p2p import calculate_distance
 from CodeBase.fileIO.CommonFormat.CFOperations.cf_sym_arc_calculations import calculate_sym_arc_degree, \
-    get_cf_symmetrical_arc_radius_point, find_sym_arc_radius
+    get_cf_symmetrical_arc_radius_point, find_sym_arc_radius, generate_points_on_sym_arc_complex
 
 
 class CFFilledSymmetricalArc(CFCurveParent):
@@ -56,8 +56,10 @@ class CFFilledSymmetricalArc(CFCurveParent):
             self.extreme_points.append(self.list_of_inner_pts)
 
     def _calculate_points_on_curve(self):
-        self.list_of_outer_pts = self._generate_circular_points(self.center_pt, self.radius_pt, self.start_pt,
-                                                                self.end_pt)
+        if self.arc_radius == self.edge_radius:
+            self.list_of_outer_pts = self._generate_circular_points(self.center_pt, self.radius_pt, self.start_pt, self.end_pt)
+        else:
+            generate_points_on_sym_arc_complex(self)
         if self.inner_off is not None:
             self.list_of_inner_pts = self._generate_circular_points(self.center_pt, self.radius_pt, self.start_pt,
                                                                     self.end_pt)

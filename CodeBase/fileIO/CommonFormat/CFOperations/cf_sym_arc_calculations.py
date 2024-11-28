@@ -1,5 +1,7 @@
 import math
 
+from CodeBase.fileIO.CommonFormat.CFOperations.GeneralMath.calculate_arc_radians import calculate_arc_radians
+
 
 def get_cf_symmetrical_arc_radius_point(degree, start_pt, center_pt, radius):
     """
@@ -116,3 +118,25 @@ def find_sym_arc_radius(center, point, new_distance):
     new_point = (center[0] + scaled_vector[0], center[1] + scaled_vector[1])
 
     return new_point
+
+def generate_points_on_sym_arc_complex(self):
+    # Reference CF shapes documentation "Sym_arc_pt_1.jpg" + "Sym_arc_pt_2.jpg"
+    num_points = self.qty_points_on_curve
+
+    edge_radius = self.edge_radius
+    amplitude = self.arc_radius
+    x_rad = calculate_arc_radians(self.center_pt, self.start_pt)
+    z_rad = calculate_arc_radians(self.center_pt, self.end_pt)
+
+    step = (z_rad - x_rad) / (num_points - 1)  # Calculate the step size
+    theta_list = [x_rad + i * step for i in range(num_points)]
+
+    points_on_curve = []
+    for theta in theta_list:
+        x = (edge_radius + amplitude * math.sin(math.pi/(x_rad-z_rad)*(x_rad-theta))) * math.cos(theta)
+        y = (edge_radius + amplitude * math.sin(math.pi / (x_rad - z_rad) * (x_rad - theta))) * math.sin(theta)
+
+        shifted_y = x + self.center_pt[0]
+        shifted_x = y + self.center_pt[1]
+        points_on_curve.append((shifted_x, shifted_y))
+    return points_on_curve
