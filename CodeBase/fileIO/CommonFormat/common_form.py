@@ -154,6 +154,7 @@ class CommonForm:
     def verify_units(self, outfile_config):
         for layer in self.layer_list:
             layer.verify_units(outfile_config)
+        #******************************************************************************** WRONG
 
     def format_layers(self):
         core_flag = 0
@@ -167,6 +168,8 @@ class CommonForm:
             if config.annotation_flag:
                 annotation_flag = 1
         for layer in self.layer_list:
+            # VERIFY UNITS ***************************************************************************************
+            self.verify_units()
             if annotation_flag:
                 # toggles annotations
                 layer.set_annotation_flag()

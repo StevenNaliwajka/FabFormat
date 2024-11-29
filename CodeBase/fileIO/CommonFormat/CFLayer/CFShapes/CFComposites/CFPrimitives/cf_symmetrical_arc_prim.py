@@ -1,5 +1,5 @@
 from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.cf_curve_parent import CFCurveParent
-from CodeBase.fileIO.CommonFormat.CFOperations.GeneralMath.calculate_distance_p2p import calculate_distance
+from CodeBase.fileIO.CommonFormat.CFOperations.GeneralMath.calculate_distance_p2p import calculate_distance_p2p
 from CodeBase.fileIO.CommonFormat.CFOperations.cf_sym_arc_calculations import calculate_sym_arc_degree, \
     get_cf_symmetrical_arc_radius_point, generate_points_on_sym_arc_complex
 
@@ -24,7 +24,7 @@ class CFSymmetricalArcPrim(CFCurveParent):
         self.start_pt = start_pt
         self.end_pt = end_pt
 
-        self.edge_radius = calculate_distance(center_pt, start_pt)
+        self.edge_radius = calculate_distance_p2p(center_pt, start_pt)
         self.arc_radius = arc_radius
 
         self.degree = calculate_sym_arc_degree(start_pt, end_pt, center_pt)

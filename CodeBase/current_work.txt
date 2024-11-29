@@ -22,7 +22,11 @@
 - Generate core traces by creating a composite shape from outlines then subtract everything from it.
 - Create GCODE that parses shapes
 
+- WHEN DETECTING EDGES, when organizing shapes find some way to orient self in the depths of 'clockwise'
+
 - modify the CF_CF switcher to be additive instead of multiply. Smaller Numbers
+
+- add verify_units() to each layer. have it called upon every overlap calculation.
 
 - Additive overlaps:
     -CIR_CIR: Maintain cir1 and create a filled symmetrical arc.

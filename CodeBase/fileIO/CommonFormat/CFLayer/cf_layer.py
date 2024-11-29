@@ -121,29 +121,71 @@ class CFTraceLayer:
 
     def remove_additive_overlaps(self):
         # Removes subtractive traces from primary.
-        '''
-        if self.map_shapes_flag:
-            self.map_shapes()
-        '''
 
-        index_in_list = 0
-        while index_in_list < len(self.primary_traces):
-            check_cf = self.primary_traces[index_in_list]
-            for index, trace in enumerate(self.primary_traces):
+        # Navigates through primary_traces in the form
+        #   1  2  3  4
+        # 1 *  *  *  *
+        # 2    *  *  *
+        # 3       *  *
+        # 4          *
+        # Appends new shapes and checks those as well.
+
+        index1 = 0
+        while index1 < len(self.primary_traces):
+            cf_1 = self.primary_traces[index1]
+            index2 = index1
+            while index2 < len(self.primary_traces):
+                cf_2 = self.primary_traces[index2]
                 # Get intersection data
-                intersection = check_for_cf_intersection(trace, check_cf, self.common_format)
-                # IF no intersection it returns None and goes to the next object. Else handles intersection
-                if intersection:
-                    # handle the intersection
-                    modified_traces = cf_handle_intersection(True, intersection, self.common_format)
+                intersection_data = check_for_cf_intersection(cf_1, cf_2, self.common_format)
 
-                    # Remove OG trace
-                    del self.modified_primary_traces[index]
-                    # Copy the modified traces over to the modified_primary_traces.
-                    self.modified_primary_traces.extend(modified_traces)
-                else:
+                # Intersection_data:
+                # [0] cf_1
+                # [1] cf_2
+                # [2] cf1_outer_pt_list = Intersection pts on outer of cf1
+                # [3] cf1_inner_pt_list = Intersection pts on inner of cf1
+                # [4] cf2_outer_pt_list = Intersection pts on outer of cf2
+                # [5] cf2_inner_pt_list = Intersection pts on inner of cf2
+                # [6] overlap_flag = True: Overlapping, handle case
+                #                    False: Touching, do nothing
+                # [7] enveloped_case = 1: If cf1 is entirely enveloped by cf2, remove it
+                #                      2: if cf2 is entirely enveloped by cf1, remove it
+                #                      0: default, nothing
+
+                # IF INTERSECTION DATA IS NONE
+                if not intersection_data:
                     # Since no intersection. go to next line
-                    index_in_list += 1
+                    index2 += 1
+
+                elif intersection_data[6]:
+                    # intersection overlaps, so handle
+
+                    # IF enveloped_case is NONE.
+                    if intersection_data[7]:
+                        # enveloped_case so cf_1 is enveloped. so remove
+                        if intersection_data[7] == 1:
+                            # del cf_1
+                            del self.primary_traces[index1]
+                        # enveloped_case so cf_2 is enveloped. so remove
+                        elif intersection_data[7] == 2:
+                            # del cf_2
+                            del self.primary_traces[index2]
+
+                    # Intersection. Handle it
+                    elif intersection_data:
+                        # handle the intersection
+                        modified_traces = cf_handle_intersection(True, intersection_data, self.common_format)
+                        if modified_traces[0].id == self.primary_traces[cf_1].id:
+                            # Copy the modified traces over to the modified_primary_traces BESIDES THE OG TRACE
+                            self.primary_traces.extend(modified_traces[1:])
+                            index2 += 1
+                        else:
+                            # Remove OG trace
+                            del self.primary_traces[index1]
+                            # Copy the modified traces over to the modified_primary_traces.
+                            self.primary_traces.extend(modified_traces)
+            index1 += 1
+
 
     def set_annotation_flag(self):
         self.annotation_traces_flag = 1

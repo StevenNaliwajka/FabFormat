@@ -1,4 +1,4 @@
-from CodeBase.fileIO.CommonFormat.CFOperations.GeneralMath.calculate_distance_p2p import calculate_distance
+from CodeBase.fileIO.CommonFormat.CFOperations.GeneralMath.calculate_distance_p2p import calculate_distance_p2p
 
 
 def cf_determine_extreme_point(list_of_cf, check_pt, type_code):
@@ -46,7 +46,7 @@ def _is_furthest(check_pt, furthest_point_list):
     # returns true if further
 
     # get distance between Start cords and check cords
-    new_distance = calculate_distance(check_pt, (furthest_point_list[3], furthest_point_list[4]))
+    new_distance = calculate_distance_p2p(check_pt, (furthest_point_list[3], furthest_point_list[4]))
     if new_distance > furthest_point_list[2]:
         furthest_point_list[2] = new_distance
         furthest_point_list[0] = check_pt[0]
@@ -61,7 +61,7 @@ def _is_closest(check_pt, furthest_point_list):
     # returns true if closer
 
     # get distance between Start cords and check cords
-    new_distance = calculate_distance(check_pt, (furthest_point_list[3], furthest_point_list[4]))
+    new_distance = calculate_distance_p2p(check_pt, (furthest_point_list[3], furthest_point_list[4]))
     if new_distance < furthest_point_list[2]:
         furthest_point_list[2] = new_distance
         furthest_point_list[0] = check_pt[0]

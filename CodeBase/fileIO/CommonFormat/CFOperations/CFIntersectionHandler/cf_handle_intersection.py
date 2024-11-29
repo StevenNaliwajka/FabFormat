@@ -4,17 +4,19 @@ def cf_handle_intersection(intersection_flag, intersection_data, common_format):
     # Data provided by intersection detection
     # intersection_data is a touple of the following data
     # [cf_1, cf_2, cf1_outer_pt_list, cf1_inner_pt_list, cf2_outer_pt_list, cf2_inner_pt_list, overlap_flag,
-    # duplicate_flag]
-    # cf_1
-    # cf_2
-    # cf1_outer_pt_list = Intersection pts on outer of cf1
-    # cf1_inner_pt_list = Intersection pts on inner of cf1
-    # cf2_outer_pt_list = Intersection pts on outer of cf2
-    # cf2_inner_pt_list = Intersection pts on inner of cf2
-    # overlap_flag = Overlap Flag. If just touching. Do nothing. If bounding
-    # enveloped_case = 1: If cf1 is entirely enveloped by cf2
-    #                  2: if cf2 is entirely enveloped by cf2
-    #                  0: default, nothing
+    # enveloped_case]
+    # Intersection_data:
+    # [0] cf_1
+    # [1] cf_2
+    # [2] cf1_outer_pt_list = Intersection pts on outer of cf1
+    # [3] cf1_inner_pt_list = Intersection pts on inner of cf1
+    # [4] cf2_outer_pt_list = Intersection pts on outer of cf2
+    # [5] cf2_inner_pt_list = Intersection pts on inner of cf2
+    # [6] overlap_flag = True: Overlapping, handle case
+    #                    False: Touching, do nothing
+    # [7] enveloped_case = 1: If cf1 is entirely enveloped by cf2, remove it
+    #                      2: if cf2 is entirely enveloped by cf1, remove it
+    #                      0: default, nothing
 
     # gets prime numbers
     cf_1_val = common_format.cf_shape_switcher.get(intersection_data[0].type)

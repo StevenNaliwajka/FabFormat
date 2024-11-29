@@ -140,3 +140,27 @@ def generate_points_on_sym_arc_complex(self):
         shifted_x = y + self.center_pt[1]
         points_on_curve.append((shifted_x, shifted_y))
     return points_on_curve
+
+
+def find_center_pt_on_sym_arc(start_pt, end_pt):
+    x1, y1 = start_pt
+    x2, y2 = end_pt
+
+    # Midpoint
+    mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+
+    # Perpendicular direction vector (clockwise rotation)
+    dx, dy = x2 - x1, y2 - y1
+    perp_vector = (-dy, dx)
+    perp_length = math.sqrt(perp_vector[0] ** 2 + perp_vector[1] ** 2)
+    perp_unit = (perp_vector[0] / perp_length, perp_vector[1] / perp_length)
+
+    # Radius of the circle
+    d = math.sqrt(dx ** 2 + dy ** 2)
+    r = d / math.sqrt(2)
+
+    # Center point
+    cx = mx + r * perp_unit[0]
+    cy = my + r * perp_unit[1]
+
+    return cx, cy
