@@ -8,6 +8,16 @@ from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFComposites.CFPrimitives.cf_
 from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFSolids.cf_circle import CFCircle
 from CodeBase.fileIO.CommonFormat.CFLayer.CFShapes.CFSolids.cf_filled_symmetrical_arc import CFFilledSymmetricalArc
 from CodeBase.fileIO.CommonFormat.CFLayer.cf_layer import CFTraceLayer
+from CodeBase.fileIO.CommonFormat.CFOperations.CFIntersectionHandler.intersection_operations.CF_CF_Additive_Handling import \
+    cir_cir_additive_handling, cir_composite_additive_handling, cir_fsa_additive_handling, \
+    composite_composite_additive_handling, fsa_composite_additive_handling, fsa_fsa_additive_handling
+from CodeBase.fileIO.CommonFormat.CFOperations.CFIntersectionHandler.intersection_operations.CF_CF_Intersection_test import \
+    cir_cir_intersection, cir_fsa_intersection, cir_lin_intersection, cir_pcs_intersection, cir_sap_intersection, \
+    fsa_fsa_intersection, fsa_lin_intersection, fsa_pcs_intersection, fsa_sap_intersection, lin_lin_intersection, \
+    lin_sap_intersection, lin_pcs_intersection, pcs_pcs_intersection, pcs_sap_intersection, sap_sap_intersection
+from CodeBase.fileIO.CommonFormat.CFOperations.CFIntersectionHandler.intersection_operations.CF_CF_Subtractive_handling import \
+    cir_cir_subtractive_handling, cir_composite_subtractive_handling, cir_fsa_subtractive_handling, \
+    composite_composite_subtractive_handling, fsa_composite_subtractive_handling, fsa_fsa_subtractive_handling
 
 
 class CommonForm:
@@ -22,6 +32,69 @@ class CommonForm:
         self.layer_list = []
         self.input_config = input_config
         self.output_config = output_config
+
+        self.cf_shape_switcher = {
+            # Shapes
+            "cir": 2,  # Circle
+            "fsa": 3,  # Filled_sym_arc
+            # Primitives
+            "lin": 5,  # Linear_prim
+            "pcs": 7,  # Parametric_cub_spline_prim
+            "sap": 11,  # symm_arc_prim
+            # Composites
+            "com": 13,  # complex shape (LIN,PCS,SAP)
+            "pol": 17,  # Polygon (LIN only)
+        }
+
+        self.intersection_method_switcher = {
+            # CF * CF = unique number.
+            # CF number gotten from cf_shape_switcher above
+            3: cir_cir_intersection,
+            6: cir_fsa_intersection,
+            10: cir_lin_intersection,
+            14: cir_pcs_intersection,
+            22: cir_sap_intersection,
+            9: fsa_fsa_intersection,
+            15: fsa_lin_intersection,
+            21: fsa_pcs_intersection,
+            33: fsa_sap_intersection,
+            25: lin_lin_intersection,
+            35: lin_pcs_intersection,
+            55: lin_sap_intersection,
+            49: pcs_pcs_intersection,
+            77: pcs_sap_intersection,
+            121: sap_sap_intersection,
+        }
+
+        self.additive_handling_switcher = {
+            # CF * CF = unique number.
+            # CF number gotten from cf_shape_switcher above
+            4: cir_cir_additive_handling,
+            26: cir_composite_additive_handling,  # COM
+            34: cir_composite_additive_handling,  # POL
+            6: cir_fsa_additive_handling,
+            169: composite_composite_additive_handling,  # COM * COM
+            221: composite_composite_additive_handling,  # COM * POL
+            289: composite_composite_additive_handling,  # POL * POL
+            39: fsa_composite_additive_handling,  # COM
+            51: fsa_composite_additive_handling,  # POL
+            9: fsa_fsa_additive_handling
+        }
+
+        self.subtractive_handling_switcher = {
+            # CF * CF = unique number.
+            # CF number gotten from cf_shape_switcher above
+            4: cir_cir_subtractive_handling,
+            26: cir_composite_subtractive_handling,  # COM
+            34: cir_composite_subtractive_handling,  # POL
+            6: cir_fsa_subtractive_handling,
+            169: composite_composite_subtractive_handling,  # COM * COM
+            221: composite_composite_subtractive_handling,  # COM * POL
+            289: composite_composite_subtractive_handling,  # POL * POL
+            39: fsa_composite_subtractive_handling,  # COM
+            51: fsa_composite_subtractive_handling,  # POL
+            9: fsa_fsa_subtractive_handling
+        }
 
     # Composites
     def add_polygon(self, layer_list, type_of_trace, unit, primitive_list):

@@ -22,6 +22,8 @@
 - Generate core traces by creating a composite shape from outlines then subtract everything from it.
 - Create GCODE that parses shapes
 
+- modify the CF_CF switcher to be additive instead of multiply. Smaller Numbers
+
 - Additive overlaps:
     -CIR_CIR: Maintain cir1 and create a filled symmetrical arc.
     -CIR_FSA: Maintain cir1 and make a COM with a symprim as one edge. OR a FSA and a COM if both inner+outer overlap
