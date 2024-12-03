@@ -1,4 +1,4 @@
-# IN PROG: 100% by Nov 29 (70%:Oct 25)
+# IN PROG:
 The cumulation of a semester of work for my senior project "Affordable 3D PCB Printing for Prototyping".
 
 Goal is to have a modular file converter and slicer. 
