@@ -1,5 +1,5 @@
 # IN PROG:
-The "part 2" of my senior project "Affordable 3D PCB Printing for Prototyping", begun the same semester.
+The "part 2" of my [Senior Project](https://github.com/StevenNaliwajka/ProjectGuide/blob/main/FormalWork/SeniorProject-3DPCBS/README.md) "Affordable 3D PCB Printing for Prototyping", begun the same semester.
 
 Currently 5500~ lines and 80% completed  
 Goal is to have a modular file converter and slicer. 
