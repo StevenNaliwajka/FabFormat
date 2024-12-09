@@ -1,6 +1,7 @@
 # IN PROG:
-The cumulation of a semester of work for my senior project "Affordable 3D PCB Printing for Prototyping".
+The "part 2" of my senior project "Affordable 3D PCB Printing for Prototyping", begun the same semester.
 
+Currently 5500~ lines and 80% completed  
 Goal is to have a modular file converter and slicer. 
 So that PCBs can be printed on a standard dual extrusion FDM 3D printer using conductive fillament in place of copper.
 Components can be surface mounted by hand using conductive epoxy. 
@@ -23,13 +24,12 @@ CodeFlow:
    - Gcode
    - PNG
 
-Its not completed 100%, more like 70%. Infiles -> Common form is done. Common form -> 2 extruder Gcode is in the works.   
+Its not completed 100%, more like 80%. Infiles -> Common form is done. Common form -> 2 extruder Gcode is in the works.   
 
 
 Notes:
 - Currently Headless mode is only supported, had to drop Gershenfeld's GUI when refactoring to opject oriented.
 - Modular so adding new input or output file types is as easy as converting to or from common form.
-- I *think* all modern gerber features are supported. AM(aperture macros) etc.. more testing required to be sure.
 
 ---------------------------------------------------------------------------------------------------------
 
