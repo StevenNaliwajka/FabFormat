@@ -10,6 +10,9 @@ While any number of input layers are allowed, embedded components are not suppor
 Inspriation gained from Neil Gershenfeld (GTG.py) and my professor Theodore Grosch (cam1.py).
 Even though I think I have rewritten every inherited code block, I could not have gotten this far without their prior work.
 
+
+Currently on backburner while I finish other projects.
+
 ---------------------------------------------------------------------------------------------------------
 
 CodeFlow:
